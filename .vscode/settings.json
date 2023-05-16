@@ -1,0 +1,20 @@
+{
+  "files.associations": {
+    "fontloader.h": "c",
+    "stdlib.h": "c",
+    "limits.h": "c",
+    "stdint.h": "c",
+    "naiveconsole.h": "c",
+    "stddef.h": "c",
+    "syscall.h": "c",
+    "syscalls.h": "c",
+    "syscallslib.h": "c",
+    "string.h": "c",
+    "shell.h": "c",
+    "programs.h": "c",
+    "keyboard_driver.h": "c",
+    "time.h": "c",
+    "ourlib.h": "c",
+    "speakerdriver.h": "c"
+  }
+}
