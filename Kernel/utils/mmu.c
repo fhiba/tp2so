@@ -1,4 +1,4 @@
-#include "./include/mmu.h"
+#include <mmu.h>
 #include <stdint.h>
 
 #define MINIMUM_BLOCK_SIZE ((unsigned int)(STRUCT_SIZE * 2))

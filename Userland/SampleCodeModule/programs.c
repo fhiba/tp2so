@@ -50,13 +50,6 @@ char getDateValues(char value){
     return sys_date(value);
 }
 
-void test(){
-    for(int i = 0; i < 6200 ; i++){
-        printf("a");
-        sys_sleep(20);
-    }
-}
-
 void date(){
     int values[5] = {7,8,9,4,2};
     for (int i=0;i<5;i++){

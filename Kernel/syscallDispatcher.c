@@ -2,6 +2,8 @@
 #include <syscalls.h>
 #include <speakerDriver.h>
 #include "./include/time.h"
+#include "./include/mmu_wrapper.h"
+
 
 static int num_syscall;
 extern void divzero();
@@ -51,6 +53,12 @@ int sys_dispatcher(int arg0, int arg1, int arg2, int arg3,int arg4){
             break;
         case 17:
             beep();
+            break;
+        case 18:
+            return alloc(arg0);
+            break;
+        case 19:
+            free(arg0);
             break;
         case 40:
             memPrint((uint64_t) arg0, (unsigned char *) arg1);

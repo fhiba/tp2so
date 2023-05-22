@@ -7,6 +7,7 @@
 #include <idtLoader.h>
 #include <syscalls.h>
 #include <speakerDriver.h>
+#include <mmu_wrapper.h>
 extern uint8_t text;
 extern uint8_t rodata;
 extern uint8_t data;
@@ -18,6 +19,8 @@ static const uint64_t PageSize = 0x1000;
 
 static void * const sampleCodeModuleAddress = (void*)0x400000;
 static void * const sampleDataModuleAddress = (void*)0x500000;
+static void *const heap_address = (void *)0x600000;
+static void *const mmu_address = (void *)0x50000;
 
 typedef int (*EntryPoint)();
 
@@ -56,6 +59,7 @@ void * initializeKernelBinary()
 }
 int main()
 {	
+	new_mmu(mmu_address,heap_address);
 	load_idt();
 	startPos();
 	//beep();

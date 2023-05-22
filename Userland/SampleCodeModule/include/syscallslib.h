@@ -20,4 +20,6 @@ void sys_recto(int x, int y,int color, unsigned char width, unsigned char height
 void sys_beep();
 void sys_printBase(uint64_t value, uint32_t base);
 int sys_isBlackPixel(unsigned int x, unsigned int y);
+void * sys_malloc(unsigned int mem_to_alloc);
+void sys_free(void * mem_to_free);
 #endif
