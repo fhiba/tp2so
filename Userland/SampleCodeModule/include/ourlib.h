@@ -34,4 +34,6 @@ void printerr(char * str);
 void printFirst(char * str);
 uint32_t cUintToBase(uint64_t value, char * buffer, uint32_t base);
 uint64_t stringToUint64(char *hex, int *ok);
+void intToString(int num, char* str);
+void reverseString(char* str, int length);
 #endif

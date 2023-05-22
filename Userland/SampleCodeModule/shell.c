@@ -63,6 +63,8 @@ void getProgram(char * buffer){
         test();
     else if(strcmp(buffer,"MEMPRINT"))
         memPrint();
+    else if(strcmp(buffer,"TEST"))
+        test();
     else
         printerr("Invalid Command\n");
 }

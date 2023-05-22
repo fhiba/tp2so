@@ -65,6 +65,47 @@ int atoi(char * str){
     return res;
 }
 
+void reverseString(char* str, int length) {
+    int start = 0;
+    int end = length - 1;
+    while (start < end) {
+        char temp = str[start];
+        str[start] = str[end];
+        str[end] = temp;
+        start++;
+        end--;
+    }
+}
+
+void intToString(int num, char* str) {
+    int i = 0;
+    int isNegative = 0;
+
+    // Handle the case of a negative number
+    if (num < 0) {
+        isNegative = 1;
+        num = -num;
+    }
+
+    // Convert individual digits to characters
+    while (num != 0) {
+        int remainder = num % 10;
+        str[i++] = '0' + remainder;
+        num = num / 10;
+    }
+
+    // Add the negative sign if necessary
+    if (isNegative) {
+        str[i++] = '-';
+    }
+
+    // Add null terminator
+    str[i] = '\0';
+
+    // Reverse the string
+    reverseString(str, i);
+}
+
 uint32_t cUintToBase(uint64_t value, char * buffer, uint32_t base)
 {
     char *p = buffer;

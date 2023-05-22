@@ -1,7 +1,8 @@
 #include <syscalls.h>
-#include <naiveConsole.h>
+#include "./include/naiveConsole.h"
 #include <interrupts.h>
 #include <lib.h>
+#include <mmu.h>
 
 #define STDIN 1
 #define RETVALUE -1
