@@ -1,4 +1,4 @@
 #include <stdio.h>
 
-void run_all(void) {
+void run_tests(void) {
 }
