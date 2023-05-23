@@ -1,5 +1,6 @@
 /* sampleCodeModule.c */
 #include <shell.h>
+#include <AllTest.h>
 
 char * v = (char*)0xB8000 + 79 * 2;
 
@@ -8,6 +9,8 @@ static int var2 = 0;
 
 
 int main() {
+	//Aca se podrian correr los test
+	RunAllTests();
 	clear();
 	printf("Welcome to capOs. Run HELP command to see the available programs!\n");
 	shell();
