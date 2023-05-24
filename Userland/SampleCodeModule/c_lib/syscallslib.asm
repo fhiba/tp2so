@@ -17,6 +17,8 @@ GLOBAL sys_tron
 GLOBAL sys_beep
 GLOBAL sys_printBase
 GLOBAL sys_isBlackPixel
+GLOBAL sys_malloc
+GLOBAL sys_free
 sys_write:
     mov rax, 2
     int 80h
@@ -100,6 +102,16 @@ sys_printBase:
 
 sys_isBlackPixel:
     mov rax, 23
+    int 80h
+    ret
+
+sys_malloc:
+    mov rax, 18
+    int 80h
+    ret
+
+sys_free:
+    mov rax,19
     int 80h
     ret
 
