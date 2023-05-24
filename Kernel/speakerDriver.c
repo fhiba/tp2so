@@ -1,5 +1,4 @@
-#include <stddef.h>
-#include <stdint.h>
+#include <speakerDriver.h>
 //Make it go beep!
 
  //Play sound using built in speaker

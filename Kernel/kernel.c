@@ -41,8 +41,6 @@ void * getStackBase()
 
 void * initializeKernelBinary()
 {
-	char buffer[10];
-
 
 	void * moduleAddresses[] = {
 		sampleCodeModuleAddress,

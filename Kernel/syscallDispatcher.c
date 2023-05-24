@@ -1,7 +1,7 @@
 #include <stddef.h>
 #include <syscalls.h>
 #include <speakerDriver.h>
-#include "./include/time.h"
+#include <time.h>
 #include "./include/mmu_wrapper.h"
 
 
@@ -16,10 +16,10 @@ void set_syscall(int num){
 int sys_dispatcher(int arg0, int arg1, int arg2, int arg3,int arg4){
     switch(num_syscall){
         case 1:
-            read(arg0,(char*)arg1,(size_t)arg2);
+            read(arg0,(char*) (long) arg1,(size_t)arg2);
             break;
         case 2:
-            write(arg0,(char*)arg1,(size_t)arg2);
+            write(arg0,(char*) (long)arg1,(size_t)arg2);
             break;
         case 3:
             clear();
@@ -55,13 +55,13 @@ int sys_dispatcher(int arg0, int arg1, int arg2, int arg3,int arg4){
             beep();
             break;
         case 18:
-            return alloc(arg0);
+            return (long) alloc(arg0);
             break;
         case 19:
-            free(arg0);
+            free((void*)(long)arg0);
             break;
         case 40:
-            memPrint((uint64_t) arg0, (unsigned char *) arg1);
+            memPrint((uint64_t) arg0, (unsigned char *) (long) arg1);
         case 23:
             isBlackPixel((unsigned int)arg0,(unsigned int) arg1);
         default:

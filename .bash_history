@@ -239,3 +239,202 @@ make all
 exit
 apt-get install qemu-system-x86_64
 exit
+ls
+cd root/
+ls
+cd Toolchain/
+ls
+make all
+cd ..
+make al
+make all
+clear
+exit
+cd root/
+ls
+clear
+make all
+exit
+cd root/
+ls
+clear
+cd Toolchain/
+make clean 
+make all
+cd ..
+ls
+make clean
+make all
+clear
+exit
+cd root/
+ls
+cd Toolchain/
+make clean
+cd ..
+make clean
+cd Toolchain/
+make all
+cd ..
+make all
+make all
+clear
+make clean
+clear
+make all
+make clean
+clear
+make all
+make clean
+make all
+clear
+make clean
+clear
+make all
+make clean
+clear
+make all >> file.txt
+nvim file.txt
+nano file.txt
+clear
+cat file.txt 
+clear
+make clean
+clear
+make all >> file.txt
+clear
+make clean
+make all
+clear
+make clean
+clear
+make all
+make clean
+clear
+make all
+clear
+make clean
+clear
+make all
+make clean
+make all
+clear
+make all
+make clean
+clear
+make all
+make clean
+clear
+make all
+clear
+make clean
+clear
+make all
+clear
+make clean
+clear
+make all
+clear
+make clean
+clear
+make clean
+clear
+make all
+clear
+make clean
+make all
+clear
+make clean
+clear
+make all
+clear
+make clean
+clear
+make all
+make clean
+clear
+make all
+clear
+make clean
+clear
+make all
+clear
+make clean
+clear
+make all
+celar
+clear
+make clean
+make all
+clear
+make clean
+clear
+make all
+make clear
+clear
+make clean
+clear
+make all
+clear
+make clean
+make all
+clear
+make clean
+clear
+make all
+clear
+make clean
+clear
+make all
+clear
+make clean
+clear
+make all
+clear
+make clean && clear
+clear
+clear
+make all
+clear
+make clean && clear
+clear
+make all
+make clean && clear
+make all
+make clean && clear
+clear
+clear
+make all
+make clean && clear
+clear
+make all
+ckear
+clear
+make clean && clear
+clear
+make all
+clear
+clear
+make clea
+make clean
+clear
+clear
+make all
+make clean
+clear
+clear
+clear
+make all
+make clean
+make all
+make clean
+clear
+clear
+make all
+make clean
+clear
+clear
+make all
+cd Image/
+ls
+exit

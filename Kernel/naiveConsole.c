@@ -19,7 +19,7 @@ void startPos(){
 	screenInfo = (void *) 0x5C00; 
 	currentPos.x = 0;
 	currentPos.y = 0;
-	currentVideo = screenInfo->framebuffer;
+	currentVideo = (void *) (long) screenInfo->framebuffer;
 	width = screenInfo->width;
 	height = screenInfo->height;
 	bpp = screenInfo->bpp;
@@ -125,9 +125,9 @@ void fillRect(int x, int y, int color, unsigned char w, unsigned char h){
 	int i, j;
 	for(i = 0; i < w; i++){
 		for(j = 0; j < h;j++){
-			putpixel(screenInfo->framebuffer, x + i, y + j, color);	
+			putpixel((unsigned char *) (long) screenInfo->framebuffer, x + i, y + j, color);	
 		}
-	}
+	} 
 	
 }
 
