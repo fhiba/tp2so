@@ -12,5 +12,5 @@ void div_zero();
 void opcodetest();
 void tron();
 void test();
-
+void memPrint();
 #endif
