@@ -15,6 +15,9 @@
     "keyboard_driver.h": "c",
     "time.h": "c",
     "ourlib.h": "c",
-    "speakerdriver.h": "c"
+    "speakerdriver.h": "c",
+    "memorymanagertest.h": "c",
+    "mmu.h": "c",
+    "mmu_wrapper.h": "c"
   }
 }

@@ -8,6 +8,8 @@
 
 typedef struct mem_manager * mmu;
 
+mmu create_memory_management(void * const restrict mem_to_assign, void * const restrict managed_mem );
+
 void * my_malloc(mmu const my_mmu, unsigned int mem_to_alloc );//pasarle el memory manager y la cantidad
 
 void my_free(mmu const my_mmu, void * block);//recibe mem manager + bloque(?)
