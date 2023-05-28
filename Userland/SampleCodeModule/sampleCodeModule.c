@@ -10,7 +10,6 @@ static int var2 = 0;
 
 int main() {
 	//Aca se podrian correr los test
-	run_tests();
 	clear();
 	printf("Welcome to capOs. Run HELP command to see the available programs!\n");
 	shell();

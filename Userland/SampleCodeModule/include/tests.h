@@ -1,6 +1,8 @@
 #ifndef ALL_TEST
 #define ALL_TEST
 
-void run_tests(void);
+#include <test_mm.h>
+
+void run_tests();
 
 #endif

@@ -1,6 +1,7 @@
 #include <programs.h>
 #include <syscallslib.h>
 #include <shell.h>
+#include <tests.h>
 #include <tron.h>
 
 
@@ -59,13 +60,10 @@ void getProgram(char * buffer){
         sys_divzero();
     else if(strcmp(buffer, "OPCODE"))
         sys_opcode();
-//    else if(strcmp(buffer,"CAPOS"))
-//        test();
     else if(strcmp(buffer,"MEMPRINT"))
         memPrint();
-//    else if(strcmp(buffer,"TEST"))
-//        test();
-
+   else if(strcmp(buffer,"TEST"))
+       run_tests();
     else
         printerr("Invalid Command\n");
 }

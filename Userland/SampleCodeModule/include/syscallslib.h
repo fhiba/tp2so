@@ -22,4 +22,5 @@ void sys_printBase(uint64_t value, uint32_t base);
 int sys_isBlackPixel(unsigned int x, unsigned int y);
 void * sys_malloc(unsigned int mem_to_alloc);
 void sys_free(void * mem_to_free);
+void * sys_memset(void * destination, int32_t c, uint64_t length);
 #endif
