@@ -9,7 +9,6 @@ typedef struct sem{
     uint64_t id;
     atomic_int value;
     atomic_flag mutex;
-    boolean 
 } sem;
 
 #define acquire(m) while (atomic_flag_test_and_set(m));
@@ -22,13 +21,13 @@ int amount = 0;
 
 sem * create_sem(){
     if(amount == MAX_SEMS){
+        
         exit(1);
     }
     semaphores[amount] = (my_sem)(alloc(sizeof(sem)));
     // semaphores[amount]->mutex = ;
     semaphores[amount]->value = ATOMIC_VAR_INIT(0);
     semaphores[amount]->id = amount;
-    
     return semaphores[amount++];
 }
 
@@ -36,20 +35,40 @@ sem * my_sem_open(uint64_t id){
     while(_xchg(&sem_mut,1) != 0);
 
     if(id >= amount){
-        return create_sem();
+        my_sem out = create_sem();
+        _xchg(&sem_mut,0);
+        return out;
     }
     _xchg(&sem_mut,0);
     return semaphores[id];
 }
 
-void my_sem_close(uint64_t id){
+int my_sem_close(my_sem close){
     while(_xchg(&sem_mut,1) != 0);
 
-    if(id >= amount){
+    if(close->id >= amount){
         return;
     }
 
+    int aux = 0;
+    while (aux < amount && semaphores[aux]->id != close->id) {
+        aux++;
+    }
+
+    if (aux == amount) {
+        _xchg(&sem_mut, 0);
+        return -1;
+    }
+
+    while (aux < amount - 1) {
+        semaphores[aux] = semaphores[aux + 1];
+        aux++;
+    }
+
+    amount--;
+    free(close);
     _xchg(&sem_mut,0);
+    return 1;
 }
 
 int my_sem_wait(sem * sem_id){
