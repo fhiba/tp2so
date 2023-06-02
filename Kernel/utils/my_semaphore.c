@@ -25,7 +25,7 @@ sem * create_sem(){
         exit(1);
     }
     semaphores[amount] = (my_sem)(alloc(sizeof(sem)));
-    // semaphores[amount]->mutex = ;
+    // semaphores[amount]->mutex = ATOMIC_FLAG_INIT;
     semaphores[amount]->value = ATOMIC_VAR_INIT(0);
     semaphores[amount]->id = amount;
     return semaphores[amount++];
@@ -79,6 +79,6 @@ int my_sem_wait(sem * sem_id){
     return 0;
 }
 
-void my_sem_post(sem * sem_id){
+int my_sem_post(sem * sem_id){
   return atomic_fetch_add(&sem_id->value, 1);
 }
