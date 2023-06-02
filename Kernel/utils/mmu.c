@@ -45,7 +45,7 @@ static void insert_block_into_free_list(mmu my_mmu, mem_block * my_memblock){
     }
 
     my_memblock->next = block_iter->next;
-    my_memblock->next = my_memblock;
+    block_iter->next = my_memblock;
 }
 
 void * my_malloc(mmu const my_mmu, unsigned int mem_to_alloc){
