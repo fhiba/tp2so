@@ -31,16 +31,16 @@ sem * create_sem(){
     return semaphores[amount++];
 }
 
-sem * my_sem_open(uint64_t id){
+my_sem my_sem_open(my_sem sem_id){
     while(_xchg(&sem_mut,1) != 0);
 
-    if(id >= amount){
+    if(sem_id->id >= amount){
         my_sem out = create_sem();
         _xchg(&sem_mut,0);
         return out;
     }
     _xchg(&sem_mut,0);
-    return semaphores[id];
+    return semaphores[sem_id->id];
 }
 
 int my_sem_close(my_sem close){
