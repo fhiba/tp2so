@@ -8,6 +8,7 @@
 #include <syscalls.h>
 #include <speakerDriver.h>
 #include <mmu_wrapper.h>
+#include <scheduler.h>
 extern uint8_t text;
 extern uint8_t rodata;
 extern uint8_t data;
@@ -60,10 +61,21 @@ void * initializeKernelBinary()
 int main()
 {	
 	new_mmu(mmu_address,heap_address);
-	load_idt();
 	startPos();
+	ncPrint("hola");
 	//beep();
-	((EntryPoint)sampleCodeModuleAddress)();
+	initScheduler();
+
+	char argv[ARG_QTY][ARG_LEN];
+	argv[0][0] = 'S';
+	argv[0][1] = 'h';
+	argv[0][2] = 'e';
+	argv[0][3] = 'l';
+	argv[0][4] = 'l';
+	argv[0][5] = 0;
+
+  	create_process((uint64_t)sampleCodeModuleAddress, 1, 1, argv, NULL, NULL);
+	load_idt();
 	return 0;
 }
 
