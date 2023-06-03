@@ -21,6 +21,22 @@ void help(){
     printf(": Dumps 20 bytes of memory from given pointer\n");
     printFirst("NICE");
     printf(": Changes the priority of a process to the given priority");
+    printFirst("PS");
+    printf(": Prints a list of all the processes and their properties\n");
+    printFirst("LOOP");
+    printf(": Prints the ID and a message every 3 seconds\n");
+    printFirst("KILL");
+    printf(": Kills the process of a certain ID\n");
+    printFirst("BLOCK");
+    printf(": Changes the state of a process between blocked and ready given its ID\n");
+    printFirst("CAT");
+    printf(": Prints the contents of the standard input\n");
+    printFirst("WC");
+    printf(": Counts the amount of input lines\n");
+    printFirst("FILTER");
+    printf(": Filters the vocals frome the input\n");
+    printFirst("PHYLO");
+    printf(": Runs phylo\n");
     printFirst("CLEAR");
     printf(": Clean the screen\n");
 }
@@ -64,6 +80,38 @@ void nice(){
     }while(buffer2[idx-1] != '\n');
     buffer2[idx-1] = 0;
 
+}
+
+void ps(){
+    //devuelve el program list
+}
+
+void loop(){
+    //imprime el pid y un saludo cada x segundos
+}
+
+void kill(){
+    //mata un proceso dado el pid
+}
+
+void block(){
+    //cambia el estado de un proceso entre blockeado y listo
+}
+
+void cat(){
+    //imprime el stdin tal como lo recibe
+}
+
+void wc(){
+    //cuenta la cantidad de lineas del input
+}
+
+void filter_vow(){
+    //filtra las vocales del input
+}
+
+void phylo(){
+    //corre el programa de los filosofos
 }
 
 void clearProg(){
