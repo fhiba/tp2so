@@ -61,8 +61,10 @@ void getProgram(char * buffer){
         sys_opcode();
     else if(strcmp(buffer,"CAPOS"))
         test();
-    else if(strcmp(buffer,"MEMPRINT"))
+    else if(strcmp(buffer,"MEM"))
         memPrint();
+    else if(strcmp(buffer,"NICE"))
+        nice();
     else if(strcmp(buffer,"TEST"))
         test();
     else

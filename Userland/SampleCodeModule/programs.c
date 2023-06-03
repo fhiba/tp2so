@@ -17,10 +17,53 @@ void help(){
     printf(": See what the opcode exception loooks like\n");
     printFirst("INFOREG");
     printf(": After taking a snapshot with = see what values the registers hold!\n");
-    printFirst("MEMPRINT");
+    printFirst("MEM");
     printf(": Dumps 20 bytes of memory from given pointer\n");
+    printFirst("NICE");
+    printf(": Changes the priority of a process to the given priority");
     printFirst("CLEAR");
     printf(": Clean the screen\n");
+}
+
+void nice(){
+    printf("Insert the PID\n");    
+    char buffer1[90] = {0};
+    int idx = 0;
+    do{
+            sys_read(1, buffer1 + idx, 1);
+            if(buffer1[idx] == 0){
+                
+            }
+            else if(buffer1[idx] != 0x7F){
+                sys_write(1, buffer1 + idx, 1);
+                idx++;
+            }
+            else if (idx > 0) {
+                sys_write(1, buffer1 + idx, 1);
+                idx--;
+            }
+    }while(buffer1[idx-1] != '\n');
+    buffer1[idx-1] = 0;
+
+    printf("Choose the new priority\n");    
+    char buffer2[90] = {0};
+    int idx = 0;
+    do{
+            sys_read(1, buffer2 + idx, 1);
+            if(buffer2[idx] == 0){
+                
+            }
+            else if(buffer2[idx] != 0x7F){
+                sys_write(1, buffer2 + idx, 1);
+                idx++;
+            }
+            else if (idx > 0) {
+                sys_write(1, buffer2 + idx, 1);
+                idx--;
+            }
+    }while(buffer2[idx-1] != '\n');
+    buffer2[idx-1] = 0;
+
 }
 
 void clearProg(){
