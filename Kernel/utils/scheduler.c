@@ -2,6 +2,9 @@
 
 #include <scheduler.h>
 
+
+#define DEFAULT_PROG_MEM 4096
+
 typedef struct process_node {
     pcb *pcb;
     struct process_node *next
@@ -15,7 +18,8 @@ typedef struct Scheduler {
 Scheduler *scheduler;
 int currentPID = 1;
 process_node *starting_process;
-
+pcb *startingPCB;
+uint8_t firstProcess = 1;
 static void default_process() {
   while (1) {
     _hlt();
@@ -29,15 +33,16 @@ void initScheduler(){
     uint64_t sp = initProcess(defaultProcessMem + 2048,
                                 (uint64_t)&default_process, 0, NULL);
 
+    startingPCB = (pcb *)alloc(sizeof(pcb));
+    startingPCB->pid = 0;
+    startingPCB->stackPointer = sp;
+    startingPCB->processMemory = defaultProcessMem;
+    startingPCB->state = 1; 
+    startingPCB->priority = 1;  
+    startingPCB->auxPriority = 1;
     starting_process = (process_node *)alloc(sizeof(process_node));
-    starting_process->pcb->pid = 0;
-    starting_process->pcb->stackPointer = sp;
-    starting_process->pcb->processMemory = defaultProcessMem;
-    starting_process->pcb->state = 1; 
-    starting_process->pcb->priority = 1;  
-    starting_process->pcb->auxPriority = 1;
+    starting_process->pcb = startingPCB;
     starting_process->next = scheduler->process_list;
-    starting_process->next = scheduler->current;
 }
 
 static char *strcpy(char *destination, const char *source) {
@@ -60,31 +65,63 @@ int create_process(uint64_t ip, uint8_t priority, uint64_t argc,
                   fd *customStdout){
 
     //CREO EL PROCESO
-    pcb *new_process = (pcb *)alloc(sizeof(pcb));
-    new_process->pid = currentPID++;
-    new_process->priority = priority;
-    new_process->auxPriority = priority;
-    new_process->stdin = customStdin;
-    new_process->stdout = customStdout;
-    new_process->state = 1;
-    for (int i = 0; i < argc; i++) {
-      strcpy(new_process->args[i], argv[i]);
+    if (scheduler->process_list == NULL) {
+        pcb *newPCB = (pcb *)alloc(sizeof(pcb));
+        newPCB->pid = currentPID++;
+        newPCB->priority = priority;
+        newPCB->auxPriority = priority;
+        newPCB->stdin = customStdin;
+        newPCB->stdout = customStdout;
+        newPCB->state = 1;
+        for (int i = 0; i < argc; i++) {
+            strcpy(newPCB->args[i], argv[i]);
+        }
+        uint64_t processMemory = (uint64_t)alloc(DEFAULT_PROG_MEM);
+        uint64_t sp = initProcess(processMemory + DEFAULT_PROG_MEM, ip, argc,
+                                newPCB->args);
+        newPCB->stackPointer = sp;
+        newPCB->basePointer = processMemory + DEFAULT_PROG_MEM - 1;  // no se si aca falta un -1
+        newPCB->processMemory = processMemory;
+        process_node *newNode = (process_node *)alloc(sizeof(process_node));
+        newNode->pcb = newPCB;
+        scheduler->process_list = newNode;
+        return 0;
     }
+    // pcb *new_process = (pcb *)alloc(sizeof(pcb));
+    // new_process->pid = currentPID++;
+    // new_process->priority = priority;
+    // new_process->auxPriority = priority;
+    // new_process->stdin = customStdin;
+    // new_process->stdout = customStdout;
+    // new_process->state = 1;
+    // for (int i = 0; i < argc; i++) {
+    //   strcpy(new_process->args[i], argv[i]);
+    // }
 
-    //LO INSERTO EN LA LISTA DE PROCESOS
-    process_node *new_process_node = (process_node *)alloc(sizeof(process_node));
-    new_process_node->pcb = new_process;
-    process_node* aux_list = scheduler->process_list;
-    while(aux_list->next != NULL)
-        aux_list = aux_list->next;
-    aux_list->next = new_process_node;
+    // //LO INSERTO EN LA LISTA DE PROCESOS
+    // process_node *new_process_node = (process_node *)alloc(sizeof(process_node));
+    // new_process_node->pcb = new_process;
+    // process_node* aux_list = scheduler->process_list;
+    // while(aux_list->next != NULL)
+    //     aux_list = aux_list->next;
+    // aux_list->next = new_process_node;
 
     return 0;
 }  
 int switch_context(int rsp){
+    if (firstProcess) {
+        firstProcess = 0;
+        scheduler->current = scheduler->process_list;
+        return scheduler->process_list->pcb->stackPointer;
+    }
+    
     scheduler->current->pcb->stackPointer = rsp;
-    scheduler->current = scheduler->current->next;
-    return 0;
+    if(scheduler->current->next == NULL){
+        scheduler->current = scheduler->process_list;
+    }else{
+        scheduler->current = scheduler->current->next;
+    }
+    return scheduler->current->pcb->stackPointer;
 }
 int kill_process(int process_id){
     return 0;

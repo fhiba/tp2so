@@ -1,16 +1,15 @@
 #Binary Files
 *.bin
 *.sys
-
 #The images
 *.img
 *.qcow2
 *.vmdk
+*.elf
 
 #Object files
 *.o
 .gdb_history
 .gdbinit
 .run.sh
-Kernel/kernel.elf
-Userland/0000-sampleCodeModule.elf
+
