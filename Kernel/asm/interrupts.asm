@@ -30,7 +30,7 @@ EXTERN inforegs
 GLOBAL registersSaved
 GLOBAL registers
 GLOBAL registersException
-; EXTERN saveBackup
+EXTERN switch_context
 ; EXTERN ncPrintReg
 ; EXTERN rebootTerm
 
@@ -86,17 +86,29 @@ SECTION .text
 	pushState
 	cli
 
-	; call saveBackup
+	;call saveBackup
 
 	mov rdi, %1 ; pasaje de parametro
 	call irqDispatcher
+		; signal pic EOI (End of Interrupt)
+		mov al, 20h
+		out 20h, al
 
-	; signal pic EOI (End of Interrupt)
-	mov al, 20h
-	out 20h, al
-	popState
-	sti
-	iretq
+	mov rax, %1
+
+	cmp rax,0
+	jne .end
+	.isTimer
+	mov rdi,rsp
+	call switch_context
+	cmp rax,0
+	je .end
+	mov rsp,rax
+	
+	.end:
+		popState
+		sti
+		iretq
 %endmacro
 
 %macro exceptionHandler 1

@@ -8,7 +8,7 @@ void new_mmu(void * const restrict mem_to_assign, void * const restrict managed_
 }
 
 void * alloc(unsigned int mem_to_alloc){
-    my_malloc(my_mmu,mem_to_alloc);
+    return my_malloc(my_mmu,mem_to_alloc);
 }
 
 void free(void * mem_to_free){

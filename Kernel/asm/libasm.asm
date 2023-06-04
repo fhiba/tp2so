@@ -6,7 +6,10 @@ GLOBAL rtcGet
 GLOBAL getDir
 GLOBAL inb
 GLOBAL outb
+GLOBAL initProcess
+GLOBAL fork
 EXTERN registers
+EXTERN create_child_process
 section .text
 
 
@@ -101,6 +104,48 @@ rtcGet:
 	ret
 
 
+initProcess:
+	push rbp
+	push rsp
+	mov rax, rsp
+	
+	mov rsp, rdi
+	sub rdi, 160 
+	mov rbp, rdi
+
+	; <-rsp
+	push qword 0x0   ; ss
+	push qword rsp   ; rsp
+	push qword 0x202 ; rflags
+	push qword 0x8   ; cs
+	push qword rsi   ; rip
+	; registros generales
+	push qword 0x1
+	push qword 0x2
+	push qword 0x3
+	push qword 0x4
+	push qword 0x5
+	push qword rdx ; argc
+	push qword rcx ; argv
+	push qword 0x6
+	push qword 0x7
+	push qword 0x8
+	push qword 0x9
+	push qword 0xA
+	push qword 0xB
+	push qword 0xC
+	push qword 0xD
+
+	mov rsp, rax
+	mov rax, rbp
+	pop rsp
+	pop rbp
+	ret
+
+fork:
+	mov rdi,rsp
+	call create_child_process
+	ret
 
 	
 

@@ -53,7 +53,7 @@ void * my_malloc(mmu const my_mmu, unsigned int mem_to_alloc){
     void * out = NULL;
 
     if(mem_to_alloc == 0)
-        return out;
+        return NULL;
     
     
     mem_to_alloc += STRUCT_SIZE;
@@ -66,13 +66,13 @@ void * my_malloc(mmu const my_mmu, unsigned int mem_to_alloc){
         mem_block *prev = &my_mmu->start;
         current = my_mmu->start.next;
 
-        while((current->block_size < mem_to_alloc) && current->next != NULL){
+        while((current->block_size < mem_to_alloc) && (current->next != NULL)){
             prev = current;
             current = current->next;
         }
         if (current == &my_mmu->end)
-            return out;
-        out = (void *)(((uint8_t*)current) + mem_to_alloc);
+            return NULL;
+        out = (void *)(((uint8_t*)prev->next) + STRUCT_SIZE);
 
         prev->next = current->next;
 
