@@ -7,7 +7,9 @@ GLOBAL getDir
 GLOBAL inb
 GLOBAL outb
 GLOBAL initProcess
+GLOBAL fork
 EXTERN registers
+EXTERN create_child_process
 section .text
 
 
@@ -140,7 +142,10 @@ initProcess:
 	pop rbp
 	ret
 
-
+fork:
+	mov rdi,rsp
+	call create_child_process
+	ret
 
 	
 
