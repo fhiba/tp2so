@@ -1,6 +1,7 @@
 #include <pipes.h>
 
 #define BUFFER_SIZE 512
+#define MAX_PIPES 64
 
 typedef struct process_node{
     int pid;
@@ -10,25 +11,28 @@ typedef struct process_node{
 
 typedef process_node * process_list;
 
-typedef struct pipe{
+typedef struct pipe_struct{
     int id;
     char buffer[BUFFER_SIZE];
+    uint8_t is_named;
     unsigned int read_index;
     unsigned int write_index;
     process_list working_processes;
     process_node * last_process_node;
     //semaphore sem_write;
-}pipe;
+}pipe_struct;
 
-pipe * pipe_array[MAX_PIPES];
+
+pipe pipe_array[MAX_PIPES];
 int asigned_pipes = 0;
 
 
-uint8_t add_process_to_pipe(pipe* my_pipe, int pid, int operation);
+uint8_t add_process_to_pipe(pipe my_pipe, int pid, int operation);
 process_list remove_node(process_list list, int pid, uint8_t * status);
-uint8_t remove_process_from_pipe(pipe * my_pipe, int pid);
+uint8_t remove_process_from_pipe(pipe my_pipe, int pid);
 
-int pipe_create() {
+
+int pipe_create(int is_named) {
     if(asigned_pipes == MAX_PIPES)
         return -1;
     int idx = 0;
@@ -51,10 +55,14 @@ int pipe_create() {
     pipe_array[idx]->working_processes = NULL;
     pipe_array[idx]->last_process_node = NULL;
     pipe_array[idx]->id = idx;
+    pipe_array[idx]->is_named = is_named;
 
+    asigned_pipes++;
     //setting up return values
     return idx;
 }
+
+
 
 uint8_t pipe_open(fd * asigned_fd, int pipe_id, int pid) {
     if(pipe_id < 0 || pipe_id > MAX_PIPES)
@@ -68,20 +76,19 @@ uint8_t pipe_open(fd * asigned_fd, int pipe_id, int pid) {
     return add_process_to_pipe(pipe_array[pipe_id], pid, asigned_fd->readable? READ:WRITE);
 }
 
-uint8_t pipe_close(pipe * my_pipe, int pid) {
+uint8_t pipe_close(pipe my_pipe, int pid) {
     if(my_pipe == NULL)
         return 1;
     
     if(remove_process_from_pipe(my_pipe, pid) != 0) 
         return 1;
-    if(destroyable_pipe(my_pipe)) {
+    if(my_pipe->is_named == 0 && destroyable_pipe(my_pipe))
         return destroy_pipe(my_pipe);
-    }
 
     return 0;
 }
 
-uint8_t remove_process_from_pipe(pipe * my_pipe, int pid) {
+uint8_t remove_process_from_pipe(pipe my_pipe, int pid) {
     
     if(my_pipe == NULL)
         return 1;
@@ -106,7 +113,7 @@ process_list remove_node(process_list list, int pid, uint8_t * status) {
     return list;
 }
 
-uint8_t add_process_to_pipe(pipe * my_pipe, int pid, int operation) {
+uint8_t add_process_to_pipe(pipe my_pipe, int pid, int operation) {
     process_node * new_node = (process_node *) alloc(sizeof(process_node));
     if(new_node == NULL)
         return 1;
@@ -122,25 +129,31 @@ uint8_t add_process_to_pipe(pipe * my_pipe, int pid, int operation) {
     return 0;
 }
 
-uint8_t destroyable_pipe(pipe * my_pipe) {
+uint8_t destroyable_pipe(pipe my_pipe) {
     if(my_pipe->working_processes == NULL)
         return 1;
     return 0;    
 }
 
-uint8_t destroy_pipe(pipe * my_pipe) {
-    if(!destroyable_pipe(my_pipe))
-        return 1;
+uint8_t destroy_pipe(pipe my_pipe) {
     int idx = my_pipe->id;
     pipe_array[idx] = NULL;
+    if(my_pipe->working_processes != NULL) {
+        process_node * aux = my_pipe->working_processes;
+        while(aux != NULL) {
+            my_pipe->working_processes = aux->next;
+            free(aux);
+            aux = my_pipe->working_processes;
+        }
+    }
     free(my_pipe);
+    asigned_pipes--;
     return 0;   
 }
-
 int read_pipe(fd * user_fd, char * buffer, int max_bytes) {
     if(user_fd == NULL || user_fd->readable == 0)
         return -1;
-    pipe * pipe_to_read = user_fd->pipe;
+    pipe pipe_to_read = user_fd->pipe;
     
     if(pipe_to_read == NULL)
         return -1;
@@ -162,7 +175,7 @@ int read_pipe(fd * user_fd, char * buffer, int max_bytes) {
 int write_pipe(fd * user_fd, char * buffer, int max_bytes) {
     if(user_fd == NULL || user_fd->writeable == 0)
         return -1;
-    pipe * pipe_to_write = user_fd->pipe;
+    pipe pipe_to_write = user_fd->pipe;
 
     if(pipe_to_write == NULL)
         return -1;
@@ -177,4 +190,117 @@ int write_pipe(fd * user_fd, char * buffer, int max_bytes) {
         }
     }
     return write_bytes;
+}
+
+typedef struct named_pipe_node {
+    char * name;
+    pipe named_pipe;
+    named_pipe_node * next;
+}named_pipe_node;
+
+named_pipe_node * list;
+
+uint8_t open_named_pipe(fd * asigned_fd, char * name , int pid) {
+    named_pipe_node * named_pipe = get_node(list, name);
+
+    if(named_pipe == NULL)
+        return 1;
+    
+    return pipe_open(asigned_fd, named_pipe->named_pipe->id, pid);
+}
+
+named_pipe_node * get_node(named_pipe_node * list, char *name) {
+    if(list == NULL)
+        return list;
+    
+    if(strcmp(list->name, name) == 0)
+        return list;
+
+    return get_node(list->next, name);
+}
+
+
+uint8_t destroy_named_pipe(char * name) {
+    uint8_t status = 0;
+    list = remove_node_from_list(list, name, &status);
+    return status;
+}
+
+named_pipe_node * remove_node_from_list(named_pipe_node * list, char * name, uint8_t * status){ 
+    if(list == NULL)
+        return NULL;
+    int cmp = strcmp(list->name, name);
+    if(cmp > 0)
+        return list;
+    else if(cmp < 0) {
+        list->next = remove_node_from_list(list->next, name, status);
+    }
+
+    named_pipe_node * aux = list->next;
+    free(list->name);
+    destroy_pipe(list->named_pipe);
+    free(list);
+    *status = 1;
+    return aux;
+}
+
+int named_pipe_create(char * name) {
+    if(name == NULL)
+        return -1;
+    
+    if(node_exists(name) == 1)
+        return -1;
+
+
+    named_pipe_node * new_pipe = (named_pipe_node *) alloc(sizeof(named_pipe_node));
+    
+    if(new_pipe == NULL)
+        return -1;
+
+    unsigned int len = strlen(name);
+
+    new_pipe->name = (char *) alloc(len+1);
+
+    if(new_pipe->name == NULL) {
+        free(new_pipe);
+        return -1;
+    }
+
+    strcpy(new_pipe->name, name);
+
+    int idx = pipe_create(1);
+
+    if(idx < 0) {
+        free(new_pipe->name);
+        free(new_pipe);
+    }
+    
+    new_pipe->next = NULL;
+
+    list = insert_into_list(list, new_pipe);
+    return idx;
+}
+
+int node_exists(char * name) {
+    named_pipe_node * aux = list;
+    while(aux != NULL && (strcmp(aux->name, name) < 0)) {
+        aux = aux->next;
+    }
+    if(strcmp(aux->name, name) == 0)
+        return 1;
+    return 0;
+}
+
+named_pipe_node * insert_into_list(named_pipe_node* list, named_pipe_node* insert) {
+    if(list == NULL)
+        return insert;
+    
+    if(strcmp(list->name, insert->name) > 0) { 
+        insert->next = list;
+        return insert;
+    }
+
+    list->next = insert_into_list(list->next, insert);
+
+    return list;
 }
