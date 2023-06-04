@@ -17,27 +17,113 @@ void help(){
     printf(": See what the opcode exception loooks like\n");
     printFirst("INFOREG");
     printf(": After taking a snapshot with = see what values the registers hold!\n");
-    printFirst("MEMPRINT");
+    printFirst("MEM");
     printf(": Dumps 20 bytes of memory from given pointer\n");
+    printFirst("NICE");
+    printf(": Changes the priority of a process to the given priority\n");
+    printFirst("PS");
+    printf(": Prints a list of all the processes and their properties\n");
+    printFirst("LOOP");
+    printf(": Prints the ID and a message every 3 seconds\n");
+    printFirst("KILL");
+    printf(": Kills the process of a certain ID\n");
+    printFirst("BLOCK");
+    printf(": Changes the state of a process between blocked and ready given its ID\n");
+    printFirst("CAT");
+    printf(": Prints the contents of the standard input\n");
+    printFirst("WC");
+    printf(": Counts the amount of input lines\n");
+    printFirst("FILTER");
+    printf(": Filters the vocals frome the input\n");
+    printFirst("PHYLO");
+    printf(": Runs phylo\n");
     printFirst("CLEAR");
     printf(": Clean the screen\n");
+}
+
+void nice(int argc,char argv[5][20]){
+    if(argc != 2){
+        printerr("Wrong amount of arguments\n");
+        return;
+    }
+    sys_nice(argv[0],argv[1]);
+}
+
+void ps(int argc,char argv[5][20]){
+    sys_prog_list();
+}
+
+void loop(int argc,char argv[5][20]){
+    //imprime el pid y un saludo cada x segundos
+}
+
+void kill(int argc, char argv[5][20]){
+    if(argc != 1){
+        printerr("Wrong amount of arguments\n");
+        return;
+    }
+    sys_kill(argv[0]);
+}
+
+void block(int argc,char argv[5][20]){
+    if(argc != 1){
+        printerr("Wrong amount of arguments\n");
+        return;
+    }
+    sys_block(argv[0]);
+}
+
+void cat(int argc,char argv[5][20]){
+    //imprime el stdin tal como lo recibe
+}
+
+void wc(int argc,char argv[5][20]){
+    //cuenta la cantidad de lineas del input
+}
+
+int is_vow(char letter){
+    if(letter == 'A' || letter == 'E' || letter == 'I' || letter == 'O' || letter == 'U')
+        return 1;
+    return 0;
+}
+
+void filter_vow(int argc, char argv[5][20]){
+    if(argc != 1){
+        printerr("Wrong amount of arguments\n");
+        return;
+    }
+    int i, j;
+    for(i = 0, j = 0; argv[0][i] != 0;i++){
+        if(!is_vow(argv[0][i]))
+            argv[0][j++] = argv[0][i];
+    }
+    argv[0][j] = 0;
+}
+
+void phylo(int argc,char argv[5][20]){
+    //corre el programa de los filosofos
 }
 
 void clearProg(){
     clear();
 }
 
-void resize(){
-    printf("Choose a multiplier to resize the font!\n");
-    char buffer[2] = {0};
+void resize(int argc,char argv[5][20]){
+    // printf("Choose a multiplier to resize the font!\n");
+    // char buffer[2] = {0};
 
-    do{
-        sys_read(1, buffer, 1);
-    }while(buffer[0] == 0);
+    // do{
+    //     sys_read(1, buffer, 1);
+    // }while(buffer[0] == 0);
 
-    sys_write(1, buffer, 1);
-    printf("\n");
-    int aux = atoi(buffer);
+    // sys_write(1, buffer, 1);
+    // printf("\n");
+
+    if(argc != 1){
+        printerr("Wrong amount of arguments\n");
+        return;
+    }
+    int aux = atoi(argv[0]);
     sys_resize(aux);
 }
 
@@ -78,29 +164,14 @@ void infoRegs(){
 }
 
 
-void memPrint(){
-    printf("Enter a hexadecimal address of 8 characters at max\n");
-    printf("Example: 0000000F\n");
-    char buffer[90] = {0};
-    int idx = 0;
-    do{
-            sys_read(1, buffer + idx, 1);
-            if(buffer[idx] == 0){
-                
-            }
-            else if(buffer[idx] != 0x7F){
-                sys_write(1, buffer + idx, 1);
-                idx++;
-            }
-            else if (idx > 0) {
-                sys_write(1, buffer + idx, 1);
-                idx--;
-            }
-    }while(buffer[idx-1] != '\n');
-    buffer[idx-1] = 0;    
+void memPrint(int argc, char argv[5][20]){
+    if(argc != 1){
+        printerr("Wrong amount of arguments\n");
+        return;
+    } 
     int ok = 1;
-    uint64_t dir = stringToUint64(buffer,&ok);
-    if(!ok || idx > 9){
+    uint64_t dir = stringToUint64(argv[0],&ok);
+    if(!ok || strlen(argv[0]) > 9){
         printerr("Invalid adress\n");
         return;
     }

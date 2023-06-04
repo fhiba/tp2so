@@ -2,6 +2,7 @@
 #include <syscallslib.h>
 #include <shell.h>
 #include <tron.h>
+#include <parser.h>
 
 
 void shell(void){
@@ -29,38 +30,7 @@ void shell(void){
             }
         }while(buffer[idx-1] != '\n');
         buffer[idx-1] = 0;         
-        getProgram(buffer);
+        parser(buffer);
         idx = 0;
     }
-}
-
-void getProgram(char * buffer){
-    for (size_t i = 0; buffer[i] != 0; i++)
-    {
-        if(buffer[i] == '=')
-            return;
-    }
-    
-    if(strcmp(buffer,"HELP"))
-        help();
-    else if(strcmp(buffer,"DATE"))
-        date();
-    else if(strcmp(buffer,"CLEAR"))
-        clearProg();
-    else if(strcmp(buffer,"RESIZE"))
-        resize();
-    else if(strcmp(buffer,"EXIT"))
-        exitShell();
-    else if(strcmp(buffer,"TRON"))
-        tron();
-    else if(strcmp(buffer,"INFOREG"))
-        infoRegs();
-    else if(strcmp(buffer, "DIVZERO"))
-        sys_divzero();
-    else if(strcmp(buffer, "OPCODE"))
-        sys_opcode();
-    else if(strcmp(buffer,"MEMPRINT"))
-        memPrint();
-    else
-        printerr("Invalid Command\n");
 }
