@@ -12,5 +12,15 @@ void div_zero();
 void opcodetest();
 void tron();
 void test();
+void nice();
+void ps();
+void loop();
+void kill();
+void block();
+void cat();
+void wc();
+void filter_vow();
+void phylo();
+void memPrint();
 
 #endif

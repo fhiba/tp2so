@@ -20,7 +20,7 @@ void help(){
     printFirst("MEM");
     printf(": Dumps 20 bytes of memory from given pointer\n");
     printFirst("NICE");
-    printf(": Changes the priority of a process to the given priority");
+    printf(": Changes the priority of a process to the given priority\n");
     printFirst("PS");
     printf(": Prints a list of all the processes and their properties\n");
     printFirst("LOOP");
@@ -41,76 +41,66 @@ void help(){
     printf(": Clean the screen\n");
 }
 
-void nice(){
-    printf("Insert the PID\n");    
-    char buffer1[90] = {0};
-    int idx = 0;
-    do{
-            sys_read(1, buffer1 + idx, 1);
-            if(buffer1[idx] == 0){
-                
-            }
-            else if(buffer1[idx] != 0x7F){
-                sys_write(1, buffer1 + idx, 1);
-                idx++;
-            }
-            else if (idx > 0) {
-                sys_write(1, buffer1 + idx, 1);
-                idx--;
-            }
-    }while(buffer1[idx-1] != '\n');
-    buffer1[idx-1] = 0;
-
-    printf("Choose the new priority\n");    
-    char buffer2[90] = {0};
-    int idx = 0;
-    do{
-            sys_read(1, buffer2 + idx, 1);
-            if(buffer2[idx] == 0){
-                
-            }
-            else if(buffer2[idx] != 0x7F){
-                sys_write(1, buffer2 + idx, 1);
-                idx++;
-            }
-            else if (idx > 0) {
-                sys_write(1, buffer2 + idx, 1);
-                idx--;
-            }
-    }while(buffer2[idx-1] != '\n');
-    buffer2[idx-1] = 0;
-
+void nice(int argc,char argv[5][20]){
+    if(argc != 2){
+        printerr("Wrong amount of arguments\n");
+        return;
+    }
+    sys_nice(argv[0],argv[1]);
 }
 
-void ps(){
-    //devuelve el program list
+void ps(int argc,char argv[5][20]){
+    sys_prog_list();
 }
 
-void loop(){
+void loop(int argc,char argv[5][20]){
     //imprime el pid y un saludo cada x segundos
 }
 
-void kill(){
-    //mata un proceso dado el pid
+void kill(int argc, char argv[5][20]){
+    if(argc != 1){
+        printerr("Wrong amount of arguments\n");
+        return;
+    }
+    sys_kill(argv[0]);
 }
 
-void block(){
-    //cambia el estado de un proceso entre blockeado y listo
+void block(int argc,char argv[5][20]){
+    if(argc != 1){
+        printerr("Wrong amount of arguments\n");
+        return;
+    }
+    sys_block(argv[0]);
 }
 
-void cat(){
+void cat(int argc,char argv[5][20]){
     //imprime el stdin tal como lo recibe
 }
 
-void wc(){
+void wc(int argc,char argv[5][20]){
     //cuenta la cantidad de lineas del input
 }
 
-void filter_vow(){
-    //filtra las vocales del input
+int is_vow(char letter){
+    if(letter == 'A' || letter == 'E' || letter == 'I' || letter == 'O' || letter == 'U')
+        return 1;
+    return 0;
 }
 
-void phylo(){
+void filter_vow(int argc, char argv[5][20]){
+    if(argc != 1){
+        printerr("Wrong amount of arguments\n");
+        return;
+    }
+    int i, j;
+    for(i = 0, j = 0; argv[0][i] != 0;i++){
+        if(!is_vow(argv[0][i]))
+            argv[0][j++] = argv[0][i];
+    }
+    argv[0][j] = 0;
+}
+
+void phylo(int argc,char argv[5][20]){
     //corre el programa de los filosofos
 }
 
@@ -118,17 +108,22 @@ void clearProg(){
     clear();
 }
 
-void resize(){
-    printf("Choose a multiplier to resize the font!\n");
-    char buffer[2] = {0};
+void resize(int argc,char argv[5][20]){
+    // printf("Choose a multiplier to resize the font!\n");
+    // char buffer[2] = {0};
 
-    do{
-        sys_read(1, buffer, 1);
-    }while(buffer[0] == 0);
+    // do{
+    //     sys_read(1, buffer, 1);
+    // }while(buffer[0] == 0);
 
-    sys_write(1, buffer, 1);
-    printf("\n");
-    int aux = atoi(buffer);
+    // sys_write(1, buffer, 1);
+    // printf("\n");
+
+    if(argc != 1){
+        printerr("Wrong amount of arguments\n");
+        return;
+    }
+    int aux = atoi(argv[0]);
     sys_resize(aux);
 }
 
@@ -169,29 +164,14 @@ void infoRegs(){
 }
 
 
-void memPrint(){
-    printf("Enter a hexadecimal address of 8 characters at max\n");
-    printf("Example: 0000000F\n");
-    char buffer[90] = {0};
-    int idx = 0;
-    do{
-            sys_read(1, buffer + idx, 1);
-            if(buffer[idx] == 0){
-                
-            }
-            else if(buffer[idx] != 0x7F){
-                sys_write(1, buffer + idx, 1);
-                idx++;
-            }
-            else if (idx > 0) {
-                sys_write(1, buffer + idx, 1);
-                idx--;
-            }
-    }while(buffer[idx-1] != '\n');
-    buffer[idx-1] = 0;    
+void memPrint(int argc, char argv[5][20]){
+    if(argc != 1){
+        printerr("Wrong amount of arguments\n");
+        return;
+    } 
     int ok = 1;
-    uint64_t dir = stringToUint64(buffer,&ok);
-    if(!ok || idx > 9){
+    uint64_t dir = stringToUint64(argv[0],&ok);
+    if(!ok || strlen(argv[0]) > 9){
         printerr("Invalid adress\n");
         return;
     }

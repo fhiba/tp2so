@@ -3,6 +3,15 @@
 #define STDIN 1
 #define MAXBUFF 100000
 
+void my_substring(char* dest, const char* src, int n, int m) {
+    int i, j;
+
+    for (i = n, j = 0; i <= m; i++, j++) {
+        dest[j] = src[i];
+    }
+
+    dest[j] = '\0';
+}
 
 int strlen(char * string){
     int i = 0;
