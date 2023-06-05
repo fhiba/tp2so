@@ -6,7 +6,7 @@
 #include <stdint.h>
 
 #define ARG_QTY 5
-#define ARG_LEN 5
+#define ARG_LEN 20
 
 typedef struct fd {
   char readable;

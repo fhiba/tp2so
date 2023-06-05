@@ -77,6 +77,14 @@ static char *strcpy(char *destination, const char *source) {
   return ptr;
 }
 
+int strlen(char * string){
+    int i = 0;
+    while(string[i]!=0){
+        i++;
+    }
+    return i;
+}
+
 int create_process(uint64_t ip, uint8_t priority, uint64_t argc,char argv[ARG_QTY][ARG_LEN], fd *customStdin,fd *customStdout, uint8_t background){
     //CREO EL PROCESO
     pcb *newPCB = (pcb *)alloc(sizeof(pcb));
@@ -88,7 +96,9 @@ int create_process(uint64_t ip, uint8_t priority, uint64_t argc,char argv[ARG_QT
     newPCB->state = 1;
     newPCB->background = background;
     for (int i = 0; i < argc; i++) {
-        strcpy(newPCB->args[i], argv[i]);
+        for (int j = 0; j < strlen(argv[i]); j++) {
+            newPCB->args[i][j] = argv[i][j];
+        }
     }
     uint64_t processMemory = (uint64_t)alloc(DEFAULT_PROG_MEM);
     uint64_t sp = initProcess(processMemory + DEFAULT_PROG_MEM, ip, argc, newPCB->args);
@@ -287,6 +297,7 @@ int get_PID(){
 
 void get_process_list(){
     ncPrint("NAME      PID       PRIORITY      STACK     BASE POINTER      FOREGROUND");
+    ncNewline();
     process_node * iter = scheduler->process_list;
     while(iter != NULL){
         ncPrint(iter->pcb->args);//name
@@ -299,8 +310,10 @@ void get_process_list(){
         ncPrint("      ");
         ncPrint(iter->pcb->basePointer);//stack
         ncPrint("      ");
-        ncPrint(iter->pcb->fds);//stack
+        ncPrint(iter->pcb->background?"0":"1");//stack
         ncPrint("      ");
+        ncNewline();
+        iter = iter->next;
     }
 }
 int change_priority(int process_id,int priority){
