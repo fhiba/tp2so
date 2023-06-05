@@ -26,19 +26,19 @@ void clear(void){
 }
 
 void putchar(char c){
-    sys_write(STDIN,&c,1);
+    sys_write(STDOUT, 1,&c,1);
 }
 
 void printf(char * string){
-    sys_write(1,string,strlen(string));
+    sys_write(STDOUT, 1,string,strlen(string));
 }
 
 void printerr(char * string){
-    sys_write(2,string,strlen(string));
+    sys_write(STDOUT, 2,string,strlen(string));
 }
 
 void printFirst(char * string){
-    sys_write(3,string,strlen(string));
+    sys_write(STDOUT, 3,string,strlen(string));
 }
 
 int scanf(char * buffer){

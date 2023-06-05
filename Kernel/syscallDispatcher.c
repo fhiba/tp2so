@@ -17,10 +17,10 @@ void set_syscall(int num){
 int sys_dispatcher(int arg0, int arg1, int arg2, int arg3,int arg4, int arg5, int arg6){
     switch(num_syscall){
         case 1:
-            read(arg0,(char*)arg1,(size_t)arg2);
+            read((unsigned int)arg0,(char*)arg1,(size_t)arg2);
             break;
         case 2:
-            write(arg0,(char*)arg1,(size_t)arg2);
+            write((unsigned int) arg0, arg1,(char*)arg2,(size_t)arg3);
             break;
         case 3:
             clear();

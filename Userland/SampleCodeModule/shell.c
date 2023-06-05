@@ -11,7 +11,7 @@ void shell(void){
     while(1){
         printFirst("$ ");
         do{
-            sys_read(1, buffer + idx, 1);
+            sys_read(STDIN, buffer + idx, 1);
             if(buffer[idx] == 0){
                 
             }
@@ -20,12 +20,12 @@ void shell(void){
                     printFirst("\nSnapshot Tomado\n");
                     break;
                 }else{   
-                    sys_write(1, buffer + idx, 1);
+                    sys_write(STDOUT,1, buffer + idx, 1);
                 }
                 idx++;
             }
             else if (idx > 0) {
-                sys_write(1, buffer + idx, 1);
+                sys_write(STDOUT,1, buffer + idx, 1);
                 idx--;
             }
         }while(buffer[idx-1] != '\n');

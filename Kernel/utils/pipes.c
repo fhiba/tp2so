@@ -76,6 +76,20 @@ int pipe_create(int is_named) {
 }
 
 
+int get_pipe_id(pipe my_pipe) {
+    int idx = 0;
+    while(idx < MAX_PIPES) {
+        if(pipe_array[idx] == my_pipe) {
+            return idx;
+        }
+        idx++;
+    }
+    return -1;
+}
+
+pipe get_pipe(int pipe_id) {
+    return pipe_array[pipe_id];
+}
 
 uint8_t pipe_open(fd * asigned_fd, int pipe_id, int pid) {
     if(pipe_id < 0 || pipe_id > MAX_PIPES)
@@ -191,7 +205,7 @@ int read_pipe(fd * user_fd, char * buffer, int max_bytes) {
 }
 
 int write_pipe(fd * user_fd, char * buffer, int max_bytes) {
-    if(user_fd == NULL || user_fd->writeable == 0)
+    if(user_fd == NULL || user_fd->writable == 0)
         return -1;
     pipe pipe_to_write = user_fd->pipe;
 
