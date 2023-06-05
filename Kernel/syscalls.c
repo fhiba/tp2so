@@ -16,6 +16,7 @@ extern uint64_t registers[17];
 extern char registersSaved;
 
 void write(int fd, char*buffer, size_t count){
+    
     int color = 0;
     for(int i =0;i<count;i++){
         if(buffer[i] == '\n'){

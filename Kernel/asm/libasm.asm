@@ -142,11 +142,6 @@ initProcess:
 	pop rbp
 	ret
 
-fork:
-	mov rdi,rsp
-	call create_child_process
-	ret
-
 	
 
 ;Beep

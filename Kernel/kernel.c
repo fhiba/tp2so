@@ -62,7 +62,6 @@ int main()
 {	
 	new_mmu(mmu_address,heap_address);
 	startPos();
-	ncPrint("hola");
 	//beep();
 	initScheduler();
 

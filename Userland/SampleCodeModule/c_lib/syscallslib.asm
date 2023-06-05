@@ -19,6 +19,9 @@ GLOBAL sys_printBase
 GLOBAL sys_isBlackPixel
 GLOBAL sys_malloc
 GLOBAL sys_free
+GLOBAL sys_process
+GLOBAL sys_kill
+GLOBAL sys_get_pid
 sys_write:
     mov rax, 2
     int 80h
@@ -54,7 +57,7 @@ sys_sleep:
     int 80h
     ret
 
-sys_setScreen:
+sys_process:
     mov rax, 8
     int 80h
     ret
@@ -97,6 +100,16 @@ sys_recto:
 
 sys_printBase:
     mov rax, 20
+    int 80h
+    ret
+
+sys_kill:
+    mov rax, 21
+    int 80h
+    ret
+
+sys_get_pid:
+    mov rax, 22
     int 80h
     ret
 

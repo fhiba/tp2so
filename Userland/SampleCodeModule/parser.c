@@ -90,9 +90,9 @@ void parse_pipe(char * buffer, char * aux1, int idx,int argc1, char argv1[MAX_AR
         printerr(argv2[k]);
         printf("\n");
     }
-    //get_program(aux1);
-    //get_program(aux2);
-
+    func1 = get_program(aux1);
+    func2 = get_program(aux2);
+    
 }
 
 void parser(char * buffer){
@@ -135,47 +135,41 @@ void parser(char * buffer){
     if(space_flag == 0)
         my_substring(aux,buffer,0,idx-1);
     
-    char num[5];
-    intToString(argc,num);
-    printf(aux);
-    printf("\n");
-    for(int k = 0; k <= argc; k++){
-        printerr(argv[k]);
-        printf("\n");
-    }
-    printf("\n");
-//    get_program(aux);
+    fd * fd_aux = sys_malloc(sizeof(fd));
+    func1 = get_program(aux);
+    sys_process(func1,9,argc,argv,NULL,NULL);
 }
 
-void get_program(char * buffer){
+void * get_program(char * buffer){
     for (size_t i = 0; buffer[i] != 0; i++)
     {
         if(buffer[i] == '=')
-            return;
+            return 0;
     }
     
     if(strcmp(buffer,"HELP"))
-        help();
+        return &help;
     else if(strcmp(buffer,"DATE"))
-        date();
+        return &date;
     else if(strcmp(buffer,"CLEAR"))
-        clearProg();
+        return &clearProg;
     else if(strcmp(buffer,"RESIZE"))
-        resize();
+        return &resize;
     else if(strcmp(buffer,"EXIT"))
-        exitShell();
+        return &exitShell;
     else if(strcmp(buffer,"TRON"))
-        tron();
+        return &tron;
     else if(strcmp(buffer,"INFOREG"))
-        infoRegs();
+        return &infoRegs;
     else if(strcmp(buffer, "DIVZERO"))
-        sys_divzero();
+        return &sys_divzero;
     else if(strcmp(buffer, "OPCODE"))
-        sys_opcode();
+        return &sys_opcode;
     else if(strcmp(buffer,"MEM"))
-        memPrint();
+        return &memPrint;
     else if(strcmp(buffer,"NICE"))
-        nice();
+        return &nice;
     else
-        printerr("Invalid Command\n");
+        return 0;
+    return 0;
 }

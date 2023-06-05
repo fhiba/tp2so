@@ -39,6 +39,9 @@ void help(){
     printf(": Runs phylo\n");
     printFirst("CLEAR");
     printf(": Clean the screen\n");
+    int pid = sys_get_pid();
+    sys_kill(pid);
+    return;
 }
 
 void nice(int argc,char argv[5][20]){
@@ -46,11 +49,11 @@ void nice(int argc,char argv[5][20]){
         printerr("Wrong amount of arguments\n");
         return;
     }
-    sys_nice(argv[0],argv[1]);
+    // sys_nice(argv[0],argv[1]);
 }
 
 void ps(int argc,char argv[5][20]){
-    sys_prog_list();
+    // sys_prog_list();
 }
 
 void loop(int argc,char argv[5][20]){
@@ -70,7 +73,7 @@ void block(int argc,char argv[5][20]){
         printerr("Wrong amount of arguments\n");
         return;
     }
-    sys_block(argv[0]);
+    // sys_block(argv[0]);
 }
 
 void cat(int argc,char argv[5][20]){

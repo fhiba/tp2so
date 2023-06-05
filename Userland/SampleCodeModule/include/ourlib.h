@@ -4,6 +4,13 @@
 #include <stddef.h>
 #include <stdint.h>
 
+typedef struct fd {
+  char readable;
+  char writable;
+  struct pipe *pipe;
+  struct shm *shared_mem;
+} fd;
+
 typedef struct{
     int rax;
     int rbx;
