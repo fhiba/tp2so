@@ -42,9 +42,11 @@ static void default_process() {
   }
 }
 
+//falta ultimo = null??
 void initScheduler(){
     scheduler = (Scheduler *)alloc(sizeof(Scheduler));
-      uint64_t defaultProcessMem = (uint64_t)alloc(2048);
+    scheduler->process_list = NULL;
+    uint64_t defaultProcessMem = (uint64_t)alloc(2048);
 
     uint64_t sp = initProcess(defaultProcessMem + 2048,
                                 (uint64_t)&default_process, 0, NULL);
@@ -245,10 +247,25 @@ int free_process_resource(process_node *process){
 int get_PID(){
     return scheduler->current->pcb->pid;
 }
-// char* get_process_list(){
 
-//     return NULL;
-// }
+void get_process_list(){
+    printf("NAME      PID       PRIORITY      STACK     BASE POINTER      FOREGROUND");
+    process_node * iter = scheduler->process_list;
+    while(iter != NULL){
+        printf(iter->pcb->args);//name
+        printf("      ");
+        printf(iter->pcb->pid);//pid
+        printf("      ");
+        printf(iter->pcb->priority);//priority
+        printf("      ");
+        printf(iter->pcb->stackPointer);//stack
+        printf("      ");
+        printf(iter->pcb->basePointer);//stack
+        printf("      ");
+        printf(iter->pcb->fds);//stack
+        printf("      ");
+    }
+}
 int change_priority(int process_id,int priority){
     //BUSCO EL PROCESO
     process_node* node = get_process_node(process_id);

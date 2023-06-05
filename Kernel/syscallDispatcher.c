@@ -71,6 +71,15 @@ int sys_dispatcher(int arg0, int arg1, int arg2, int arg3,int arg4, int arg5){
             return get_PID();
         case 23:
             isBlackPixel((unsigned int)arg0,(unsigned int) arg1);
+        case 24:
+            block_process(arg1);
+            break;
+        case 25:
+            change_priority(arg1,arg2);
+            break;
+        case 26:
+            get_process_list();
+            break;
         case 40:
             memPrint((uint64_t) arg0, (unsigned char *) arg1);
 

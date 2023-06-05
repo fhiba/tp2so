@@ -48,5 +48,6 @@ int unblock_process(int process_id);
 int cede_cpu(int process_id);
 int wait_pid(int process_id);
 int fork();
+void get_process_list();
 
 #endif

@@ -22,6 +22,10 @@ GLOBAL sys_free
 GLOBAL sys_process
 GLOBAL sys_kill
 GLOBAL sys_get_pid
+GLOBAL sys_block
+GLOBAL sys_nice
+GLOBAL sys_ps
+
 sys_write:
     mov rax, 2
     int 80h
@@ -115,6 +119,21 @@ sys_get_pid:
 
 sys_isBlackPixel:
     mov rax, 23
+    int 80h
+    ret
+
+sys_block:
+    mov rax, 24
+    int 80h
+    ret
+
+sys_nice:
+    mov rax, 25
+    int 80h
+    ret
+
+sys_ps:
+    mov rax, 26
     int 80h
     ret
 
