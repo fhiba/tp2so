@@ -33,6 +33,15 @@ void bubbleSort(process_node *start);
 /* Function to swap data of two nodes a and b*/
 void swap(process_node *a, process_node *b); 
  
+pcb * get_pcb(int pid){
+    process_node * iter = scheduler->process_list;
+    while(iter != NULL){
+        if(iter->pcb->pid == pid)
+            return iter->pcb;
+        iter = iter->next;
+    }
+    return NULL;
+}
 
 
 static void default_process() {
@@ -85,7 +94,7 @@ int strlen(char * string){
     return i;
 }
 
-int create_process(uint64_t ip, uint8_t priority, uint64_t argc,char argv[ARG_QTY][ARG_LEN], fd *customStdin,fd *customStdout, uint8_t background){
+int create_process(uint64_t ip, uint8_t priority, uint64_t argc,char argv[MAX_ARGS][MAX_ARG_LENGTH], fd *customStdin,fd *customStdout, uint8_t background){
     //CREO EL PROCESO
     pcb *newPCB = (pcb *)alloc(sizeof(pcb));
     newPCB->pid = currentPID++;
@@ -379,7 +388,7 @@ int create_child_process(uint64_t ip){
     //     stdout_cpy->writable = node->pcb->stdout->writable;
     //     stdout_cpy->pipe = node->pcb->stdout->pipe;
     // }
-    // int create_process(uint64_t ip, uint8_t priority, uint64_t argc,char argv[ARG_QTY][ARG_LEN], fd *customStdin,fd *customStdout)
+    // int create_process(uint64_t ip, uint8_t priority, uint64_t argc,char argv[MAX_ARGS][MAX_MAX_ARG_LENGTHGTH], fd *customStdin,fd *customStdout)
     
     // create_process(ip,,node->pcb->args,)
     return 0;
