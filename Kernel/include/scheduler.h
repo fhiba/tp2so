@@ -8,8 +8,8 @@
 #include <stdio.h>
 #include <naiveConsole.h>
 
-#define ARG_QTY 5
-#define ARG_LEN 20
+#define MAX_ARGS 5
+#define MAX_ARG_LENGTH 20
 
 #define STDIN 1
 #define STDOUT 0
@@ -27,7 +27,7 @@ typedef struct fdNode {
 }fdNode;
 
 typedef struct pcb {
-  char args[ARG_QTY][ARG_LEN];
+  char args[MAX_ARGS][MAX_ARG_LENGTH];
   uint32_t pid;
   uint8_t state;
   uint8_t priority;
@@ -44,7 +44,7 @@ typedef struct pcb {
 } pcb;
 
 
-int create_process(uint64_t ip, uint8_t priority, uint64_t argc, char argv[ARG_QTY][ARG_LEN], fd *customStdin, fd *customStdout, uint8_t background);
+int create_process(uint64_t ip, uint8_t priority, uint64_t argc, char argv[MAX_ARGS][MAX_ARG_LENGTH], fd *customStdin, fd *customStdout, uint8_t background);
 int switch_context(int rsp);
 int kill_process(int process_id);
 int get_PID();

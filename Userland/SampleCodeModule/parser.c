@@ -7,10 +7,9 @@
 #define MAX_ARGS 5
 #define MAX_ARG_LENGTH 20
 
-int background_flag = 0;
 
 int check_next(char * buffer, int idx){
-    if(buffer[idx] == '-' && buffer[idx+1] == 'B'){
+    if(buffer[idx] == '-'){
         return 1;
     }
     else if( buffer[idx] == '['){
@@ -21,7 +20,7 @@ int check_next(char * buffer, int idx){
 
 int catch_args(char * buffer, int idx, int * argc, char argv[MAX_ARGS][MAX_ARG_LENGTH]){
     int i = 0;
-    int cant = 0;
+    int cant = 1;
     int next = 0;
     char c;
     while(buffer[idx] != 0 && cant < MAX_ARGS && i < MAX_ARG_LENGTH){
@@ -43,7 +42,7 @@ int catch_args(char * buffer, int idx, int * argc, char argv[MAX_ARGS][MAX_ARG_L
         idx++;
     }
     argv[cant][i] = 0;
-    *argc = cant + 1;
+    *argc = cant;
     return idx;
 }
 
@@ -96,15 +95,17 @@ void parse_pipe(char * buffer, char * aux1, int idx,int argc1, char argv1[MAX_AR
     }
     func1 = get_program(aux1);
     func2 = get_program(aux2);
+    strcpy(argv1[0],aux1);
+    strcpy(argv2[0],aux2);
     sys_process(func1,5,argc1,argv1,NULL,NULL,0);
     sys_process(func2,5,argc2,argv2,NULL,NULL,0);
-    
+
 }
 
 void parser(char * buffer){
     void * func1;
     int len = strlen(buffer);
-    int idx = 0;
+    int idx = 0, background_flag = 0;
     char aux[len];
     int space_flag = 0;
     int argc = 0;
@@ -129,7 +130,7 @@ void parser(char * buffer){
                 return;
             }
         }
-        else if(buffer[idx] == '-' && buffer[idx+1] == 'B'){
+        else if(buffer[idx] == '-'){
             background_flag = 1;
         }
         else if(buffer[idx] == '['){
@@ -140,18 +141,12 @@ void parser(char * buffer){
     }
     if(space_flag == 0)
         my_substring(aux,buffer,0,idx-1);
-    
-    fd * fd_aux = sys_malloc(sizeof(fd));
     func1 = get_program(aux);
+    strcpy(argv[0],aux);
     sys_process(func1,9,argc,argv,NULL,NULL,0);
 }
 
 void * get_program(char * buffer){
-    for (size_t i = 0; buffer[i] != 0; i++)
-    {
-        if(buffer[i] == '=')
-            return 0;
-    }
     
     if(strcmp(buffer,"HELP"))
         return &help;
