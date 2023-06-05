@@ -14,7 +14,7 @@ void set_syscall(int num){
     num_syscall = num;
 }
 
-int sys_dispatcher(int arg0, int arg1, int arg2, int arg3,int arg4, int arg5){
+int sys_dispatcher(int arg0, int arg1, int arg2, int arg3,int arg4, int arg5, int arg6){
     switch(num_syscall){
         case 1:
             read(arg0,(char*)arg1,(size_t)arg2);
@@ -38,7 +38,7 @@ int sys_dispatcher(int arg0, int arg1, int arg2, int arg3,int arg4, int arg5){
             tsleep((long)arg0);
             break;
         case 8:
-            create_process((uint64_t) arg0, (uint8_t) arg1, (uint64_t) arg2,(char **) arg3, (fd *)arg4,(fd *)arg5);
+            create_process((uint64_t) arg0, (uint8_t) arg1, (uint64_t) arg2,(char **) arg3, (fd *)arg4,(fd *)arg5, (uint8_t) arg6);
             break;
         case 9:
             resize(arg0);

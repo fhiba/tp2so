@@ -1,7 +1,6 @@
 #include <stdio.h>
-
 #include <scheduler.h>
-
+#include <naiveConsole.h>
 
 #define DEFAULT_PROG_MEM 4096
 
@@ -78,7 +77,7 @@ static char *strcpy(char *destination, const char *source) {
   return ptr;
 }
 
-int create_process(uint64_t ip, uint8_t priority, uint64_t argc,char argv[ARG_QTY][ARG_LEN], fd *customStdin,fd *customStdout){
+int create_process(uint64_t ip, uint8_t priority, uint64_t argc,char argv[ARG_QTY][ARG_LEN], fd *customStdin,fd *customStdout, uint8_t background){
     //CREO EL PROCESO
     pcb *newPCB = (pcb *)alloc(sizeof(pcb));
     newPCB->pid = currentPID++;
@@ -87,6 +86,7 @@ int create_process(uint64_t ip, uint8_t priority, uint64_t argc,char argv[ARG_QT
     newPCB->stdin = customStdin;
     newPCB->stdout = customStdout;
     newPCB->state = 1;
+    newPCB->background = background;
     for (int i = 0; i < argc; i++) {
         strcpy(newPCB->args[i], argv[i]);
     }
@@ -122,6 +122,33 @@ void insert_by_priority(process_node ** head, process_node* newNode)
     current->next = newNode;
 }
 
+void shell_handler(process_node * process){
+    if(process->pcb->pid == 1){ //es la shell?
+        process_node * iter = scheduler->process_list;
+        int flag = 0;
+        if(process->pcb->state == BLOCKED){
+            while(iter->next != NULL){
+                if(iter->pcb->state == READY && iter->pcb->background == 0)
+                    flag = 1;
+            }
+            if(flag == 0){
+                process->pcb->state = READY;
+            }
+        }
+        else{
+            while(iter->next != NULL){
+                if(iter->pcb->pid != 1 && iter->pcb->state != BLOCKED){
+                    flag = 1;
+                }
+                iter = iter->next;
+            }
+            if(flag){
+                process->pcb->state = BLOCKED;
+            }
+        }
+    }
+}
+
 int switch_context(int rsp){
 
     if (firstProcess) {
@@ -135,8 +162,11 @@ int switch_context(int rsp){
         scheduler->current->pcb->auxPriority--;
         return scheduler->current->pcb->stackPointer;
     }
+    
     //ME GUARDO EL STACK POINTER DEL PROCESO QUE ESTABA CORRIENDO 
     scheduler->current->pcb->stackPointer = rsp;
+    
+    
 
     //ELIGO QUIEN VA
     process_node *aux_node = scheduler->process_list;
@@ -145,6 +175,7 @@ int switch_context(int rsp){
     uint8_t all_blocked = 1;
     while (aux_node != NULL )
     {
+        shell_handler(aux_node);
         if(aux_node->pcb->auxPriority > 0 && aux_node->pcb->state != BLOCKED){
             scheduler->current = aux_node;
             scheduler->current->pcb->auxPriority--;
@@ -249,21 +280,21 @@ int get_PID(){
 }
 
 void get_process_list(){
-    printf("NAME      PID       PRIORITY      STACK     BASE POINTER      FOREGROUND");
+    ncPrint("NAME      PID       PRIORITY      STACK     BASE POINTER      FOREGROUND");
     process_node * iter = scheduler->process_list;
     while(iter != NULL){
-        printf(iter->pcb->args);//name
-        printf("      ");
-        printf(iter->pcb->pid);//pid
-        printf("      ");
-        printf(iter->pcb->priority);//priority
-        printf("      ");
-        printf(iter->pcb->stackPointer);//stack
-        printf("      ");
-        printf(iter->pcb->basePointer);//stack
-        printf("      ");
-        printf(iter->pcb->fds);//stack
-        printf("      ");
+        ncPrint(iter->pcb->args);//name
+        ncPrint("      ");
+        ncPrint(iter->pcb->pid);//pid
+        ncPrint("      ");
+        ncPrint(iter->pcb->priority);//priority
+        ncPrint("      ");
+        ncPrint(iter->pcb->stackPointer);//stack
+        ncPrint("      ");
+        ncPrint(iter->pcb->basePointer);//stack
+        ncPrint("      ");
+        ncPrint(iter->pcb->fds);//stack
+        ncPrint("      ");
     }
 }
 int change_priority(int process_id,int priority){

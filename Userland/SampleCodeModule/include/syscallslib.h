@@ -21,7 +21,7 @@ void sys_printBase(uint64_t value, uint32_t base);
 int sys_isBlackPixel(unsigned int x, unsigned int y);
 void * sys_malloc(unsigned int mem_to_alloc);
 void sys_free(void * mem_to_free);
-int sys_process(uint64_t ip, uint8_t priority, uint64_t argc,char *argv[20], void *customStdin,void *customStdout);
+int sys_process(uint64_t ip, uint8_t priority, uint64_t argc,char *argv[20], void *customStdin,void *customStdout,uint8_t background_flag);
 void sys_kill(int pid);
 int sys_get_pid();
 void sys_block(int pid);

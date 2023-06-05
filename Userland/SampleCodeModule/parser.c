@@ -137,7 +137,7 @@ void parser(char * buffer){
     
     fd * fd_aux = sys_malloc(sizeof(fd));
     func1 = get_program(aux);
-    sys_process(func1,9,argc,argv,NULL,NULL);
+    sys_process(func1,9,argc,argv,NULL,NULL,0);
 }
 
 void * get_program(char * buffer){

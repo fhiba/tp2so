@@ -32,12 +32,11 @@ typedef struct pcb {
   fd *stdin;
   fd *stdout;
   fdNode *fds;
+  uint8_t background;
 } pcb;
 
 
-int create_process(uint64_t ip, uint8_t priority, uint64_t argc,
-                  char argv[ARG_QTY][ARG_LEN], fd *customStdin,
-                  fd *customStdout);
+int create_process(uint64_t ip, uint8_t priority, uint64_t argc, char argv[ARG_QTY][ARG_LEN], fd *customStdin, fd *customStdout, uint8_t background);
 int switch_context(int rsp);
 int kill_process(int process_id);
 int get_PID();

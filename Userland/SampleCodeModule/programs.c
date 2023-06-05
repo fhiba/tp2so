@@ -65,6 +65,7 @@ void kill(int argc, char argv[5][20]){
         printerr("Wrong amount of arguments\n");
         return;
     }
+    //falta pasar de string a int
     sys_kill(argv[0]);
 }
 
