@@ -1,10 +1,5 @@
 #include <my_semaphore.h>
-#include <stddef.h>
-#include <mutex.h>
-#include <mmu_wrapper.h>
-#include <stdatomic.h>
-#include <stdint.h>
-#include <asm/unistd.h>
+
 
 typedef struct sem{
     uint64_t id;
@@ -20,13 +15,18 @@ uint8_t sem_mut = 0;
 sem * semaphores[MAX_SEMS];
 int amount = 0;
 
+atomic_int get_value(my_sem semaphore) {
+    return semaphore->value;
+}
+
+
 sem * create_sem(){
     if(amount == MAX_SEMS){
         return 1;
     }
     semaphores[amount] = (my_sem)(alloc(sizeof(sem)));
     aquire(semaphores[amount]->mutex);
-    semaphores[amount]->value = ATOMIC_VAR_INIT(0);
+    semaphores[amount]->value = ATOMIC_VAR_INIT(1);
     semaphores[amount]->id = amount;
     return semaphores[amount++];
 }

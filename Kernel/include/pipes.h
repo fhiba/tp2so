@@ -4,6 +4,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <mmu_wrapper.h>
+#include <my_semaphore.h>
 
 #define READ 0
 #define WRITE 1

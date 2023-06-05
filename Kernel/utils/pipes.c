@@ -19,9 +19,17 @@ typedef struct pipe_struct{
     unsigned int write_index;
     process_list working_processes;
     process_node * last_process_node;
-    //semaphore sem_write;
+    my_sem sem_pipe_access;
+    my_sem sem_write;
 }pipe_struct;
 
+typedef struct named_pipe_node {
+    char * name;
+    pipe named_pipe;
+    named_pipe_node * next;
+}named_pipe_node;
+
+named_pipe_node * named_pipe_list;
 
 pipe pipe_array[MAX_PIPES];
 int asigned_pipes = 0;
@@ -58,7 +66,12 @@ int pipe_create(int is_named) {
     pipe_array[idx]->is_named = is_named;
 
     asigned_pipes++;
-    //setting up return values
+    
+    
+    //setting up sems
+    pipe_array[idx]->sem_pipe_access = create_sem();
+    pipe_array[idx]->sem_write = create_sem();
+
     return idx;
 }
 
@@ -151,24 +164,29 @@ uint8_t destroy_pipe(pipe my_pipe) {
     return 0;   
 }
 int read_pipe(fd * user_fd, char * buffer, int max_bytes) {
+
     if(user_fd == NULL || user_fd->readable == 0)
         return -1;
     pipe pipe_to_read = user_fd->pipe;
     
     if(pipe_to_read == NULL)
         return -1;
-    
+    my_sem_wait(pipe_to_read->sem_pipe_access);
     int read_bytes = 0;
 
     while(read_bytes < max_bytes) {
         if(pipe_to_read->read_index != pipe_to_read->write_index) {
             buffer[read_bytes++] = pipe_to_read->buffer[pipe_to_read->read_index++];
         } else {
-            //sem_post(pipe_to_read->sem_write);
+            if(read_bytes > 0 && get_value(pipe_to_read->sem_write) < 1) {
+                my_sem_post(pipe_to_read->sem_write);
+            }
+            my_sem_post(pipe_to_read->sem_pipe_access);
             return read_bytes;
         }
     }
-    //sem_post(pipe_to_read->sem_write);
+    my_sem_post(pipe_to_read->sem_write);
+    my_sem_post(pipe_to_read->sem_pipe_access);
     return read_bytes;
 }
 
@@ -179,29 +197,26 @@ int write_pipe(fd * user_fd, char * buffer, int max_bytes) {
 
     if(pipe_to_write == NULL)
         return -1;
-    
+    my_sem_wait(pipe_to_write->sem_pipe_access);
     int write_bytes = 0;
 
     while(write_bytes < max_bytes) {
         if(pipe_to_write->read_index != pipe_to_write->write_index) {
             pipe_to_write->buffer[pipe_to_write->write_index++] = buffer[write_bytes++];
         } else {
-            //sem_await(pipe_to_read->read_sem);
+            my_sem_post(pipe_to_write->sem_pipe_access);
+            my_sem_wait(pipe_to_write->sem_write);
+            my_sem_wait(pipe_to_write->sem_pipe_access);
         }
     }
+    my_sem_post(pipe_to_write->sem_pipe_access);
     return write_bytes;
 }
 
-typedef struct named_pipe_node {
-    char * name;
-    pipe named_pipe;
-    named_pipe_node * next;
-}named_pipe_node;
-
-named_pipe_node * list;
+//!------------------------------------------------------------------------------------------------- named pipes funcs
 
 uint8_t open_named_pipe(fd * asigned_fd, char * name , int pid) {
-    named_pipe_node * named_pipe = get_node(list, name);
+    named_pipe_node * named_pipe = get_node(named_pipe_list, name);
 
     if(named_pipe == NULL)
         return 1;
@@ -222,7 +237,7 @@ named_pipe_node * get_node(named_pipe_node * list, char *name) {
 
 uint8_t destroy_named_pipe(char * name) {
     uint8_t status = 0;
-    list = remove_node_from_list(list, name, &status);
+    named_pipe_list = remove_node_from_list(named_pipe_list, name, &status);
     return status;
 }
 
@@ -277,12 +292,12 @@ int named_pipe_create(char * name) {
     
     new_pipe->next = NULL;
 
-    list = insert_into_list(list, new_pipe);
+    named_pipe_list = insert_into_list(named_pipe_list, new_pipe);
     return idx;
 }
 
 int node_exists(char * name) {
-    named_pipe_node * aux = list;
+    named_pipe_node * aux = named_pipe_list;
     while(aux != NULL && (strcmp(aux->name, name) < 0)) {
         aux = aux->next;
     }
