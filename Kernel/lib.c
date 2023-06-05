@@ -53,3 +53,25 @@ void * memcpy(void * destination, const void * source, uint64_t length)
 void sleep(long ms){
 	tsleep(ms);
 }
+
+
+int my_strlen(const char *str) {
+  int len = 0;
+  while (str[len] != 0) {
+    len++;
+  }
+  return len;
+}
+
+char *my_strcat(char *destination, const char *source) {
+  char *ptr = destination + my_strlen(destination);
+
+  while (*source != '\0') {
+    *ptr++ = *source++;
+  }
+
+  *ptr = '\0';
+
+  return destination;
+}
+
