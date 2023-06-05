@@ -1,5 +1,9 @@
 #include <stddef.h>
 #include <stdint.h>
+
+extern int outb(int, uint8_t);
+extern int inb(int);
+extern int _hlt();
 //Make it go beep!
 
  //Play sound using built in speaker

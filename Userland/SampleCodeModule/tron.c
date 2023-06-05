@@ -70,9 +70,9 @@ void tronRun(){
     board_init(); 
     winner = 0; //luego de mover va a una funcion que chequea por colision, si hubo unca carga 1 si gano 1 o 2 si gano 2.
     int quit = 0;
-    sys_write(1,"Press backspace to quit the game!",33);
+    sys_write(STDOUT, 1,"Press backspace to quit the game!",33);
     do{
-        sys_read(1, actions, 4);
+        sys_read(STDIN, actions, 4);
         for(action_idx = 0; action_idx < 4 && winner == 0 && quit == 0; action_idx++) {
             if(actions[action_idx] != 0x7F) { 
                 updatePos();
@@ -86,17 +86,17 @@ void tronRun(){
     sys_clear();
     
     if(winner != 0) {
-        sys_write(1, "Player ", 7);
-        sys_write(1, winner == 1? "1 ":"2 ", 2);
-        sys_write(1, "won.", 4);
+        sys_write(STDOUT, 1, "Player ", 7);
+        sys_write(STDOUT, 1, winner == 1? "1 ":"2 ", 2);
+        sys_write(STDOUT, 1, "won.", 4);
     }else{
-        sys_write(2,"NO ONE WON!!1!",14);
+        sys_write(STDOUT, 2,"NO ONE WON!!1!",14);
     }
     sys_beep();
-    sys_write(3,"\n\n\n\nPress P to play again or press Q to go back to the shell",60);
+    sys_write(STDOUT, 3,"\n\n\n\nPress P to play again or press Q to go back to the shell",60);
     char c = 0;
     do{
-        sys_read(1,&c,1);
+        sys_read(STDIN,&c,1);
     }while(c == 0);
     if(c == 'P'){
         tronRun();

@@ -22,10 +22,10 @@ void exceptionDispatcher(int exception) {
 
 static void zero_division() {
 	// saveRegisters();
-	write(1, "Err: You may not divide by zero.\n", 33);
+	write(STDOUT, 1, "Err: You may not divide by zero.\n", 33);
 	 for(int i = 0;i<17;i++){
-		write(4,registerNames[i],3);
-		write(1,": ",2);
+		write(STDOUT, 4,registerNames[i],3);
+		write(STDOUT, 1,": ",2);
 		ncPrintBase(registersException[i],16);
 		ncNewline();
 	}
@@ -33,10 +33,10 @@ static void zero_division() {
 }
 
 static void invalid_opcode() {
-	write(1, "Err: Invalid Opcode\n", 20);
+	write(STDOUT, 1, "Err: Invalid Opcode\n", 20);
 	for(int i = 0;i<17;i++){
-		write(4,registerNames[i],3);
-		write(1,": ",2);
+		write(STDOUT, 4,registerNames[i],3);
+		write(STDOUT,1,": ",2);
 		ncPrintBase(registersException[i],16);
 		ncNewline();
 	}
