@@ -110,6 +110,8 @@ void phylo(int argc,char argv[5][20]){
 
 void clearProg(){
     clear();
+    int pid = sys_get_pid();
+    sys_kill(pid);
 }
 
 void resize(int argc,char argv[5][20]){
@@ -154,6 +156,8 @@ void date(){
         }
     }
     printf("UTC\n");
+    int pid = sys_get_pid();
+    sys_kill(pid);
 }
 
 void tron(){

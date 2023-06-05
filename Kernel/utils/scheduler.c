@@ -98,6 +98,7 @@ int create_process(uint64_t ip, uint8_t priority, uint64_t argc,char argv[ARG_QT
     process_node *newNode = (process_node *)alloc(sizeof(process_node));
     newNode->pcb = newPCB;
     insert_by_priority(&(scheduler->process_list),newNode);
+    force_timer();
     return 0;
 }  
 
@@ -127,16 +128,17 @@ void shell_handler(process_node * process){
         process_node * iter = scheduler->process_list;
         int flag = 0;
         if(process->pcb->state == BLOCKED){
-            while(iter->next != NULL){
-                if(iter->pcb->state == READY && iter->pcb->background == 0)
+            while(iter != NULL){
+                if(iter->pcb->pid != 1 && iter->pcb->state == READY && iter->pcb->background == 0)
                     flag = 1;
+                iter = iter->next;
             }
             if(flag == 0){
                 process->pcb->state = READY;
             }
         }
         else{
-            while(iter->next != NULL){
+            while(iter != NULL){
                 if(iter->pcb->pid != 1 && iter->pcb->state != BLOCKED){
                     flag = 1;
                 }
@@ -199,7 +201,10 @@ int switch_context(int rsp){
         aux_node->pcb->auxPriority = aux_node->pcb->priority;
         aux_node = aux_node->next;
     }
-    scheduler->current = scheduler->process_list;
+    aux_node = scheduler->process_list;
+    while(aux_node->pcb->state == BLOCKED)
+        aux_node = aux_node->next;
+    scheduler->current = aux_node;
     scheduler->current->pcb->auxPriority--;
     return scheduler->current->pcb->stackPointer;    
 }
@@ -225,7 +230,7 @@ int kill_process(int process_id){
     if(process_to_remove != prev_process_to_remove){
         prev_process_to_remove->next = process_to_remove->next;
     }else{
-        firstProcess = 1;
+        scheduler->process_list = process_to_remove->next;
     }
     
     //LIBERO SUS RECURSOS
@@ -234,6 +239,7 @@ int kill_process(int process_id){
     free_fd_list(process_to_remove->pcb->fds,process_id);
     free(process_to_remove->pcb);
     free(process_to_remove);
+    force_timer();
     return 0;
 }
 

@@ -8,6 +8,7 @@ GLOBAL inb
 GLOBAL outb
 GLOBAL initProcess
 GLOBAL fork
+GLOBAL force_timer
 EXTERN registers
 EXTERN create_child_process
 section .text
@@ -101,6 +102,10 @@ rtcGet:
 
 	mov rsp, rbp
 	pop rbp
+	ret
+
+force_timer:
+	int 20h;
 	ret
 
 
