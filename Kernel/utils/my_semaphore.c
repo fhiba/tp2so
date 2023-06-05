@@ -1,4 +1,5 @@
 #include <my_semaphore.h>
+#include <stddef.h>
 #include <mutex.h>
 #include <mmu_wrapper.h>
 #include <stdatomic.h>
@@ -21,11 +22,10 @@ int amount = 0;
 
 sem * create_sem(){
     if(amount == MAX_SEMS){
-        
-        exit(1);
+        return 1;
     }
     semaphores[amount] = (my_sem)(alloc(sizeof(sem)));
-    // semaphores[amount]->mutex = ATOMIC_FLAG_INIT;
+    aquire(semaphores[amount]->mutex);
     semaphores[amount]->value = ATOMIC_VAR_INIT(0);
     semaphores[amount]->id = amount;
     return semaphores[amount++];
