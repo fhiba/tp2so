@@ -20,12 +20,10 @@ extern char registersSaved;
 
 
 void write_tty(int color_choice, char*buffer, size_t count) {
-    /*int pid = get_PID();
+    int pid = get_PID();
     pcb * process = get_pcb(pid);
     if(process->background)         
         return;
-        
-    */
 
     int color = 0;
     for(int i =0;i<count;i++){
