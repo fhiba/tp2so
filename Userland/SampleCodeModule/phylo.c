@@ -112,7 +112,7 @@ void phylo() {
           printf("No more philosophers can leave\n");
         } else {
             sys_sem_wait(mutex);
-            kill(pids[n - 1]);
+            sys_kill(pids[n - 1]);
             n--;
             printf("The philosopher left the rift\n");
             sys_sem_post(mutex);

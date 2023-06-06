@@ -97,10 +97,13 @@ void parse_pipe(char * buffer, char * aux1, int idx,int argc1, char argv1[MAX_AR
     func2 = get_program(aux2);
     strcpy(argv1[0],aux1);
     strcpy(argv2[0],aux2);
-    unsigned int fd[2];
-    sys_create_pipe(fd);
-    sys_process(func1,5,argc1,argv1,NULL,NULL,0);
-    sys_process(func2,5,argc2,argv2,NULL,NULL,0);
+    unsigned int pipe_fd[2];
+    sys_create_pipe(pipe_fd);
+    fd * read = sys_get_fd(sys_get_pid(), pipe_fd[0]);
+    fd * write = sys_get_fd(sys_get_pid(), pipe_fd[1]);
+
+    sys_process(func1,5,argc1,argv1,read,NULL,0);
+    sys_process(func2,5,argc2,argv2,NULL,write,0);
 }
 
 void parser(char * buffer){

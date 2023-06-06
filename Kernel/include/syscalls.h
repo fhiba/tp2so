@@ -7,7 +7,7 @@
 #include <stdint.h>
 #include <scheduler.h>
 #include <naiveConsole.h>
-
+#include <keyboard_driver.h>
 #define READ 0
 #define WRITE 1
 #define STOP_PROCESS 18
@@ -24,7 +24,7 @@ void resize(int num);
 void new_pipe(unsigned int fds[2]);
 uint8_t create_named_pipe(char * name);
 uint8_t named_pipe_destroy(char * name);
-unsigned int named_pipe_open(char * name, uint8_t operation);
+int named_pipe_open(char * name, uint8_t operation);
 void close(unsigned int my_fd);
 void dup(unsigned int dest_fd, unsigned int src_fd);
 #endif

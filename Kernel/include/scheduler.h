@@ -16,8 +16,8 @@
 
 
 typedef struct fdNode {
-  fd *file_descriptor;
-  struct fdNode *next;
+  fd * file_descriptor;
+  struct fdNode * next;
 }fdNode;
 
 typedef struct pid_node {
@@ -37,8 +37,8 @@ typedef struct pcb {
   uint64_t processMemory;
   unsigned int next_fd_id;
   fd * stdin_fd;
-  fd *stdout_fd;
-  fdNode *fds;
+  fd * stdout_fd;
+  fdNode * fds;
   fdNode * last_node;
   uint8_t background;
   pid_node *child_pid_list;
@@ -64,4 +64,5 @@ int dup_fd(unsigned int dest_fd, unsigned int src_fd, int pid);
 fd * get_stdin(int pid);
 fd * get_stdout(int pid);
 fd * get_fd(int pid, unsigned int searching_fd);
+int find_fd_id(fdNode * list, fd * my_fd);
 #endif

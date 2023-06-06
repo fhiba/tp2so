@@ -8,8 +8,6 @@
 #define RETVALUE -1
 
 
-
-static char snapshot = 0;
 static const char* registerNames[17] = {
     "RIP", "RAX", "RBX", "RCX", "RDX", "RSI", "RDI", "RBP", "RSP", "R8 ", "R9 ", "R10", "R11", "R12", "R13", "R14", "R15"
 };
@@ -20,12 +18,10 @@ extern char registersSaved;
 
 
 void write_tty(int color_choice, char*buffer, size_t count) {
-    /*int pid = get_PID();
+    int pid = get_PID();
     pcb * process = get_pcb(pid);
     if(process->background)         
         return;
-        
-    */
 
     int color = 0;
     for(int i =0;i<count;i++){
@@ -119,7 +115,7 @@ void inforegs(){
         ncNewline();
     }else{
         for(int i = 0;i<17;i++){
-            write(STDOUT,4,registerNames[i],3);
+            write(STDOUT,4,(char*)registerNames[i],3);
             write(STDOUT, 1,": ",2);
             ncPrintBase(registers[i],16);
             ncNewline();
@@ -173,15 +169,15 @@ void new_pipe(unsigned int fds[2]) {
     fd * new_writable_fd = create_fd(pid);
 
     if(new_writable_fd == NULL) {
-        close(new_readable_fd);
+        close(new_readable_fd->id);
         return;
     }
     new_writable_fd->writable = 1;
 
     int pipe_id = pipe_create(0);
     if(pipe_id < 0) {
-        close(new_writable_fd);
-        close(new_readable_fd);
+        close(new_writable_fd->id);
+        close(new_readable_fd->id);
         return;
     }
 
@@ -189,16 +185,16 @@ void new_pipe(unsigned int fds[2]) {
 
     if(status > 0) {
         destroy_pipe(get_pipe(pipe_id));
-        close(new_writable_fd);
-        close(new_readable_fd);
+        close(new_writable_fd->id);
+        close(new_readable_fd->id);
         return;
     }
         
     status = pipe_open(new_writable_fd, pipe_id, pid);
     if(status > 0) {
         pipe_close(new_readable_fd->pipe, pid);
-        close(new_writable_fd);
-        close(new_readable_fd);
+        close(new_writable_fd->id);
+        close(new_readable_fd->id);
         return;
     }
 
@@ -214,7 +210,6 @@ void close(unsigned int fd) {
 }
 
 uint8_t create_named_pipe(char * name) {
-    int pid = get_PID();
     return named_pipe_create(name) > 0 ? 1: 0;
 }
 
@@ -222,13 +217,13 @@ uint8_t named_pipe_destroy(char * name) {
     return destroy_named_pipe(name);
 }
 
-unsigned int named_pipe_open(char * name, uint8_t operation) {
+int named_pipe_open(char * name, uint8_t operation) {
     int pid = get_PID();
 
     fd * new_fd = create_fd(pid);
 
     if(new_fd == NULL)
-        return;
+        return -1;
 
     if(operation == READ) {
         new_fd->readable = 1;        
@@ -238,8 +233,8 @@ unsigned int named_pipe_open(char * name, uint8_t operation) {
     uint8_t status = open_named_pipe(new_fd, name, pid);
 
     if(status > 0) {
-        close(new_fd);
-        return;
+        close(new_fd->id);
+        return -1;
     }
     return new_fd->id;
 }

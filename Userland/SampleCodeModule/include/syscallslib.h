@@ -38,6 +38,6 @@ void sys_sem_wait(my_sem sem);
 void sys_create_pipe(unsigned int fds[2]);
 void sys_close_pipe(unsigned int my_fd);
 void sys_dup_fd(unsigned int dest_fd, unsigned int src_fd);
-
+fd * sys_get_fd(int pid ,unsigned int searching_fd);
 void * sys_memset(void * destination, int32_t c, uint64_t length);
 #endif
