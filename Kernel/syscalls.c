@@ -4,6 +4,7 @@
 #include <lib.h>
 #include <mmu.h>
 #include <keyboard_driver.h>
+#include <scheduler.h>
 
 #define STDIN 1
 #define RETVALUE -1

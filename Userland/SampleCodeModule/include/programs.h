@@ -22,5 +22,6 @@ void wc();
 void filter_vow();
 void phylo();
 void memPrint();
+void test_childs();
 void memPrint();
 #endif
