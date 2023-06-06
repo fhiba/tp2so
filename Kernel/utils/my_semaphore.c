@@ -26,7 +26,7 @@ sem * create_sem(){
     }
     semaphores[amount] = (my_sem)(alloc(sizeof(sem)));
     acquire(&semaphores[amount]->mutex);
-    semaphores[amount]->value = ATOMIC_VAR_INIT(1);
+    semaphores[amount]->value = ATOMIC_VAR_INIT(0);
     semaphores[amount]->id = amount;
     return semaphores[amount++];
 }
