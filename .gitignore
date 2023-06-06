@@ -1,3 +1,4 @@
+.vscode/*
 #Binary Files
 *.bin
 *.sys

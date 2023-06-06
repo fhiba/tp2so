@@ -1,19 +1,19 @@
-#ifndef SCHEDULER_H
-#define SCHEDULER_H
+#ifndef SCHEDULER_H_
+#define SCHEDULER_H_
 
 #include <stdlib.h>
 #include <defs.h>
 #include <stdint.h>
+#include <pipes.h>
+#include <stdio.h>
+#include <naiveConsole.h>
 
 #define ARG_QTY 5
 #define ARG_LEN 20
 
-typedef struct fd {
-  char readable;
-  char writable;
-  struct pipe *pipe;
-  struct shm *shared_mem;
-} fd;
+#define STDIN 1
+#define STDOUT 0
+
 
 typedef struct fdNode {
   fd *file_descriptor;
@@ -35,9 +35,11 @@ typedef struct pcb {
   uint64_t stackPointer;
   uint64_t basePointer;
   uint64_t processMemory;
-  fd *stdin;
-  fd *stdout;
+  unsigned int next_fd_id;
+  fd * stdin_fd;
+  fd *stdout_fd;
   fdNode *fds;
+  fdNode * last_node;
   uint8_t background;
   pid_node *child_pid_list;
 } pcb;
@@ -56,5 +58,10 @@ int cede_cpu(int process_id);
 int wait_pid(int process_id);
 int fork();
 void get_process_list();
-
+void close_fd(unsigned int fd, int pid);
+fd * create_fd(int pid);
+int dup_fd(unsigned int dest_fd, unsigned int src_fd, int pid);
+fd * get_stdin(int pid);
+fd * get_stdout(int pid);
+fd * get_fd(int pid, unsigned int searching_fd);
 #endif

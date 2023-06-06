@@ -1,6 +1,8 @@
 #ifndef PROGRAMS_H
 #define PROGRAMS_H
 
+#include <phylo.h>
+
 void help();
 void clearProg();
 void resize();
@@ -20,8 +22,11 @@ void block();
 void cat();
 void wc();
 void filter_vow();
-void phylo();
+void run_phylo();
 void memPrint();
+
 void test_childs();
 void memPrint();
+void invalid();
+
 #endif

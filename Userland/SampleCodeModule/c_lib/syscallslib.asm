@@ -27,8 +27,13 @@ GLOBAL sys_nice
 GLOBAL sys_ps
 GLOBAL sys_create_child
 GLOBAL sys_wait_pid
-
-
+GLOBAL sys_sem_create
+GLOBAL sys_sem_open
+GLOBAL sys_sem_wait
+GLOBAL sys_sem_post
+GLOBAL sys_create_pipe
+GLOBAL sys_close_pipe
+GLOBAL sys_dup_fd
 sys_write:
     mov rax, 2
     int 80h
@@ -104,6 +109,16 @@ sys_recto:
     int 80h
     ret
 
+sys_malloc:
+    mov rax, 18
+    int 80h
+    ret
+
+sys_free:
+    mov rax,19
+    int 80h
+    ret
+
 
 sys_printBase:
     mov rax, 20
@@ -140,13 +155,23 @@ sys_ps:
     int 80h
     ret
 
-sys_malloc:
-    mov rax, 18
+sys_sem_wait:
+    mov rax, 27
     int 80h
     ret
 
-sys_free:
-    mov rax,19
+sys_sem_post:
+    mov rax,28
+    int 80h
+    ret
+
+sys_sem_create:
+    mov rax, 29
+    int 80h
+    ret
+
+sys_sem_open:
+    mov rax, 30
     int 80h
     ret
 
@@ -155,6 +180,10 @@ sys_memset:
     int 80h
     ret
 
+sys_create_pipe:
+    mov rax, 31
+    int 80h
+    ret
 
 sys_create_child:
     mov rax, 35
@@ -165,6 +194,18 @@ sys_wait_pid
     mov rax, 36
     int 80h
     ret
+
+sys_close_pipe:
+    mov rax, 32
+    int 80h
+    ret
+
+sys_dup_fd:
+    mov rax, 33
+    int 80h
+    ret
+
+
 opcodetest:
     push rbp
     mov rbp, rsp

@@ -48,8 +48,13 @@ void help(){
     return;
 }
 
+void invalid(){
+    printerr("INVALID COMMAND\n");
+    exit();
+}
+
 void nice(int argc,char argv[5][20]){
-    if(argc != 2){
+    if(argc != 3){
         printerr("Wrong amount of arguments\n");
         exit();
     }
@@ -58,9 +63,9 @@ void nice(int argc,char argv[5][20]){
     printf(" to ");
     printf(argv[1]);
     printf("\n");
-    int aux1 = atoi(argv[0]);
-    int aux2 = atoi(argv[1]);
-    sys_nice(argv[0],argv[1]);
+    int aux1 = atoi(argv[1]);
+    int aux2 = atoi(argv[2]);
+    sys_nice(argv[1],argv[2]);
     exit();
 }
 
@@ -71,39 +76,44 @@ void ps(int argc,char argv[5][20]){
 }
 
 void loop(int argc,char argv[5][20]){
-    for(int i = 0; i < 5;i++){
-        printf("PID:2 HOLA!\n");
-        sys_sleep(2000);
+    int pid = sys_get_pid();
+    char num[20];
+    intToString(pid,num);
+    while(1){
+        printf(num);
+        printf("HOLA!");
+        sys_sleep(500);
     }
-    printf("jaja pensaste que funcionaba lrpm sos re boludo\n");
     exit();
 }
 
 void kill(int argc, char argv[5][20]){
-    if(argc != 1){
+    if(argc != 2){
         printerr("Wrong amount of arguments\n");
         int pid = sys_get_pid();
         sys_kill(pid);
     }
-    //falta pasar de string a int
-    sys_kill(argv[0]);
+    int num = atoi(argv[1]);
+    sys_kill(argv[1]);
     exit();
 }
 
 void block(int argc,char argv[5][20]){
-    if(argc != 1){
+    if(argc != 2){
         printerr("Wrong amount of arguments\n");
         int pid = sys_get_pid();
         sys_kill(pid);
     }
-    sys_block(argv[0]);
+    sys_block(argv[1]);
     exit();
 }
 
 void cat(int argc,char argv[5][20]){
-    printf("meow\n");
+
+    for(int i = 0; i < argc; i++){
+        printf(argv[i]);
+    }
     exit();
-    //imprime el stdin tal como lo recibe
 }
 
 void wc(int argc,char argv[5][20]){
@@ -119,25 +129,24 @@ int is_vow(char letter){
 }
 
 void filter_vow(int argc, char argv[5][20]){
-    if(argc != 1){
+    if(argc != 2){
         printerr("Wrong amount of arguments\n");
         int pid = sys_get_pid();
         sys_kill(pid);
     }
     int i, j;
-    for(i = 0, j = 0; argv[0][i] != 0;i++){
-        if(!is_vow(argv[0][i]))
-            argv[0][j++] = argv[0][i];
+    for(i = 0, j = 0; argv[1][i] != 0;i++){
+        if(!is_vow(argv[1][i]))
+            argv[1][j++] = argv[1][i];
     }
-    argv[0][j] = 0;
-    printf(argv[0]);
+    argv[1][j] = 0;
+    printf(argv[1]);
     printf("\n");
     exit();
 }
 
-void phylo(int argc,char argv[5][20]){
-    printf("deja de sacarle filo a la espada que te vas a quedar ciego pedro\n");
-    //corre el programa de los filosofos
+void run_phylo(int argc,char argv[5][20]){
+    phylo();
     exit();
 }
 
@@ -157,7 +166,7 @@ void resize(int argc,char argv[5][20]){
     // sys_write(1, buffer, 1);
     // printf("\n");
 
-    if(argc != 1){
+    if(argc != 2){
         printerr("Wrong amount of arguments\n");
         int pid = sys_get_pid();
         sys_kill(pid);
@@ -224,12 +233,12 @@ void test_childs(){
 
 
 void memPrint(int argc, char argv[5][20]){
-    if(argc != 1){
+    if(argc != 2){
         printerr("Wrong amount of arguments\n");
         return;
     } 
     int ok = 1;
-    uint64_t dir = stringToUint64(argv[0],&ok);
+    uint64_t dir = stringToUint64(argv[1],&ok);
     if(!ok || strlen(argv[0]) > 9){
         printerr("Invalid adress\n");
         return;

@@ -9,6 +9,7 @@ GLOBAL outb
 GLOBAL initProcess
 GLOBAL fork
 GLOBAL force_timer
+GLOBAL _xchg
 EXTERN registers
 EXTERN create_child_process
 section .text
@@ -167,3 +168,10 @@ outb:
     out dx, al
     leave
     ret
+
+
+_xchg:
+  ; se usa xcgh pq garantiza atomicidad aunque no sea eficiente
+  mov rax,rsi
+  xchg [rdi],eax
+  ret
