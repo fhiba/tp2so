@@ -22,7 +22,7 @@ atomic_int get_value(my_sem semaphore) {
 
 sem * create_sem(){
     if(amount == MAX_SEMS){
-        return 1;
+        return NULL;
     }
     semaphores[amount] = (my_sem)(alloc(sizeof(sem)));
     acquire(&semaphores[amount]->mutex);
@@ -47,7 +47,7 @@ int my_sem_close(my_sem close){
     while(_xchg(&sem_mut,1) != 0);
 
     if(close->id >= amount){
-        return;
+        return -1;
     }
 
     int aux = 0;

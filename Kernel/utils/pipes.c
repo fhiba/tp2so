@@ -34,7 +34,7 @@ named_pipe_node * named_pipe_list = NULL;
 pipe pipe_array[MAX_PIPES];
 int asigned_pipes = 0;
 
-
+int node_exists(char * name);
 named_pipe_node * get_node(named_pipe_node * list, char *name);
 uint8_t destroyable_pipe(pipe my_pipe);
 named_pipe_node * insert_into_list(named_pipe_node* list, named_pipe_node* insert);
@@ -54,7 +54,7 @@ int pipe_create(int is_named) {
         idx++;
 
     //alloc mem
-    pipe_array[idx] = (pipe*) alloc(sizeof(pipe));
+    pipe_array[idx] = (pipe) alloc(sizeof(pipe_struct));
     
     //not enough mem => should exit
     if(pipe_array[idx] == NULL)

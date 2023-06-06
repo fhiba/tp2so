@@ -15,7 +15,7 @@ typedef struct mem_block{
 typedef struct mem_manager{
     mem_block start;
     mem_block end;
-    unsigned int remaining_space
+    unsigned int remaining_space;
 } mem_manager;
 
 static const uint16_t STRUCT_SIZE = ((sizeof(mem_block) + (BYTE_ALIGMENT - 1)) & ~MASK_BYTE_ALIGMENT);
@@ -60,7 +60,7 @@ void * my_malloc(mmu const my_mmu, unsigned int mem_to_alloc){
     
     mem_to_alloc += STRUCT_SIZE;
 
-    if(mem_to_alloc & MASK_BYTE_ALIGMENT != 0){
+    if((mem_to_alloc & MASK_BYTE_ALIGMENT) != 0){
         mem_to_alloc += (BYTE_ALIGMENT - (mem_to_alloc & MASK_BYTE_ALIGMENT));
     }
 

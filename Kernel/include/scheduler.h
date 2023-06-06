@@ -7,6 +7,8 @@
 #include <pipes.h>
 #include <stdio.h>
 #include <naiveConsole.h>
+#include <interrupts.h>
+#include <lib.h>
 
 #define ARG_QTY 5
 #define ARG_LEN 20
@@ -51,6 +53,7 @@ int switch_context(int rsp);
 int kill_process(int process_id);
 int get_PID();
 // pcb* get_process_list();
+void initScheduler();
 int change_priority(int process_id, int priority);
 int block_process(int process_id);
 int unblock_process(int process_id);

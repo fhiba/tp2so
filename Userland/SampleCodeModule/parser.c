@@ -22,9 +22,7 @@ int catch_args(char * buffer, int idx, int * argc, char argv[MAX_ARGS][MAX_ARG_L
     int i = 0;
     int cant = 1;
     int next = 0;
-    char c;
     while(buffer[idx] != 0 && cant < MAX_ARGS && i < MAX_ARG_LENGTH){
-        c = buffer[idx];
         next = check_next(buffer,idx);
         if(next != 0)
                 return idx;

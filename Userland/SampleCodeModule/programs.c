@@ -65,7 +65,7 @@ void nice(int argc,char argv[5][20]){
     printf("\n");
     int aux1 = atoi(argv[1]);
     int aux2 = atoi(argv[2]);
-    sys_nice(argv[1],argv[2]);
+    sys_nice(aux1,aux2);
     exit();
 }
 
@@ -93,7 +93,7 @@ void kill(int argc, char argv[5][20]){
         exit();
     }
     int num = atoi(argv[1]);
-    sys_kill(argv[1]);
+    sys_kill(num);
     exit();
 }
 
@@ -102,7 +102,8 @@ void block(int argc,char argv[5][20]){
         printerr("Wrong amount of arguments\n");
         exit();
     }
-    sys_block(argv[1]);
+    int num = atoi(argv[1]);
+    sys_block(num);
     exit();
 }
 

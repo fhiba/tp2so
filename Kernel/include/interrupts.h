@@ -29,6 +29,9 @@ void _sti(void);
 
 void _hlt(void);
 
+uint64_t initProcess(uint64_t, uint64_t, int, void*);
+
+
 void picMasterMask(uint8_t mask);
 
 void picSlaveMask(uint8_t mask);

@@ -20,10 +20,10 @@ int sys_dispatcher(int arg0, int arg1, int arg2, int arg3,int arg4, int arg5, in
             set_back();
             break;
         case 1:
-            read((unsigned int)arg0,(char*)arg1,(size_t)arg2);
+            read((unsigned int)arg0,(char*)(long)arg1,(size_t)arg2);
             break;
         case 2:
-            write((unsigned int) arg0, arg1,(char*)arg2,(size_t)arg3);
+            write((unsigned int) arg0, arg1,(char*)(long)arg2,(size_t)arg3);
             break;
         case 3:
             clear();
@@ -41,7 +41,7 @@ int sys_dispatcher(int arg0, int arg1, int arg2, int arg3,int arg4, int arg5, in
             tsleep((long)arg0);
             break;
         case 8:
-            create_process((uint64_t) arg0, (uint8_t) arg1, (uint64_t) arg2,(char **) arg3, (fd *)arg4,(fd *)arg5);
+            create_process((uint64_t) arg0, (uint8_t) arg1, (uint64_t) arg2,(char **) (void*) (long) arg3, (fd *) (long) arg4,(fd *) (long) arg5);
             break;
         case 9:
             resize(arg0);
@@ -62,7 +62,7 @@ int sys_dispatcher(int arg0, int arg1, int arg2, int arg3,int arg4, int arg5, in
             free((void*)(long)arg0);
             break;
         case 81:
-            return memset(arg0,arg1,arg2);
+            return (long) memset((void*)(long)arg0,(int32_t)arg1,(int64_t)arg2);
             break;
         case 20:
             printBase((uint64_t)arg0, (uint32_t) arg1);
@@ -84,19 +84,19 @@ int sys_dispatcher(int arg0, int arg1, int arg2, int arg3,int arg4, int arg5, in
             get_process_list();
             break;
         case 27:
-            my_sem_wait((my_sem) arg0);
+            my_sem_wait((my_sem)(long) arg0);
             break;
         case 28:
-            my_sem_post((my_sem) arg0);
+            my_sem_post((my_sem)(long) arg0);
             break;
         case 30:
-            return my_sem_open((my_sem) arg0);
+            return (long) my_sem_open((my_sem)(long) arg0);
             break;
         case 29:
             create_sem();
             break;
         case 31:
-            new_pipe((unsigned int *) arg0);
+            new_pipe((unsigned int *) (long)arg0);
             break;
         case 32:
             close((unsigned int) arg0);
@@ -105,13 +105,13 @@ int sys_dispatcher(int arg0, int arg1, int arg2, int arg3,int arg4, int arg5, in
             dup((unsigned int ) arg0,(unsigned int) arg1);
             break;
         case 34:
-            return get_fd(arg0, (unsigned int) arg1);
+            return (long) get_fd(arg0, (unsigned int) arg1);
             break;
         case 40:
-            memPrint((uint64_t) arg0, (unsigned char *) arg1);
+            memPrint((uint64_t) arg0, (unsigned char *) (long)arg1);
             break;
         case 35:
-            create_child(arg0,(uint64_t) arg1, (uint8_t) arg2, (uint64_t) arg3,(char **) arg4, (fd *)arg5,NULL);
+            create_child(arg0,(uint64_t) arg1, (uint8_t) arg2, (uint64_t) arg3,(char **) (long) arg4, (fd *) (long)arg5,NULL);
             break;
         case 36:
             wait_pid(arg0);

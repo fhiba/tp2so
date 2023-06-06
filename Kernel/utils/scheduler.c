@@ -32,14 +32,15 @@ void insert_by_priority(process_node ** head, process_node* newNode);
 void bubbleSort(process_node *start); 
   
 /* Function to swap data of two nodes a and b*/
-void swap(process_node *a, process_node *b); 
- 
+void swap(process_node *a, process_node *b);
+
+void free_fd(fd* fd_to_free,int process_id);
 void insert_in_pid_list(int ppid,int pid);
 fdNode * get_fd_node(fdNode * list, unsigned int fd_id); 
 process_node* get_process_node(int process_id);
 fdNode * remove_fd_from_list(fdNode* list, unsigned int fd, int pid);
 void free_fd_list(fdNode* fdNode_to_free, int process_id);
-
+void free_child_pid_list(pid_node* child_list_to_free);
 
 
 pcb * get_pcb(int pid){
@@ -75,21 +76,6 @@ void initScheduler(){
     starting_process = (process_node *)alloc(sizeof(process_node));
     starting_process->pcb = startingPCB;
     starting_process->next = scheduler->process_list;
-}
-
-static char *strcpy(char *destination, const char *source) {
-  if (destination == NULL) return NULL;
-
-  char *ptr = destination;
-
-  while (*source != '\0') {
-    *destination = *source;
-    destination++;
-    source++;
-  }
-
-  *destination = '\0';
-  return ptr;
 }
 
 int strlen(char * string){
@@ -143,7 +129,7 @@ int create_process(uint64_t ip, uint8_t priority, uint64_t argc,char argv[ARG_QT
         }
     }
     uint64_t processMemory = (uint64_t)alloc(DEFAULT_PROG_MEM);
-    if(processMemory == NULL) {
+    if((void *)processMemory == NULL) {
         free(newPCB);
         return -1;
     }
@@ -152,11 +138,11 @@ int create_process(uint64_t ip, uint8_t priority, uint64_t argc,char argv[ARG_QT
     newPCB->stackPointer = sp;
     newPCB->basePointer = processMemory + DEFAULT_PROG_MEM - 1;  // no se si aca falta un -1
     newPCB->processMemory = processMemory;
-    pid_node*new_child_pid_list = NULL;
+    pid_node * new_child_pid_list = NULL;
     process_node *newNode = (process_node *)alloc(sizeof(process_node));
     if(newNode == NULL) {
         free(newPCB);
-        free(processMemory);
+        free((void*)processMemory);
         return -1;
     }
     newNode->pcb = newPCB;
@@ -176,6 +162,7 @@ int create_child(int ppid,uint64_t ip, uint8_t priority, uint64_t argc,char argv
     process_node* parent_node = get_process_node(child_pid);
 
     insert_in_pid_list(ppid,child_pid);
+    return child_pid;
 }
 
 void insert_in_pid_list(int ppid,int pid){
@@ -426,7 +413,7 @@ fd * create_fd(int pid) {
     new_fd->writable = 0;
 
     new_node->file_descriptor = new_fd;
-    new_node->next;
+    new_node->next = NULL;
 
 
     if(node->pcb->fds == NULL) {
@@ -477,15 +464,15 @@ int dup_fd(unsigned int dest_fd, unsigned int src_fd, int pid) {
     }
 
     if(src_fd == STDIN) {
-        dest = node->pcb->stdin_fd;
+        src = node->pcb->stdin_fd;
     } else if(src_fd == STDOUT) {
-        dest = node->pcb->stdout_fd;
+        src = node->pcb->stdout_fd;
     } else {
         aux = get_fd_node(node->pcb->fds, src_fd);
         if(aux == NULL)
             return -1;
-        dest = aux->file_descriptor;
-        if(dest == NULL)
+        src = aux->file_descriptor;
+        if(src == NULL)
             return -1;
     }
     
@@ -556,6 +543,7 @@ int free_process_resource(process_node *process){
     
     free(process->pcb);
     free(process);
+    return 0;
 }
 
 int get_PID(){
