@@ -100,8 +100,8 @@ void parse_pipe(char * buffer, char * aux1, int idx,int argc1, char argv1[MAX_AR
     fd * read = sys_get_fd(sys_get_pid(), pipe_fd[0]);
     fd * write = sys_get_fd(sys_get_pid(), pipe_fd[1]);
 
-    sys_process(func1,5,argc1,argv1,read,NULL);
-    sys_process(func2,5,argc2,argv2,NULL,write);
+    sys_process(func1,5,argc1,argv1,NULL,write);
+    sys_process(func2,5,argc2,argv2,read,NULL);
 }
 
 void parser(char * buffer){

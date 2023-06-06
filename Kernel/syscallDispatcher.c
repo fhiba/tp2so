@@ -81,7 +81,7 @@ int sys_dispatcher(int arg0, int arg1, int arg2, int arg3,int arg4, int arg5, in
             change_priority(arg0,arg1);
             break;
         case 26:
-            get_process_list();
+            get_process_list((char*)(long)arg0);
             break;
         case 27:
             my_sem_wait((my_sem)(long) arg0);

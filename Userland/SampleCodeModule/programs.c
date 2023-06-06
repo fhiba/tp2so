@@ -71,7 +71,9 @@ void nice(int argc,char argv[5][20]){
 
 void ps(int argc,char argv[5][20]){
     printf("program list jaja\n");
-    sys_ps();
+    char buffer[1024] = {0};
+    sys_ps(buffer);
+    printf(buffer);
     exit();
 }
 
@@ -128,7 +130,17 @@ int is_vow(char letter){
 }
 
 void filter_vow(int argc, char argv[5][20]){
+    char buffer[512] = {0};
+    int bytes_read = 0;
     if(argc != 2){
+        while((bytes_read = sys_read(STDIN, buffer, 512))) {
+            buffer[bytes_read - 1] = '\0';
+            for(int i = 0; i < bytes_read; i++) {
+                if(!is_vow(buffer[i]))
+                    putchar(buffer[i]);
+            }
+        }
+           
         printerr("Wrong amount of arguments\n");
         int pid = sys_get_pid();
         sys_kill(pid);

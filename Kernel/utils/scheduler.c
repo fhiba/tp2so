@@ -3,6 +3,18 @@
 
 #define DEFAULT_PROG_MEM 4096
 
+
+
+
+#define NAME 0
+#define ID 1
+#define PRIORITY 2
+#define RSP 3
+#define RBP 4
+#define FOREGROUND 5
+#define STATE 6
+
+
 typedef struct process_node {
     pcb *pcb;
     struct process_node *next;
@@ -34,6 +46,8 @@ void bubbleSort(process_node *start);
 /* Function to swap data of two nodes a and b*/
 void swap(process_node *a, process_node *b);
 
+
+void normalizeSpaces(char *buf, char *data, int field);
 void free_fd(fd* fd_to_free,int process_id);
 void insert_in_pid_list(int ppid,int pid);
 fdNode * get_fd_node(fdNode * list, unsigned int fd_id); 
@@ -550,27 +564,54 @@ int get_PID(){
     return scheduler->current->pcb->pid;
 }
 
-void get_process_list(){
-    ncPrint("NAME      PID       PRIORITY      STACK     BASE POINTER      FOREGROUND");
-    ncNewline();
-    process_node * iter = scheduler->process_list;
-    while(iter != NULL){
-        ncPrint(iter->pcb->args);//name
-        ncPrint("      ");
-        ncPrint(iter->pcb->pid);//pid
-        ncPrint("      ");
-        ncPrint(iter->pcb->priority);//priority
-        ncPrint("      ");
-        ncPrint(iter->pcb->stackPointer);//stack
-        ncPrint("      ");
-        ncPrint(iter->pcb->basePointer);//stack
-        ncPrint("      ");
-        ncPrint(iter->pcb->background?"0":"1");//stack
-        ncPrint("      ");
-        ncNewline();
-        iter = iter->next;
-    }
+
+void normalizeSpaces(char *buf, char *data, int field) {
+  static int fields[] = {10, 2, 8, 8, 8, 10, 7};
+  int n = fields[field] - my_strlen(data);
+  my_strcat(buf, data);
+  for (int i = 0; i < n; i++) {
+    my_strcat(buf, " ");
+  }
+  my_strcat(buf, "  ");
 }
+
+
+void get_process_list(char *buf) {
+  my_strcat(buf, "Name        ID  Priority  RSP       RBP       Foreground  State\n");
+  process_node * current = scheduler->process_list;
+  while (current != NULL) {
+    normalizeSpaces(buf, current->pcb->args, NAME);
+
+    uint32_t pid = current->pcb->pid;
+    char pidStr[6];
+    cUintToBase(pid, pidStr, 10);
+    normalizeSpaces(buf, pidStr, ID);
+
+    uint32_t priority = current->pcb->priority;
+    char priorityStr[3];
+    cUintToBase(priority, priorityStr, 10);
+    normalizeSpaces(buf, priorityStr, PRIORITY);
+
+    uint32_t rsp = current->pcb->stackPointer;
+    char rspStr[10];
+    cUintToBase(rsp, rspStr, 16);
+    normalizeSpaces(buf, rspStr, RSP);
+
+    uint32_t rbp = current->pcb->basePointer;
+    char rbpStr[10];
+    cUintToBase(rbp, rbpStr, 16);
+    normalizeSpaces(buf, rbpStr, RBP);
+
+    normalizeSpaces(buf, priority == 1 ? "yes" : "no", FOREGROUND);
+
+    uint8_t state = current->pcb->state;
+    normalizeSpaces(buf, state == 1 ? "running" : "blocked", STATE);
+
+    my_strcat(buf, "\n");
+    current = current->next;
+  }
+}
+
 int change_priority(int process_id,int priority){
     //BUSCO EL PROCESO
     process_node* node = get_process_node(process_id);
