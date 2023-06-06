@@ -32,6 +32,7 @@ GLOBAL sys_sem_post
 GLOBAL sys_create_pipe
 GLOBAL sys_close_pipe
 GLOBAL sys_dup_fd
+GLOBAL sys_get_fd
 
 sys_write:
     mov rax, 2
@@ -189,6 +190,10 @@ sys_dup_fd:
     int 80h
     ret
 
+sys_get_fd:
+    mov rax, 34
+    int 80h
+    ret
 
 opcodetest:
     push rbp

@@ -76,5 +76,5 @@ uint32_t getWidth();
 int compare(pos p1, pos p2);
 uint32_t getScreen();
 int isBlackPixel(unsigned int x, unsigned int y);
-
+void deleteChar();
 #endif

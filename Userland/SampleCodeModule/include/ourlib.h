@@ -16,12 +16,14 @@ typedef struct sem{
 
 typedef struct sem * my_sem;
 
+typedef struct pipe_struct * pipe;
+
 typedef struct fd {
+  unsigned int id;
   char readable;
   char writable;
-  struct pipe *pipe;
-  struct shm *shared_mem;
-} fd;
+  pipe pipe;
+}fd;
 
 typedef struct{
     int rax;

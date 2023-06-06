@@ -38,6 +38,8 @@ process_node* get_process_node(int process_id);
 fdNode * remove_fd_from_list(fdNode* list, unsigned int fd, int pid);
 void free_fd_list(fdNode* fdNode_to_free, int process_id);
 
+
+
 pcb * get_pcb(int pid){
     process_node * iter = scheduler->process_list;
     while(iter != NULL){
@@ -311,12 +313,29 @@ void free_fd_list(fdNode* fdNode_to_free, int process_id){
         aux_node = next_node;    
     }
 }   
+int get_fd_id(fd * my_fd, int pid) {
+    process_node * node = get_process_node(pid);
+    if(my_fd == node->pcb->stdin_fd) {
+        return STDIN;
+    } else if (my_fd == node->pcb->stdout_fd){
+        return STDOUT;
+    }
+    return find_fd_id(node->pcb->fds, my_fd);
+}
+
+int find_fd_id(fdNode * list, fd * my_fd) {
+    if(list == NULL)
+        return -1;
+    if(list->file_descriptor == my_fd)
+        return list->file_descriptor->id;
+    return find_fd_id(list->next, my_fd);
+}
 
 void close_fd(unsigned int fd, int pid) {
     process_node * node = get_process_node(pid);
-    if(fd  == 0) {
+    if(STDIN == fd) {
         free_fd(node->pcb->stdin_fd, pid);
-    } else if (fd == 1){
+    } else if (STDOUT == fd){
          free_fd(node->pcb->stdout_fd, pid);
     }
 

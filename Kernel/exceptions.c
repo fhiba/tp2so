@@ -24,7 +24,7 @@ static void zero_division() {
 	// saveRegisters();
 	write(STDOUT, 1, "Err: You may not divide by zero.\n", 33);
 	 for(int i = 0;i<17;i++){
-		write(STDOUT, 4,registerNames[i],3);
+		write(STDOUT, 4,(char*)registerNames[i],3);
 		write(STDOUT, 1,": ",2);
 		ncPrintBase(registersException[i],16);
 		ncNewline();
@@ -35,7 +35,7 @@ static void zero_division() {
 static void invalid_opcode() {
 	write(STDOUT, 1, "Err: Invalid Opcode\n", 20);
 	for(int i = 0;i<17;i++){
-		write(STDOUT, 4,registerNames[i],3);
+		write(STDOUT, 4,(char*)registerNames[i],3);
 		write(STDOUT,1,": ",2);
 		ncPrintBase(registersException[i],16);
 		ncNewline();

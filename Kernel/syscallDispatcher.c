@@ -100,9 +100,14 @@ int sys_dispatcher(int arg0, int arg1, int arg2, int arg3,int arg4, int arg5, in
             break;
         case 33:
             dup((unsigned int ) arg0,(unsigned int) arg1);
+            break;
+        case 34:
+            return get_fd(arg0, (unsigned int) arg1);
+            break;
         case 40:
             memPrint((uint64_t) arg0, (unsigned char *) arg1);
-
+            break;
+        
         default:
             return -1;
     }
