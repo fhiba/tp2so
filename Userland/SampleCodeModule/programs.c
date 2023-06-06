@@ -138,9 +138,8 @@ void filter_vow(int argc, char argv[5][20]){
     exit();
 }
 
-void phylo(int argc,char argv[5][20]){
-    printf("deja de sacarle filo a la espada que te vas a quedar ciego pedro\n");
-    //corre el programa de los filosofos
+void ram_phylo(int argc,char argv[5][20]){
+    phylo();
     exit();
 }
 

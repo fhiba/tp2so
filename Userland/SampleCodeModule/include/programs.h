@@ -22,7 +22,7 @@ void block();
 void cat();
 void wc();
 void filter_vow();
-void phylo();
+void ram_phylo();
 void memPrint();
 
 #endif

@@ -24,85 +24,85 @@ void test(int phnum) {
       state[RIGHT] != EATING) {
     state[phnum] = EATING;
     printTable();
-    semPost(chopsticks[phnum]);
+    sys_sem_post(chopsticks[phnum]);
   }
 }
 
 void take_fork(int phnum) {
-  semWait(mutex);
+  sys_sem_wait(mutex);
 
   state[phnum] = HUNGRY;
 
   test(phnum);
 
-  sem_post(mutex);
+  sys_sem_post(mutex);
 
-  sem_wait(chopsticks[phnum]);
+  sys_sem_wait(chopsticks[phnum]);
 
-  sleep(1);
+  sys_sleep(1);
 }
 
 void put_fork(int phnum) {
-  sem_wait(mutex);
+  sys_sem_wait(mutex);
 
   state[phnum] = THINKING;
 
   test(LEFT);
   test(RIGHT);
 
-  sem_post(mutex);
+  sys_sem_post(mutex);
 }
 
-void * phylo(int argc, char argv[MAX_ARGS][MAX_ARG_LENGTH]) {
+void * philosopher(int argc, char argv[MAX_ARGS][MAX_ARG_LENGTH]) {
   if (argc != 2) {
     exit();
   }
 
   int num = atoi(argv[1]);
   while (1) {
-    sleep(1000);
+    sys_sleep(1000);
 
     take_fork(num);
 
-    sleep(1000);
+    sys_sleep(1000);
 
     put_fork(num);
   }
 }
 
-void philosophersProgram() {
+void phylo() {
   int i;
-  mutex = sem_open(GENERALSEMID, 1);
+  mutex = sys_sem_open(GENERALSEMID, 1);
 
   for (i = 0; i < N; i++) {
-    chopsticks[i] = sem_open(i, 1);
+    chopsticks[i] = sys_sem_open(i, 1);
   }
 
   char args[MAX_ARGS][MAX_ARG_LENGTH];
   char num[3];
   strcpy(args[0], "philo");
   for (i = 0; i < N; i++) {
-    uintToBase(i, num, 10);
+    cUintToBase(i, num, 10);
     strcpy(args[1], num);
-    pids[i] = createProcess((uint64_t)phylo, 3, 2, args, NULL, NULL);
+    pids[i] = sys_process((uint64_t)phylo, 3, 2, args, NULL, NULL, 0);
   }
 
   char c;
   while (1) {
-    getchar(&c);
+    sys_read(STDIN, &c, 1);
     switch (c) {
       case 'a':
       case 'A':
         if (n == MAX_PHILOSOPHERS) {
           printf("The table is full, no new philosophers can join\n");
         } else {
-          uintToBase(n, num, 10);
+          cUintToBase(n, num, 10);
           strcpy(args[1], num);
-          sem_wait(mutex);
-          chopsticks[n] = sem_open(n, i);
+          sys_sem_wait(mutex);
+          chopsticks[n] = sys_sem_open(n, i);
           state[n] = THINKING;
-          pids[n++] = createProcess((uint64_t)phylo, 3, 2, args, NULL, NULL);
-          sem_post(mutex);
+          pids[n++] = sys_process((uint64_t)phylo, 3, 2, args, NULL, NULL, 0);
+          sys_sem_post(mutex);
           printf("The philosopher sat on the table\n");
         }
       break;
@@ -111,11 +111,11 @@ void philosophersProgram() {
         if (n <= 2) {
           printf("No more philosophers can leave\n");
         } else {
-            sem_wait(mutex);
+            sys_sem_wait(mutex);
             kill(pids[n - 1]);
             n--;
             printf("The philosopher left the rift\n");
-            sem_post(mutex);
+            sys_sem_post(mutex);
           }
       }
       break;

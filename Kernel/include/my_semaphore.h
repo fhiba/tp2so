@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <asm/unistd.h>
 
+extern uint8_t _xchg(uint8_t * lock,int value);
 
 typedef struct sem * my_sem;
 

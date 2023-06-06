@@ -194,7 +194,7 @@ void new_pipe(unsigned int fds[2]) {
         return;
     }
         
-    uint8_t status = pipe_open(new_writable_fd, pipe_id, pid);
+    status = pipe_open(new_writable_fd, pipe_id, pid);
     if(status > 0) {
         pipe_close(new_readable_fd->pipe, pid);
         close(new_writable_fd);

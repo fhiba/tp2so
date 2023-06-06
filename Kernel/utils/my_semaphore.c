@@ -1,5 +1,7 @@
 #include <my_semaphore.h>
-
+#define acquire(m) while (atomic_flag_test_and_set(m));
+#define release(m) atomic_flag_clear(m);
+#define MAX_SEMS 10
 
 typedef struct sem{
     uint64_t id;
@@ -7,9 +9,7 @@ typedef struct sem{
     atomic_flag mutex;
 } sem;
 
-#define acquire(m) while (atomic_flag_test_and_set(m));
-#define release(m) atomic_flag_clear(m);
-#define MAX_SEMS 10
+
 
 uint8_t sem_mut = 0;
 sem * semaphores[MAX_SEMS];
@@ -25,7 +25,7 @@ sem * create_sem(){
         return 1;
     }
     semaphores[amount] = (my_sem)(alloc(sizeof(sem)));
-    aquire(semaphores[amount]->mutex);
+    acquire(&semaphores[amount]->mutex);
     semaphores[amount]->value = ATOMIC_VAR_INIT(1);
     semaphores[amount]->id = amount;
     return semaphores[amount++];

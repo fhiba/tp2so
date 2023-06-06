@@ -1,7 +1,7 @@
-#include <string.h>
+#include <my_string.h>
 
 
-int strcmp(const char *X, const char *Y)
+int my_strcmp(char *X, char *Y)
 {
     while (*X)
     {
@@ -19,7 +19,7 @@ int strcmp(const char *X, const char *Y)
     return *(const unsigned char*)X - *(const unsigned char*)Y;
 }
 
-int strcpy(char * to, char *from){
+int my_strcpy(char * to, char *from){
     int i;
     for(i =0; from[i] != 0; i++){
         to[i] = from[i];
@@ -28,7 +28,7 @@ int strcpy(char * to, char *from){
     return i;
 }
 
-int strlen(char * string){
+int my_strlen(char * string){
     int i = 0;
     while(string[i]!=0){
         i++;

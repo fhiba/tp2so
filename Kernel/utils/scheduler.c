@@ -5,7 +5,7 @@
 
 typedef struct process_node {
     pcb *pcb;
-    struct process_node *next
+    struct process_node *next;
 } process_node;
 
 typedef struct Scheduler {
@@ -32,9 +32,11 @@ void bubbleSort(process_node *start);
   
 /* Function to swap data of two nodes a and b*/
 void swap(process_node *a, process_node *b); 
- 
 
+fdNode * get_fd_node(fdNode * list, unsigned int fd_id); 
+process_node* get_process_node(int process_id);
 fdNode * remove_fd_from_list(fdNode* list, unsigned int fd, int pid);
+void free_fd_list(fdNode* fdNode_to_free, int process_id);
 
 pcb * get_pcb(int pid){
     process_node * iter = scheduler->process_list;
@@ -98,7 +100,7 @@ int strlen(char * string){
     return i;
 }
 
-int create_process(uint64_t ip, uint8_t priority, uint64_t argc,char argv[MAX_ARGS][MAX_ARG_LENGTH], fd *customStdin,fd *customStdout, uint8_t background){
+int create_process(uint64_t ip, uint8_t priority, uint64_t argc,char argv[ARG_QTY][ARG_LEN], fd *customStdin,fd *customStdout, uint8_t background){
     //CREO EL PROCESO
     pcb *newPCB = (pcb *)alloc(sizeof(pcb));
     if(newPCB == NULL)
@@ -375,8 +377,9 @@ fdNode * remove_fd_from_list(fdNode* list, unsigned int fd, int pid) {
 int dup_fd(unsigned int dest_fd, unsigned int src_fd, int pid) {
     process_node * node = get_process_node(pid);
     if(node == NULL)
-        return;
+        return -1;
     
+    fdNode * aux;
     fd * dest;
     fd * src;
     if(dest_fd == STDIN) {
@@ -384,7 +387,10 @@ int dup_fd(unsigned int dest_fd, unsigned int src_fd, int pid) {
     } else if(dest_fd == STDOUT) {
         dest = node->pcb->stdout_fd;
     } else {
-        dest = get_fd_node(node->pcb->fds, dest_fd)->file_descriptor;
+        aux = get_fd_node(node->pcb->fds, dest_fd);
+        if(aux == NULL)
+            return -1;
+        dest = aux->file_descriptor;
         if(dest == NULL) 
             return -1;
     }
@@ -394,7 +400,10 @@ int dup_fd(unsigned int dest_fd, unsigned int src_fd, int pid) {
     } else if(src_fd == STDOUT) {
         dest = node->pcb->stdout_fd;
     } else {
-        dest = get_fd_node(node->pcb->fds, src_fd)->file_descriptor;
+        aux = get_fd_node(node->pcb->fds, src_fd);
+        if(aux == NULL)
+            return -1;
+        dest = aux->file_descriptor;
         if(dest == NULL)
             return -1;
     }

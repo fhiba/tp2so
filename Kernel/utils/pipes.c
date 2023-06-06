@@ -6,7 +6,7 @@
 typedef struct process_node{
     int pid;
     int operation;
-    process_node * next;
+    struct process_node * next;
 }process_node;
 
 typedef process_node * process_list;
@@ -26,15 +26,19 @@ typedef struct pipe_struct{
 typedef struct named_pipe_node {
     char * name;
     pipe named_pipe;
-    named_pipe_node * next;
+    struct named_pipe_node * next;
 }named_pipe_node;
 
-named_pipe_node * named_pipe_list;
+named_pipe_node * named_pipe_list = NULL;
 
 pipe pipe_array[MAX_PIPES];
 int asigned_pipes = 0;
 
 
+named_pipe_node * get_node(named_pipe_node * list, char *name);
+uint8_t destroyable_pipe(pipe my_pipe);
+named_pipe_node * insert_into_list(named_pipe_node* list, named_pipe_node* insert);
+named_pipe_node * remove_node_from_list(named_pipe_node * list, char * name, uint8_t * status);
 uint8_t add_process_to_pipe(pipe my_pipe, int pid, int operation);
 process_list remove_node(process_list list, int pid, uint8_t * status);
 uint8_t remove_process_from_pipe(pipe my_pipe, int pid);
@@ -242,7 +246,7 @@ named_pipe_node * get_node(named_pipe_node * list, char *name) {
     if(list == NULL)
         return list;
     
-    if(strcmp(list->name, name) == 0)
+    if(my_strcmp(list->name, name) == 0)
         return list;
 
     return get_node(list->next, name);
@@ -258,7 +262,7 @@ uint8_t destroy_named_pipe(char * name) {
 named_pipe_node * remove_node_from_list(named_pipe_node * list, char * name, uint8_t * status){ 
     if(list == NULL)
         return NULL;
-    int cmp = strcmp(list->name, name);
+    int cmp = my_strcmp(list->name, name);
     if(cmp > 0)
         return list;
     else if(cmp < 0) {
@@ -286,7 +290,7 @@ int named_pipe_create(char * name) {
     if(new_pipe == NULL)
         return -1;
 
-    unsigned int len = strlen(name);
+    unsigned int len = my_strlen(name);
 
     new_pipe->name = (char *) alloc(len+1);
 
@@ -295,7 +299,7 @@ int named_pipe_create(char * name) {
         return -1;
     }
 
-    strcpy(new_pipe->name, name);
+    my_strcpy(new_pipe->name, name);
 
     int idx = pipe_create(1);
 
@@ -312,10 +316,10 @@ int named_pipe_create(char * name) {
 
 int node_exists(char * name) {
     named_pipe_node * aux = named_pipe_list;
-    while(aux != NULL && (strcmp(aux->name, name) < 0)) {
+    while(aux != NULL && (my_strcmp(aux->name, name) < 0)) {
         aux = aux->next;
     }
-    if(strcmp(aux->name, name) == 0)
+    if(my_strcmp(aux->name, name) == 0)
         return 1;
     return 0;
 }
@@ -324,7 +328,7 @@ named_pipe_node * insert_into_list(named_pipe_node* list, named_pipe_node* inser
     if(list == NULL)
         return insert;
     
-    if(strcmp(list->name, insert->name) > 0) { 
+    if(my_strcmp(list->name, insert->name) > 0) { 
         insert->next = list;
         return insert;
     }
