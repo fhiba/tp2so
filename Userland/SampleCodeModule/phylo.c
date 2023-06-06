@@ -72,10 +72,10 @@ void * philosopher(int argc, char argv[MAX_ARGS][MAX_ARG_LENGTH]) {
 
 void phylo() {
   int i;
-  mutex = sys_sem_open(GENERALSEMID, 1);
+  mutex = sys_sem_open(GENERALSEMID);
 
   for (i = 0; i < N; i++) {
-    chopsticks[i] = sys_sem_open(i, 1);
+    chopsticks[i] = sys_sem_open(i);
   }
 
   char args[MAX_ARGS][MAX_ARG_LENGTH];
@@ -99,7 +99,7 @@ void phylo() {
           cUintToBase(n, num, 10);
           strcpy(args[1], num);
           sys_sem_wait(mutex);
-          chopsticks[n] = sys_sem_open(n, i);
+          chopsticks[n] = sys_sem_open(n);
           state[n] = THINKING;
           pids[n++] = sys_process((uint64_t)phylo, 3, 2, args, NULL, NULL, 0);
           sys_sem_post(mutex);

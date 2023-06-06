@@ -1,6 +1,5 @@
 #include <stddef.h>
 #include <syscalls.h>
-#include <speakerDriver.h>
 #include <scheduler.h>
 #include <time.h>
 #include "./include/mmu_wrapper.h"
@@ -53,16 +52,13 @@ int sys_dispatcher(int arg0, int arg1, int arg2, int arg3,int arg4, int arg5, in
         case 16:
             fillRect(arg0,arg1,arg2,arg3,arg4);
             break;
-        case 17:
-            beep();
-            break;
         case 18:
             return (long) alloc(arg0);
             break;
         case 19:
             free((void*)(long)arg0);
             break;
-        case 21:
+        case 81:
             return memset(arg0,arg1,arg2);
             break;
         case 20:

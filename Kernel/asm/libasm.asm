@@ -150,7 +150,7 @@ initProcess:
 
 	
 
-;Beep
+
 
 inb:
     push rbp

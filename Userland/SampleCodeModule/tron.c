@@ -92,7 +92,7 @@ void tronRun(){
     }else{
         sys_write(STDOUT, 2,"NO ONE WON!!1!",14);
     }
-    sys_beep();
+
     sys_write(STDOUT, 3,"\n\n\n\nPress P to play again or press Q to go back to the shell",60);
     char c = 0;
     do{

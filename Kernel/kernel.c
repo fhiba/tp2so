@@ -6,7 +6,6 @@
 #include <keyboard_driver.h>
 #include <idtLoader.h>
 #include <syscalls.h>
-#include <speakerDriver.h>
 #include <mmu_wrapper.h>
 #include <scheduler.h>
 extern uint8_t text;
@@ -60,7 +59,7 @@ int main()
 {	
 	new_mmu(mmu_address,heap_address);
 	startPos();
-	//beep();
+
 	initScheduler();
 
 	char argv[ARG_QTY][ARG_LEN];

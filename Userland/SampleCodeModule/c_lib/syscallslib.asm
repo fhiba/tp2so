@@ -14,7 +14,7 @@ GLOBAL sys_divzero
 GLOBAL sys_opcode
 GLOBAL sys_recto
 GLOBAL sys_tron
-GLOBAL sys_beep
+
 GLOBAL sys_printBase
 GLOBAL sys_isBlackPixel
 GLOBAL sys_malloc
@@ -44,10 +44,6 @@ sys_read:
     int 80h
     ret
 
-sys_beep:
-    mov rax, 17
-    int 80h
-    ret
 
 sys_printMem:
     mov rax, 40
@@ -176,7 +172,7 @@ sys_sem_open:
     ret
 
 sys_memset:
-    mov rax, 21
+    mov rax, 81
     int 80h
     ret
 
