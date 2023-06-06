@@ -25,6 +25,8 @@ GLOBAL sys_get_pid
 GLOBAL sys_block
 GLOBAL sys_nice
 GLOBAL sys_ps
+GLOBAL sys_create_child
+GLOBAL sys_wait_pid
 
 sys_write:
     mov rax, 2
@@ -147,6 +149,16 @@ sys_free:
     int 80h
     ret
 
+
+sys_create_child:
+    mov rax, 35
+    int 80h
+    ret
+
+sys_wait_pid
+    mov rax, 36
+    int 80h
+    ret
 opcodetest:
     push rbp
     mov rbp, rsp

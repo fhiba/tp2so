@@ -14,7 +14,7 @@ void set_syscall(int num){
     num_syscall = num;
 }
 
-int sys_dispatcher(int arg0, int arg1, int arg2, int arg3,int arg4, int arg5, int arg6){
+int sys_dispatcher(int arg0, int arg1, int arg2, int arg3,int arg4, int arg5, int arg6, int arg7){
     switch(num_syscall){
         case 1:
             read(arg0,(char*)arg1,(size_t)arg2);
@@ -82,7 +82,12 @@ int sys_dispatcher(int arg0, int arg1, int arg2, int arg3,int arg4, int arg5, in
             break;
         case 40:
             memPrint((uint64_t) arg0, (unsigned char *) arg1);
-
+        case 35:
+            create_child(arg0,(uint64_t) arg1, (uint8_t) arg2, (uint64_t) arg3,(char **) arg4, (fd *)arg5,NULL, 0);
+            break;
+        case 36:
+            wait_pid(arg0);
+            break;
         default:
             return -1;
     }
