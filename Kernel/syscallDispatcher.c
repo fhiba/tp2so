@@ -41,7 +41,7 @@ int sys_dispatcher(int arg0, int arg1, int arg2, int arg3,int arg4, int arg5, in
             tsleep((long)arg0);
             break;
         case 8:
-            create_process((uint64_t) arg0, (uint8_t) arg1, (uint64_t) arg2,(char **) (void*) (long) arg3, (fd *) (long) arg4,(fd *) (long) arg5);
+            return create_process((uint64_t) arg0, (uint8_t) arg1, (uint64_t) arg2,(char **) (void*) (long) arg3, (fd *) (long) arg4,(fd *) (long) arg5);
             break;
         case 9:
             resize(arg0);
@@ -111,7 +111,7 @@ int sys_dispatcher(int arg0, int arg1, int arg2, int arg3,int arg4, int arg5, in
             memPrint((uint64_t) arg0, (unsigned char *) (long)arg1);
             break;
         case 35:
-            create_child(arg0,(uint64_t) arg1, (uint8_t) arg2, (uint64_t) arg3,(char **) (long) arg4, (fd *) (long)arg5,NULL);
+            return create_child(arg0,(uint64_t) arg1, (uint8_t) arg2, (uint64_t) arg3,(char **) (long) arg4, (fd *) (long)arg5,NULL);
             break;
         case 36:
             wait_pid(arg0);
