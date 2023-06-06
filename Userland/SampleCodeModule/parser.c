@@ -23,12 +23,16 @@ int catch_args(char * buffer, int idx, int * argc, char argv[MAX_ARGS][MAX_ARG_L
     int i = 0;
     int cant = 0;
     int next = 0;
+    char c;
     while(buffer[idx] != 0 && cant < MAX_ARGS && i < MAX_ARG_LENGTH){
+        c = buffer[idx];
         next = check_next(buffer,idx);
-        if( next == 1 || next == 2)
+        if(next != 0)
                 return idx;
-        next = check_next(buffer,idx+1);
-        if(buffer[idx] == ' ' && next == 0){
+        if(buffer[idx] == ' '){
+            next = check_next(buffer,idx + 1);
+            if( next != 0 )
+                return idx;
             argv[cant][i] = 0;
             cant++;
             i = 0;    
@@ -39,7 +43,7 @@ int catch_args(char * buffer, int idx, int * argc, char argv[MAX_ARGS][MAX_ARG_L
         idx++;
     }
     argv[cant][i] = 0;
-    *argc = cant;
+    *argc = cant + 1;
     return idx;
 }
 
@@ -92,6 +96,8 @@ void parse_pipe(char * buffer, char * aux1, int idx,int argc1, char argv1[MAX_AR
     }
     func1 = get_program(aux1);
     func2 = get_program(aux2);
+    sys_process(func1,5,argc1,argv1,NULL,NULL,0);
+    sys_process(func2,5,argc2,argv2,NULL,NULL,0);
     
 }
 
@@ -171,6 +177,22 @@ void * get_program(char * buffer){
         return &nice;
     else if(strcmp(buffer,"TESTCHILDS"))
         return &test_childs;
+    else if(strcmp(buffer,"FILTER"))
+        return &filter_vow;
+    else if(strcmp(buffer,"PS"))
+        return &ps;
+    else if(strcmp(buffer,"LOOP"))
+        return &loop;
+    else if(strcmp(buffer,"KILL"))
+        return &kill;
+    else if(strcmp(buffer,"WC"))
+        return &wc;
+    else if(strcmp(buffer,"BLOCK"))
+        return &block;
+    else if(strcmp(buffer,"CAT"))
+        return &cat;
+    else if(strcmp(buffer,"PHYLO"))
+        return &phylo;
     else
         return 0;
     return 0;
