@@ -1,12 +1,14 @@
 #include <my_semaphore.h>
+#include <lib.h>
 #define acquire(m) while (atomic_flag_test_and_set(m));
 #define release(m) atomic_flag_clear(m);
 #define MAX_SEMS 10
 
 typedef struct sem{
     uint64_t id;
-    atomic_int value;
-    atomic_flag mutex;
+    int value;
+    uint32_t waiting;
+    uint8_t mutex;
 } sem;
 
 
@@ -26,59 +28,88 @@ sem * create_sem(){
     }
     semaphores[amount] = (my_sem)(alloc(sizeof(sem)));
     acquire(&semaphores[amount]->mutex);
-    semaphores[amount]->value = ATOMIC_VAR_INIT(1);
+    semaphores[amount]->value = 1;
     semaphores[amount]->id = amount;
     return semaphores[amount++];
 }
 
 my_sem my_sem_open(my_sem sem_id){
-    while(_xchg(&sem_mut,1) != 0);
+    while (_xchg(&sem_mut, 1) != 0);
 
-    if(sem_id->id >= amount){
-        my_sem out = create_sem();
-        _xchg(&sem_mut,0);
-        return out;
+    int semIter = 0;
+    while (semIter < amount && semaphores[semIter]->id != sem_id->id) {
+        semIter++;
     }
-    _xchg(&sem_mut,0);
-    return semaphores[sem_id->id];
+
+    if (semIter == amount) {
+        semaphores[semIter] = (sem *)alloc(sizeof(sem));
+        semaphores[semIter]->id = sem_id->id;
+        semaphores[semIter]->waiting = 0;
+        semaphores[semIter]->value = sem_id->value;
+        _xchg(&sem_mut, 0);
+        return semaphores[amount++];
+    }
+
+    _xchg(&sem_mut, 0);
+    return semaphores[semIter];
 }
 
 int my_sem_close(my_sem close){
-    while(_xchg(&sem_mut,1) != 0);
+    if (close->waiting > 0) {
+    return -1;
+  }
+    while (_xchg(&sem_mut, 1) != 0);
 
-    if(close->id >= amount){
-        return -1;
+    int semIter = 0;
+    while (semIter < amount && semaphores[semIter]->id != close->id) {
+        semIter++;
     }
 
-    int aux = 0;
-    while (aux < amount && semaphores[aux]->id != close->id) {
-        aux++;
-    }
-
-    if (aux == amount) {
+    if (semIter == amount) {
         _xchg(&sem_mut, 0);
         return -1;
     }
-
-    while (aux < amount - 1) {
-        semaphores[aux] = semaphores[aux + 1];
-        aux++;
+    while (semIter < amount - 1) {
+        semaphores[semIter] = semaphores[semIter + 1];
+        semIter++;
     }
 
     amount--;
     free(close);
-    _xchg(&sem_mut,0);
+
+    _xchg(&sem_mut, 0);
     return 1;
 }
 
 int my_sem_wait(sem * sem_id){
-    acquire(&sem_id->mutex);                 
-    while (atomic_load(&sem_id->value) <= 0); //not sure si va un mayor
-    atomic_fetch_sub(&sem_id->value, 1);
-    release(&sem_id->mutex);
+    while (_xchg(&sem_id->mutex, 1) != 0);
+
+    while (sem_id->value == 0) {
+
+        _xchg(&sem_id->mutex, 0);
+
+        force_timer();
+    }
+
+    sem_id->value--;
+
+    _xchg(&sem_id->mutex, 0);
+
     return 0;
 }
 
 int my_sem_post(sem * sem_id){
-  return atomic_fetch_add(&sem_id->value, 1);
+    while (_xchg(&sem_id->mutex, 1) != 0);
+
+    sem_id->value++;
+
+    if (sem_id->waiting == 0) {
+        _xchg(&sem_id->mutex, 0);
+        return 0;
+    }
+
+    sem_id->waiting--;
+
+    _xchg(&sem_id->mutex, 0);
+    return 0;
 }
