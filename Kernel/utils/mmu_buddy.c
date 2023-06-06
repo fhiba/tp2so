@@ -136,7 +136,7 @@ void * my_malloc(mmu const my_mmu, unsigned int mem_to_alloc){
     while (current->block_size/2 >= MINIMUM_BLOCK_SIZE && current->block_size /2 >= mem_to_alloc){
         current->block_size /= 2;
         current->history = current->history << 1;
-        mem_block * new_block = (void *)(((uint8_t)current) + current->block_size);
+        mem_block * new_block = (void *)(((uint64_t)current) + current->block_size);
         new_block->block_size = current->block_size;
         new_block->free = 1;
         new_block->history = current->history | 0x1;
@@ -166,16 +166,16 @@ void my_free(mmu const my_mmu, void * block){
     my_mmu->remaining_space += aux;
 }
 
-unsigned int heap_size(){
+unsigned int heapSize(){
     return TOTAL_HEAP_SIZE;
 }
 
-unsigned int heap_left(mmu my_mmu){
+unsigned int heapLeft(mmu my_mmu){
     return my_mmu->remaining_space;
 }
 
-unsigned int used_heap(mmu my_mmu){
-    return heap_size() - heap_left(my_mmu);
+unsigned int usedHeap(mmu my_mmu){
+    return heapSize() - heapLeft(my_mmu);
 }
 
 #endif 
