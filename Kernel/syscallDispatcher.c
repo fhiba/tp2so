@@ -17,10 +17,10 @@ void set_syscall(int num){
 int sys_dispatcher(int arg0, int arg1, int arg2, int arg3,int arg4, int arg5, int arg6, int arg7){
     switch(num_syscall){
         case 1:
-            read(arg0,(char*)arg1,(size_t)arg2);
+            read((unsigned int)arg0,(char*)arg1,(size_t)arg2);
             break;
         case 2:
-            write(arg0,(char*)arg1,(size_t)arg2);
+            write((unsigned int) arg0, arg1,(char*)arg2,(size_t)arg3);
             break;
         case 3:
             clear();
@@ -80,6 +80,26 @@ int sys_dispatcher(int arg0, int arg1, int arg2, int arg3,int arg4, int arg5, in
         case 26:
             get_process_list();
             break;
+        case 27:
+            my_sem_wait((my_sem) arg0);
+            break;
+        case 28:
+            my_sem_post((my_sem) arg0);
+            break;
+        case 30:
+            return my_sem_open((my_sem) arg0);
+            break;
+        case 29:
+            create_sem();
+            break;
+        case 31:
+            new_pipe((unsigned int *) arg0);
+            break;
+        case 32:
+            close((unsigned int) arg0);
+            break;
+        case 33:
+            dup((unsigned int ) arg0,(unsigned int) arg1);
         case 40:
             memPrint((uint64_t) arg0, (unsigned char *) arg1);
         case 35:

@@ -4,8 +4,11 @@
 #include <stddef.h>
 #include <ourlib.h>
 
-int sys_read(int fd,char * buffer, size_t count);
-void sys_write(int fd, const char * buffer, size_t count);
+#define STDIN 1
+#define STDOUT 0
+
+int sys_read(unsigned int fd,char * buffer, size_t count);
+void sys_write(unsigned int fd, int color_choice, const char * buffer, size_t count);
 void sys_printMem(int lugar, unsigned char *buffer);
 void sys_clear();
 char sys_date(char value);
@@ -29,5 +32,8 @@ void sys_nice(int pid, int priority);
 int sys_create_child(int ppid,uint64_t ip, uint8_t priority, uint64_t argc,char *argv[20], fd *customStdin,fd *customStdout, uint8_t background);
 void sys_wait_pid(int pid);
 void sys_ps();
+void sys_create_pipe(unsigned int fds[2]);
+void sys_close_pipe(unsigned int my_fd);
+void sys_dup_fd(unsigned int dest_fd, unsigned int src_fd);
 
 #endif

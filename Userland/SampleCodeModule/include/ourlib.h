@@ -3,6 +3,18 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <stdatomic.h>
+
+#define MAX_ARGS 5
+#define MAX_ARG_LENGTH 20
+
+typedef struct sem{
+    uint64_t id;
+    atomic_int value;
+    atomic_flag mutex;
+} sem;
+
+typedef struct sem * my_sem;
 
 typedef struct fd {
   char readable;
