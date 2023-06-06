@@ -10,8 +10,7 @@
 #include <keyboard_driver.h>
 #define READ 0
 #define WRITE 1
-#define STOP_PROCESS 18
-#define SEND_EOF 19
+
 void write(unsigned int my_fd, int color_choice, char*buffer, size_t count);
 int read(unsigned int my_fd, char * buffer, size_t count);
 void inforegs();
