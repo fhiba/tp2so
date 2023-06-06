@@ -80,6 +80,26 @@ int sys_dispatcher(int arg0, int arg1, int arg2, int arg3,int arg4, int arg5, in
         case 26:
             get_process_list();
             break;
+        case 27:
+            my_sem_wait((my_sem) arg0);
+            break;
+        case 28:
+            my_sem_post((my_sem) arg0);
+            break;
+        case 30:
+            return my_sem_open((my_sem) arg0);
+            break;
+        case 29:
+            create_sem();
+            break;
+        case 31:
+            new_pipe((unsigned int *) arg0);
+            break;
+        case 32:
+            close((unsigned int) arg0);
+            break;
+        case 33:
+            dup((unsigned int ) arg0,(unsigned int) arg1);
         case 40:
             memPrint((uint64_t) arg0, (unsigned char *) arg1);
 

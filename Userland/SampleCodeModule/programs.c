@@ -48,6 +48,11 @@ void help(){
     return;
 }
 
+void invalid(){
+    printerr("INVALID COMMAND\n");
+    exit();
+}
+
 void nice(int argc,char argv[5][20]){
     if(argc != 3){
         printerr("Wrong amount of arguments\n");
@@ -88,7 +93,7 @@ void kill(int argc, char argv[5][20]){
         int pid = sys_get_pid();
         sys_kill(pid);
     }
-    //falta pasar de string a int
+    int num = atoi(argv[1]);
     sys_kill(argv[1]);
     exit();
 }
@@ -104,9 +109,11 @@ void block(int argc,char argv[5][20]){
 }
 
 void cat(int argc,char argv[5][20]){
-    printf("meow\n");
+
+    for(int i = 0; i < argc; i++){
+        printf(argv[i]);
+    }
     exit();
-    //imprime el stdin tal como lo recibe
 }
 
 void wc(int argc,char argv[5][20]){
@@ -138,7 +145,7 @@ void filter_vow(int argc, char argv[5][20]){
     exit();
 }
 
-void ram_phylo(int argc,char argv[5][20]){
+void run_phylo(int argc,char argv[5][20]){
     phylo();
     exit();
 }

@@ -30,5 +30,8 @@ int sys_get_pid();
 void sys_block(int pid);
 void sys_nice(int pid, int priority);
 void sys_ps();
+void sys_create_pipe(unsigned int fds[2]);
+void sys_close_pipe(unsigned int my_fd);
+void sys_dup_fd(unsigned int dest_fd, unsigned int src_fd);
 
 #endif

@@ -29,6 +29,9 @@ GLOBAL sys_sem_create
 GLOBAL sys_sem_open
 GLOBAL sys_sem_wait
 GLOBAL sys_sem_post
+GLOBAL sys_create_pipe
+GLOBAL sys_close_pipe
+GLOBAL sys_dup_fd
 
 sys_write:
     mov rax, 2
@@ -170,6 +173,22 @@ sys_sem_open:
     mov rax, 30
     int 80h
     ret
+
+sys_create_pipe:
+    mov rax, 31
+    int 80h
+    ret
+
+sys_close_pipe:
+    mov rax, 32
+    int 80h
+    ret
+
+sys_dup_fd:
+    mov rax, 33
+    int 80h
+    ret
+
 
 opcodetest:
     push rbp
