@@ -13,6 +13,14 @@ void my_substring(char* dest, const char* src, int n, int m) {
     dest[j] = '\0';
 }
 
+void * my_malloc(unsigned int mem_to_alloc){
+    return sys_malloc(mem_to_alloc);
+}
+
+void free( void * block){
+    sys_free(block);
+}
+
 int strlen(char * string){
     int i = 0;
     while(string[i]!=0){

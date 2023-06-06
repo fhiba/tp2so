@@ -26,6 +26,8 @@ GLOBAL sys_block
 GLOBAL sys_nice
 GLOBAL sys_ps
 
+GLOBAL sys_memset
+
 sys_write:
     mov rax, 2
     int 80h
@@ -144,6 +146,11 @@ sys_malloc:
 
 sys_free:
     mov rax,19
+    int 80h
+    ret
+
+sys_memset:
+    mov rax, 21
     int 80h
     ret
 

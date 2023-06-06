@@ -22,5 +22,5 @@ void wc();
 void filter_vow();
 void phylo();
 void memPrint();
-
+void memPrint();
 #endif

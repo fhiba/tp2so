@@ -18,4 +18,10 @@ clean:
 	cd Kernel; make clean
 	cd Userland; make clean
 
-.PHONY: bootloader image collections kernel userland all clean
+check:
+	cppcheck --quiet --enable=all --force --inconclusive .
+	pvs-studio-analyzer trace -- make all
+	pvs-studio-analyzer analyze
+	plog-converter -a '64:1,2,3;GA:1,2,3;OP:1,2,3' -t tasklist -o report.tasks PVS-Studio.log
+
+.PHONY: bootloader image collections kernel userland all clean check

@@ -44,4 +44,6 @@ uint64_t stringToUint64(char *hex, int *ok);
 void intToString(int num, char* str);
 void reverseString(char* str, int length);
 void my_substring(char* dest, const char* src, int n, int m);
+void * my_malloc(unsigned int mem_to_alloc);
+void free(void * block);
 #endif

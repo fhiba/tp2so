@@ -28,4 +28,5 @@ void sys_block(int pid);
 void sys_nice(int pid, int priority);
 void sys_ps();
 
+void * sys_memset(void * destination, int32_t c, uint64_t length);
 #endif

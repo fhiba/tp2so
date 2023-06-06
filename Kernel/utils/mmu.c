@@ -1,3 +1,5 @@
+#ifdef MMU
+
 #include <mmu.h>
 #include <stdint.h>
 
@@ -114,3 +116,5 @@ unsigned int heapLeft(mmu my_mmu){
 unsigned int usedHeap(mmu my_mmu){
     return heapSize()-heapLeft(my_mmu);
 }
+
+#endif

@@ -1,13 +1,13 @@
 #include <syscalls.h>
-#include "./include/naiveConsole.h"
+#include <naiveConsole.h>
 #include <interrupts.h>
 #include <lib.h>
 #include <mmu.h>
+#include <keyboard_driver.h>
 
 #define STDIN 1
 #define RETVALUE -1
 
-static char snapshot = 0;
 static const char* registerNames[17] = {
     "RIP", "RAX", "RBX", "RCX", "RDX", "RSI", "RDI", "RBP", "RSP", "R8 ", "R9 ", "R10", "R11", "R12", "R13", "R14", "R15"
 };
@@ -78,7 +78,7 @@ void inforegs(){
         ncNewline();
     }else{
         for(int i = 0;i<17;i++){
-            write(4,registerNames[i],3);
+            write(4,(char *) registerNames[i],3);
             write(1,": ",2);
             ncPrintBase(registers[i],16);
             ncNewline();

@@ -1,5 +1,11 @@
+#ifndef SPEAKER_DRIVER_H_
+#define SPEAKER_DRIVER_H_
 #include <stdint.h>
-static void play_sound(uint32_t nFrequence);
-static void nosound();
-static void timer_wait(uint16_t ticks);
+#include <stddef.h>
+
 void beep();
+extern void outb(uint8_t, uint8_t);
+extern uint8_t inb(uint8_t);
+extern void _hlt(void);
+
+#endif

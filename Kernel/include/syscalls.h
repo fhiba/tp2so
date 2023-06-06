@@ -2,6 +2,7 @@
 #define SYSCALL_H_
 #include <stddef.h>
 #include <stdint.h>
+#include <naiveConsole.h>
 
 void write(int fd, char* buffer, size_t count);
 int read(int fd, char * buffer, size_t count);
@@ -9,4 +10,7 @@ void inforegs();
 int64_t date(char value);
 void printBase(uint64_t value,uint32_t base);
 void memPrint(uint64_t pointer, unsigned char * buf);
+void clear();
+char mydate(char value);
+void resize(int num);
 #endif

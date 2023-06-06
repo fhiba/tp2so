@@ -1,6 +1,7 @@
 #include <programs.h>
 #include <syscallslib.h>
 #include <shell.h>
+#include <tests.h>
 #include <tron.h>
 #include <parser.h>
 
