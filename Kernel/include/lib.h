@@ -14,4 +14,5 @@ uint8_t inb(uint8_t b);
 void outb(uint8_t b2,uint8_t b1);
 char *my_strcat(char *destination, const char *source);
 void force_timer();
+uint32_t cUintToBase(uint64_t value, char * buffer, uint32_t base);
 #endif

@@ -71,7 +71,9 @@ void nice(int argc,char argv[5][20]){
 
 void ps(int argc,char argv[5][20]){
     printf("program list jaja\n");
-    sys_ps();
+    char buffer[1024] = {0};
+    sys_ps(buffer);
+    printf(buffer);
     exit();
 }
 
