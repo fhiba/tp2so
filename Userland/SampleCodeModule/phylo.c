@@ -84,7 +84,7 @@ void phylo() {
   for (i = 0; i < N; i++) {
     cUintToBase(i, num, 10);
     strcpy(args[1], num);
-    pids[i] = sys_process((uint64_t)phylo, 3, 2, args, NULL, NULL, 0);
+    pids[i] = sys_process((uint64_t)phylo, 3, 2, args, NULL, NULL);
   }
 
   char c;
@@ -101,7 +101,7 @@ void phylo() {
           sys_sem_wait(mutex);
           chopsticks[n] = sys_sem_open(n);
           state[n] = THINKING;
-          pids[n++] = sys_process((uint64_t)phylo, 3, 2, args, NULL, NULL, 0);
+          pids[n++] = sys_process((uint64_t)phylo, 3, 2, args, NULL, NULL);
           sys_sem_post(mutex);
           printf("The philosopher sat on the table\n");
         }

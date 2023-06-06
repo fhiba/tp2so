@@ -22,7 +22,7 @@ void write_tty(int color_choice, char*buffer, size_t count) {
     pcb * process = get_pcb(pid);
     if(process->background)         
         return;
-
+    
     int color = 0;
     for(int i =0;i<count;i++){
         if(buffer[i] == '\n'){

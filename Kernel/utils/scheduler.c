@@ -19,6 +19,7 @@ int currentPID = 1;
 process_node *starting_process;
 pcb *startingPCB;
 uint8_t firstProcess = 1;
+uint8_t back = 0;
 
 #define BLOCKED 0
 #define READY 1
@@ -42,13 +43,8 @@ void free_fd_list(fdNode* fdNode_to_free, int process_id);
 
 
 pcb * get_pcb(int pid){
-    process_node * iter = scheduler->process_list;
-    while(iter != NULL){
-        if(iter->pcb->pid == pid)
-            return iter->pcb;
-        iter = iter->next;
-    }
-    return NULL;
+    process_node * aux = get_process_node(pid);
+    return aux->pcb;
 }
 
 
@@ -104,7 +100,7 @@ int strlen(char * string){
     return i;
 }
 
-int create_process(uint64_t ip, uint8_t priority, uint64_t argc,char argv[ARG_QTY][ARG_LEN], fd *customStdin,fd *customStdout, uint8_t background){
+int create_process(uint64_t ip, uint8_t priority, uint64_t argc,char argv[ARG_QTY][ARG_LEN], fd *customStdin,fd *customStdout){
     //CREO EL PROCESO
     pcb *newPCB = (pcb *)alloc(sizeof(pcb));
     if(newPCB == NULL)
@@ -137,7 +133,10 @@ int create_process(uint64_t ip, uint8_t priority, uint64_t argc,char argv[ARG_QT
     newPCB->stdout_fd->id = 1;
     newPCB->next_fd_id = 2;
     newPCB->state = 1;
-    newPCB->background = background;
+    newPCB->background = back;
+    back = 0;
+
+    
     for (int i = 0; i < argc; i++) {
         for (int j = 0; j < strlen(argv[i]); j++) {
             newPCB->args[i][j] = argv[i][j];
@@ -164,11 +163,15 @@ int create_process(uint64_t ip, uint8_t priority, uint64_t argc,char argv[ARG_QT
     insert_by_priority(&(scheduler->process_list),newNode);
     force_timer();
     return newPCB->pid;
-}  
+} 
 
-int create_child(int ppid,uint64_t ip, uint8_t priority, uint64_t argc,char argv[ARG_QTY][ARG_LEN], fd *customStdin,fd *customStdout, uint8_t background){
+void set_back(){
+    back = 1;
+}
 
-    int child_pid = create_process(ip,priority,argc,argv,customStdin,customStdout,background);
+int create_child(int ppid,uint64_t ip, uint8_t priority, uint64_t argc,char argv[ARG_QTY][ARG_LEN], fd *customStdin,fd *customStdout){
+
+    int child_pid = create_process(ip,priority,argc,argv,customStdin,customStdout);
     
     process_node* parent_node = get_process_node(child_pid);
 

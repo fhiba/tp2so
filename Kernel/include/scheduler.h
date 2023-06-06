@@ -45,8 +45,8 @@ typedef struct pcb {
 } pcb;
 
 
-int create_process(uint64_t ip, uint8_t priority, uint64_t argc, char argv[ARG_QTY][ARG_LEN], fd *customStdin, fd *customStdout, uint8_t background);
-int create_child(int ppid,uint64_t ip, uint8_t priority, uint64_t argc,char argv[ARG_QTY][ARG_LEN], fd *customStdin,fd *customStdout, uint8_t background);
+int create_process(uint64_t ip, uint8_t priority, uint64_t argc, char argv[ARG_QTY][ARG_LEN], fd *customStdin, fd *customStdout);
+int create_child(int ppid,uint64_t ip, uint8_t priority, uint64_t argc,char argv[ARG_QTY][ARG_LEN], fd *customStdin,fd *customStdout);
 int switch_context(int rsp);
 int kill_process(int process_id);
 int get_PID();
@@ -65,4 +65,6 @@ fd * get_stdin(int pid);
 fd * get_stdout(int pid);
 fd * get_fd(int pid, unsigned int searching_fd);
 int find_fd_id(fdNode * list, fd * my_fd);
+pcb * get_pcb(int pid);
+void set_back();
 #endif

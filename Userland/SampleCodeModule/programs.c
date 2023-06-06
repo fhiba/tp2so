@@ -90,8 +90,7 @@ void loop(int argc,char argv[5][20]){
 void kill(int argc, char argv[5][20]){
     if(argc != 2){
         printerr("Wrong amount of arguments\n");
-        int pid = sys_get_pid();
-        sys_kill(pid);
+        exit();
     }
     int num = atoi(argv[1]);
     sys_kill(argv[1]);
@@ -101,8 +100,7 @@ void kill(int argc, char argv[5][20]){
 void block(int argc,char argv[5][20]){
     if(argc != 2){
         printerr("Wrong amount of arguments\n");
-        int pid = sys_get_pid();
-        sys_kill(pid);
+        exit();
     }
     sys_block(argv[1]);
     exit();
@@ -171,8 +169,7 @@ void resize(int argc,char argv[5][20]){
         int pid = sys_get_pid();
         sys_kill(pid);
     }
-    int aux = atoi(argv[0]);
-    sys_resize(aux);
+    sys_resize(argv[1]);
     exit();
 }
 
@@ -224,8 +221,8 @@ void sleep(){
 
 void test_childs(){
     printf("entra al proceso padre\n");
-    sys_create_child(sys_get_pid(),&sleep,9,NULL,NULL,NULL,NULL,0);
-    sys_create_child(sys_get_pid(),&sleep,9,NULL,NULL,NULL,NULL,0);
+    sys_create_child(sys_get_pid(),&sleep,9,NULL,NULL,NULL,NULL);
+    sys_create_child(sys_get_pid(),&sleep,9,NULL,NULL,NULL,NULL);
     sys_wait_pid(sys_get_pid());
     printf("termina proceso padre\n");
     sys_kill(sys_get_pid());

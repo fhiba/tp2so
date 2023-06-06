@@ -35,6 +35,13 @@ GLOBAL sys_create_pipe
 GLOBAL sys_close_pipe
 GLOBAL sys_dup_fd
 GLOBAL sys_get_fd
+GLOBAL sys_back
+
+sys_back:
+    mov rax,99
+    int 80h
+    ret
+
 sys_write:
     mov rax, 2
     int 80h

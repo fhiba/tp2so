@@ -42,7 +42,7 @@ int catch_args(char * buffer, int idx, int * argc, char argv[MAX_ARGS][MAX_ARG_L
         idx++;
     }
     argv[cant][i] = 0;
-    *argc = cant;
+    *argc = cant + 1;
     return idx;
 }
 
@@ -74,7 +74,7 @@ void parse_pipe(char * buffer, char * aux1, int idx,int argc1, char argv1[MAX_AR
             catch_args(buffer,idx,&argc2,argv2);
             break;
         case 1:
-            //activo background flag para prog2
+            sys_back();
         case 2:
             printerr("Can't use more than 1 pipe\n");
             return;
@@ -102,14 +102,14 @@ void parse_pipe(char * buffer, char * aux1, int idx,int argc1, char argv1[MAX_AR
     fd * read = sys_get_fd(sys_get_pid(), pipe_fd[0]);
     fd * write = sys_get_fd(sys_get_pid(), pipe_fd[1]);
 
-    sys_process(func1,5,argc1,argv1,read,NULL,0);
-    sys_process(func2,5,argc2,argv2,NULL,write,0);
+    sys_process(func1,5,argc1,argv1,read,NULL);
+    sys_process(func2,5,argc2,argv2,NULL,write);
 }
 
 void parser(char * buffer){
     void * func1;
     int len = strlen(buffer);
-    int idx = 0, background_flag = 0;
+    int idx = 0;
     char aux[len];
     int space_flag = 0;
     int argc = 0;
@@ -127,7 +127,7 @@ void parser(char * buffer){
                 idx = catch_args(buffer,idx+1,&argc,argv);
                 break;
             case 1:
-                background_flag = 1;
+                sys_back();
                 break;
             case 2:
                 parse_pipe(buffer,aux,idx,argc,argv,space_flag);
@@ -135,7 +135,7 @@ void parser(char * buffer){
             }
         }
         else if(buffer[idx] == '-'){
-            background_flag = 1;
+            sys_back();
         }
         else if(buffer[idx] == '['){
             parse_pipe(buffer,aux,idx,argc,argv,space_flag);
@@ -147,7 +147,7 @@ void parser(char * buffer){
         my_substring(aux,buffer,0,idx-1);
     func1 = get_program(aux);
     strcpy(argv[0],aux);
-    sys_process(func1,9,argc,argv,NULL,NULL,0);
+    sys_process(func1,9,argc,argv,NULL,NULL);
 }
 
 void * get_program(char * buffer){
