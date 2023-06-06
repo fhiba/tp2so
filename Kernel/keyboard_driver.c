@@ -1,8 +1,10 @@
 extern unsigned char getKey();
 #include <keyboard_driver.h>
+#include <scheduler.h>
 
 #define BUFFER_SIZE 100
-
+#define CTRL 29
+#define ALT 56
 int idx = 0;
 
 unsigned char key[BUFFER_SIZE] = {0};
@@ -23,8 +25,17 @@ unsigned char readKey() {
 }
 
 void keyboard_handler() {
-    key[idx % BUFFER_SIZE] = charHexMap[getKey()];
+    unsigned char keypressed = charHexMap[getKey()];
+    key[idx % BUFFER_SIZE] = keypressed;
     if(idx == BUFFER_SIZE)
         idx = 0;
     idx++;
+    if(keypressed == 18){
+        int pid = get_PID();
+        if(pid != 1){
+            ncPrint("Killed");
+            ncNewline();
+            kill_process(pid);
+        }
+    }
 }

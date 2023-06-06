@@ -1,10 +1,10 @@
 #include <syscalls.h>
-
-
-
-
-
-
+#include <naiveConsole.h>
+#include <interrupts.h>
+#include <lib.h>
+#include <mmu.h>
+#include <keyboard_driver.h>
+#include <scheduler.h>
 #define RETVALUE -1
 
 

@@ -20,9 +20,15 @@ typedef struct fdNode {
   struct fdNode * next;
 }fdNode;
 
+typedef struct pid_node {
+  int pid;
+  struct pid_node *next;
+}pid_node;
+
 typedef struct pcb {
   char args[ARG_QTY][ARG_LEN];
   uint32_t pid;
+  uint32_t ppid;
   uint8_t state;
   uint8_t priority;
   uint8_t auxPriority;
@@ -35,10 +41,12 @@ typedef struct pcb {
   fdNode * fds;
   fdNode * last_node;
   uint8_t background;
+  pid_node *child_pid_list;
 } pcb;
 
 
 int create_process(uint64_t ip, uint8_t priority, uint64_t argc, char argv[ARG_QTY][ARG_LEN], fd *customStdin, fd *customStdout, uint8_t background);
+int create_child(int ppid,uint64_t ip, uint8_t priority, uint64_t argc,char argv[ARG_QTY][ARG_LEN], fd *customStdin,fd *customStdout, uint8_t background);
 int switch_context(int rsp);
 int kill_process(int process_id);
 int get_PID();

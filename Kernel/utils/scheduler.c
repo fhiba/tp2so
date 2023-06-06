@@ -32,7 +32,8 @@ void bubbleSort(process_node *start);
   
 /* Function to swap data of two nodes a and b*/
 void swap(process_node *a, process_node *b); 
-
+ 
+void insert_in_pid_list(int ppid,int pid);
 fdNode * get_fd_node(fdNode * list, unsigned int fd_id); 
 process_node* get_process_node(int process_id);
 fdNode * remove_fd_from_list(fdNode* list, unsigned int fd, int pid);
@@ -51,6 +52,7 @@ pcb * get_pcb(int pid){
 }
 
 
+process_node* get_process_node(int process_id);
 
 static void default_process() {
   while (1) {
@@ -151,6 +153,7 @@ int create_process(uint64_t ip, uint8_t priority, uint64_t argc,char argv[ARG_QT
     newPCB->stackPointer = sp;
     newPCB->basePointer = processMemory + DEFAULT_PROG_MEM - 1;  // no se si aca falta un -1
     newPCB->processMemory = processMemory;
+    pid_node*new_child_pid_list = NULL;
     process_node *newNode = (process_node *)alloc(sizeof(process_node));
     if(newNode == NULL) {
         free(newPCB);
@@ -160,8 +163,33 @@ int create_process(uint64_t ip, uint8_t priority, uint64_t argc,char argv[ARG_QT
     newNode->pcb = newPCB;
     insert_by_priority(&(scheduler->process_list),newNode);
     force_timer();
-    return 0;
+    return newPCB->pid;
 }  
+
+int create_child(int ppid,uint64_t ip, uint8_t priority, uint64_t argc,char argv[ARG_QTY][ARG_LEN], fd *customStdin,fd *customStdout, uint8_t background){
+
+    int child_pid = create_process(ip,priority,argc,argv,customStdin,customStdout,background);
+    
+    process_node* parent_node = get_process_node(child_pid);
+
+    insert_in_pid_list(ppid,child_pid);
+}
+
+void insert_in_pid_list(int ppid,int pid){
+    process_node *parent_node = get_process_node(ppid);
+    pid_node *aux_pid_node = parent_node->pcb->child_pid_list;
+    pid_node* new_pid_node = (pid_node*) alloc(sizeof(pid_node));
+    new_pid_node->next = NULL;
+    new_pid_node->pid = pid;
+    if(aux_pid_node == NULL){
+        parent_node->pcb->child_pid_list = new_pid_node;
+    }else{
+        while(aux_pid_node->next != NULL)
+            aux_pid_node = aux_pid_node->next;
+        aux_pid_node->next = new_pid_node;
+    }
+}
+
 
 
 void insert_by_priority(process_node ** head, process_node* newNode)
@@ -238,6 +266,20 @@ int switch_context(int rsp){
     while (aux_node != NULL )
     {
         shell_handler(aux_node);
+        if(aux_node->pcb->pid != 1 &&aux_node->pcb->state == BLOCKED){
+            uint8_t flag = 0;
+            pid_node *aux = aux_node->pcb->child_pid_list;
+            while(aux != NULL){
+                if(get_process_node(aux->pid) != NULL){
+                    flag =1;
+                    break;
+                }
+                aux = aux->next;
+            }
+            if(flag == 0){
+                aux_node->pcb->state = READY;
+            }
+        }
         if(aux_node->pcb->auxPriority > 0 && aux_node->pcb->state != BLOCKED){
             scheduler->current = aux_node;
             scheduler->current->pcb->auxPriority--;
@@ -268,6 +310,13 @@ int switch_context(int rsp){
     scheduler->current->pcb->auxPriority--;
     return scheduler->current->pcb->stackPointer;    
 }
+
+void send_EOF(int process_id){
+    process_node *node = get_process_node(process_id);
+    if(node != NULL && node->pcb->stdin_fd != NULL){
+        //SEND EOF
+    }
+}
 int kill_process(int process_id){
 
     //BUSCO EL NODO A REMOVER
@@ -297,6 +346,7 @@ int kill_process(int process_id){
     free_fd(process_to_remove->pcb->stdin_fd,process_id);
     free_fd(process_to_remove->pcb->stdout_fd, process_id);
     free_fd_list(process_to_remove->pcb->fds,process_id);
+    free_child_pid_list(process_to_remove->pcb->child_pid_list);
     free(process_to_remove->pcb);
     free(process_to_remove);
     force_timer();
@@ -308,8 +358,8 @@ void free_fd_list(fdNode* fdNode_to_free, int process_id){
     fdNode* aux_node = fdNode_to_free;
     while (aux_node != NULL) {
         fdNode* next_node = aux_node->next;
-        free_fd(fdNode_to_free->file_descriptor,process_id);
-        free(fdNode_to_free);
+        free_fd(aux_node->file_descriptor,process_id);
+        free(aux_node);
         aux_node = next_node;    
     }
 }   
@@ -330,6 +380,15 @@ int find_fd_id(fdNode * list, fd * my_fd) {
         return list->file_descriptor->id;
     return find_fd_id(list->next, my_fd);
 }
+
+void free_child_pid_list(pid_node* child_list_to_free){
+    pid_node* aux_node = child_list_to_free;
+    while (aux_node != NULL) {
+        pid_node* next_node = aux_node->next;
+        free(aux_node);
+        aux_node = next_node;    
+    }
+}  
 
 void close_fd(unsigned int fd, int pid) {
     process_node * node = get_process_node(pid);
@@ -455,7 +514,6 @@ void free_fd(fd* fd_to_free,int process_id){
     if(fd_to_free->pipe != NULL){
         pipe_close(fd_to_free->pipe,process_id);
     }
-    free(fd_to_free);
 }
 
 process_node* get_process_node(int process_id){
@@ -556,34 +614,44 @@ int cede_cpu(int process_id){
     return 0;
 }
 
-int wait_pid(int process_id) {
+int wait_pid(int process_id){
+    process_node* node = get_process_node(process_id);
+    pid_node* aux_node_pid = node->pcb->child_pid_list;
+    while (aux_node_pid != NULL){
+        process_node* child_node = get_process_node(aux_node_pid->pid);
+        if(child_node != NULL){
+            node->pcb->state = BLOCKED;  
+            force_timer();      
+        }
+        aux_node_pid = aux_node_pid->next;
+    }
     return 0;
 }
 int create_child_process(uint64_t ip) {  
     // process_node* node = scheduler->current;
 
     // fd* stdin_cpy = (fd*) alloc(sizeof(fd));
-    // stdin_cpy->pipe = node->pcb->stdin->pipe;
-    // stdin_cpy->shared_mem = node->pcb->stdin->shared_mem;
-    // stdin_cpy->readable = node->pcb->stdin->readable;
-    // stdin_cpy->writable = node->pcb->stdin->writable;
-    // stdin_cpy->pipe = node->pcb->stdin->pipe;
+    // stdin_cpy->pipe = node->pcb->stdin_fd->pipe;
+    // stdin_cpy->shared_mem = node->pcb->stdin_fd->shared_mem;
+    // stdin_cpy->readable = node->pcb->stdin_fd->readable;
+    // stdin_cpy->writable = node->pcb->stdin_fd->writable;
+    // stdin_cpy->pipe = node->pcb->stdin_fd->pipe;
 
     // fd* stdout_cpy = (fd*) alloc(sizeof(fd));
-    // stdout_cpy->pipe = node->pcb->stdout->pipe;
-    // stdout_cpy->shared_mem = node->pcb->stdout->shared_mem;
-    // stdout_cpy->readable = node->pcb->stdout->readable;
-    // stdout_cpy->writable = node->pcb->stdout->writable;
-    // stdout_cpy->pipe = node->pcb->stdout->pipe;
+    // stdout_cpy->pipe = node->pcb->stdout_fd->pipe;
+    // stdout_cpy->shared_mem = node->pcb->stdout_fd->shared_mem;
+    // stdout_cpy->readable = node->pcb->stdout_fd->readable;
+    // stdout_cpy->writable = node->pcb->stdout_fd->writable;
+    // stdout_cpy->pipe = node->pcb->stdout_fd->pipe;
 
     // fd* 
     // while(){
     //     fd* stdout_cpy = (fd*) alloc(sizeof(fd));
-    //     stdout_cpy->pipe = node->pcb->stdout->pipe;
-    //     stdout_cpy->shared_mem = node->pcb->stdout->shared_mem;
-    //     stdout_cpy->readable = node->pcb->stdout->readable;
-    //     stdout_cpy->writable = node->pcb->stdout->writable;
-    //     stdout_cpy->pipe = node->pcb->stdout->pipe;
+    //     stdout_cpy->pipe = node->pcb->stdout_fd->pipe;
+    //     stdout_cpy->shared_mem = node->pcb->stdout_fd->shared_mem;
+    //     stdout_cpy->readable = node->pcb->stdout_fd->readable;
+    //     stdout_cpy->writable = node->pcb->stdout_fd->writable;
+    //     stdout_cpy->pipe = node->pcb->stdout_fd->pipe;
     // }
     // int create_process(uint64_t ip, uint8_t priority, uint64_t argc,char argv[MAX_ARGS][MAX_MAX_ARG_LENGTHGTH], fd *customStdin,fd *customStdout)
     

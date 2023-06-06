@@ -238,4 +238,3 @@ cd ..
 make all
 exit
 apt-get install qemu-system-x86_64
-exit

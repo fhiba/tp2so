@@ -215,6 +215,22 @@ void infoRegs(){
     exit();
 }
 
+void sleep(){
+    printf("empieza proceso hijo\n");
+    sys_sleep(2000);
+    printf("termina proceso hijo\n");
+    sys_kill(sys_get_pid());
+}
+
+void test_childs(){
+    printf("entra al proceso padre\n");
+    sys_create_child(sys_get_pid(),&sleep,9,NULL,NULL,NULL,NULL,0);
+    sys_create_child(sys_get_pid(),&sleep,9,NULL,NULL,NULL,NULL,0);
+    sys_wait_pid(sys_get_pid());
+    printf("termina proceso padre\n");
+    sys_kill(sys_get_pid());
+}
+
 
 void memPrint(int argc, char argv[5][20]){
     if(argc != 2){

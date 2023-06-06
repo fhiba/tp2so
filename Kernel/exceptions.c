@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <syscalls.h>
 #include <lib.h>
+#include <naiveConsole.h>
 #define ZERO_EXCEPTION_ID 0
 #define INVALID_OPCODE_EXCEPTION_ID 6
 

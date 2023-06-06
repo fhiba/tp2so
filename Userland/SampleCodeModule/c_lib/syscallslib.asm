@@ -14,7 +14,7 @@ GLOBAL sys_divzero
 GLOBAL sys_opcode
 GLOBAL sys_recto
 GLOBAL sys_tron
-GLOBAL sys_beep
+
 GLOBAL sys_printBase
 GLOBAL sys_isBlackPixel
 GLOBAL sys_malloc
@@ -25,6 +25,8 @@ GLOBAL sys_get_pid
 GLOBAL sys_block
 GLOBAL sys_nice
 GLOBAL sys_ps
+GLOBAL sys_create_child
+GLOBAL sys_wait_pid
 GLOBAL sys_sem_create
 GLOBAL sys_sem_open
 GLOBAL sys_sem_wait
@@ -33,7 +35,6 @@ GLOBAL sys_create_pipe
 GLOBAL sys_close_pipe
 GLOBAL sys_dup_fd
 GLOBAL sys_get_fd
-
 sys_write:
     mov rax, 2
     int 80h
@@ -44,10 +45,6 @@ sys_read:
     int 80h
     ret
 
-sys_beep:
-    mov rax, 17
-    int 80h
-    ret
 
 sys_printMem:
     mov rax, 40
@@ -175,8 +172,23 @@ sys_sem_open:
     int 80h
     ret
 
+sys_memset:
+    mov rax, 81
+    int 80h
+    ret
+
 sys_create_pipe:
     mov rax, 31
+    int 80h
+    ret
+
+sys_create_child:
+    mov rax, 35
+    int 80h
+    ret
+
+sys_wait_pid
+    mov rax, 36
     int 80h
     ret
 

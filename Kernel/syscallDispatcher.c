@@ -1,9 +1,9 @@
 #include <stddef.h>
 #include <syscalls.h>
-#include <speakerDriver.h>
 #include <scheduler.h>
-#include "./include/time.h"
+#include <time.h>
 #include "./include/mmu_wrapper.h"
+#include <lib.h>
 
 
 static int num_syscall;
@@ -14,7 +14,7 @@ void set_syscall(int num){
     num_syscall = num;
 }
 
-int sys_dispatcher(int arg0, int arg1, int arg2, int arg3,int arg4, int arg5, int arg6){
+int sys_dispatcher(int arg0, int arg1, int arg2, int arg3,int arg4, int arg5, int arg6, int arg7){
     switch(num_syscall){
         case 1:
             read((unsigned int)arg0,(char*)arg1,(size_t)arg2);
@@ -52,14 +52,14 @@ int sys_dispatcher(int arg0, int arg1, int arg2, int arg3,int arg4, int arg5, in
         case 16:
             fillRect(arg0,arg1,arg2,arg3,arg4);
             break;
-        case 17:
-            beep();
-            break;
         case 18:
-            return alloc(arg0);
+            return (long) alloc(arg0);
             break;
         case 19:
-            free(arg0);
+            free((void*)(long)arg0);
+            break;
+        case 81:
+            return memset(arg0,arg1,arg2);
             break;
         case 20:
             printBase((uint64_t)arg0, (uint32_t) arg1);
@@ -107,7 +107,12 @@ int sys_dispatcher(int arg0, int arg1, int arg2, int arg3,int arg4, int arg5, in
         case 40:
             memPrint((uint64_t) arg0, (unsigned char *) arg1);
             break;
-        
+        case 35:
+            create_child(arg0,(uint64_t) arg1, (uint8_t) arg2, (uint64_t) arg3,(char **) arg4, (fd *)arg5,NULL, 0);
+            break;
+        case 36:
+            wait_pid(arg0);
+            break;
         default:
             return -1;
     }

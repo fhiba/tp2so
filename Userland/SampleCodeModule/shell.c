@@ -1,10 +1,11 @@
 #include <programs.h>
 #include <syscallslib.h>
 #include <shell.h>
+#include <tests.h>
 #include <tron.h>
 #include <parser.h>
 
-
+#define CTRL 18
 void shell(void){
     char buffer[100] = {0};
     int idx = 0;
@@ -19,6 +20,8 @@ void shell(void){
                 if(buffer[idx] == '='){
                     printFirst("\nSnapshot Tomado\n");
                     break;
+                }else if(buffer[idx] == CTRL){
+                    continue;
                 }else{   
                     sys_write(STDOUT,1, buffer + idx, 1);
                 }

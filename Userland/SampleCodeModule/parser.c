@@ -174,6 +174,8 @@ void * get_program(char * buffer){
         return &memPrint;
     else if(strcmp(buffer,"NICE"))
         return &nice;
+    else if(strcmp(buffer,"TESTCHILDS"))
+        return &test_childs;
     else if(strcmp(buffer,"FILTER"))
         return &filter_vow;
     else if(strcmp(buffer,"PS"))

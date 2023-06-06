@@ -24,6 +24,9 @@ void wc();
 void filter_vow();
 void run_phylo();
 void memPrint();
+
+void test_childs();
+void memPrint();
 void invalid();
 
 #endif

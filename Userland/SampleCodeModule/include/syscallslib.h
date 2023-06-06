@@ -19,7 +19,7 @@ void sys_resize(int num);
 void sys_opcode();
 void sys_divzero();
 void sys_recto(int x, int y,int color, unsigned char width, unsigned char height);
-void sys_beep();
+
 void sys_printBase(uint64_t value, uint32_t base);
 int sys_isBlackPixel(unsigned int x, unsigned int y);
 void * sys_malloc(unsigned int mem_to_alloc);
@@ -29,6 +29,8 @@ void sys_kill(int pid);
 int sys_get_pid();
 void sys_block(int pid);
 void sys_nice(int pid, int priority);
+int sys_create_child(int ppid,uint64_t ip, uint8_t priority, uint64_t argc,char *argv[20], fd *customStdin,fd *customStdout, uint8_t background);
+void sys_wait_pid(int pid);
 void sys_ps();
 my_sem sys_sem_open(my_sem sem);
 void sys_sem_post(my_sem sem);
@@ -37,4 +39,5 @@ void sys_create_pipe(unsigned int fds[2]);
 void sys_close_pipe(unsigned int my_fd);
 void sys_dup_fd(unsigned int dest_fd, unsigned int src_fd);
 fd * sys_get_fd(int pid ,unsigned int searching_fd);
+void * sys_memset(void * destination, int32_t c, uint64_t length);
 #endif
