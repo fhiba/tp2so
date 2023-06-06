@@ -3,6 +3,7 @@
 #include <interrupts.h>
 #include <lib.h>
 #include <mmu.h>
+#include <scheduler.h>
 
 #define STDIN 1
 #define RETVALUE -1

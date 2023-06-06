@@ -86,8 +86,8 @@ int create_process(uint64_t ip, uint8_t priority, uint64_t argc,char argv[ARG_QT
     newPCB->pid = currentPID++;
     newPCB->priority = priority;
     newPCB->auxPriority = priority;
-    newPCB->stdin = customStdin;
-    newPCB->stdout = customStdout;
+    newPCB->stdin_fd = customStdin;
+    newPCB->stdout_fd = customStdout;
     newPCB->state = 1;
     newPCB->background = background;
     for (int i = 0; i < argc; i++) {
@@ -107,7 +107,11 @@ int create_process(uint64_t ip, uint8_t priority, uint64_t argc,char argv[ARG_QT
 }  
 
 int create_child(int ppid,uint64_t ip, uint8_t priority, uint64_t argc,char argv[ARG_QTY][ARG_LEN], fd *customStdin,fd *customStdout, uint8_t background){
+
     int child_pid = create_process(ip,priority,argc,argv,customStdin,customStdout,background);
+    
+    process_node* parent_node = get_process_node(child_pid);
+
     insert_in_pid_list(ppid,child_pid);
 }
 
@@ -247,6 +251,13 @@ int switch_context(int rsp){
     scheduler->current->pcb->auxPriority--;
     return scheduler->current->pcb->stackPointer;    
 }
+
+void send_EOF(int process_id){
+    process_node *node = get_process_node(process_id);
+    if(node != NULL && node->pcb->stdin_fd != NULL){
+        //SEND EOF
+    }
+}
 int kill_process(int process_id){
 
     //BUSCO EL NODO A REMOVER
@@ -273,8 +284,8 @@ int kill_process(int process_id){
     }
     
     //LIBERO SUS RECURSOS
-    free_fd(process_to_remove->pcb->stdin,process_id);
-    free_fd(process_to_remove->pcb->stdout,process_id);
+    free_fd(process_to_remove->pcb->stdin_fd,process_id);
+    free_fd(process_to_remove->pcb->stdout_fd,process_id);
     free_fd_list(process_to_remove->pcb->fds,process_id);
     free_child_pid_list(process_to_remove->pcb->child_pid_list);
     free(process_to_remove->pcb);
@@ -306,8 +317,6 @@ void free_fd(fd* fd_to_free,int process_id){
     if(fd_to_free != NULL){
         if(fd_to_free->pipe != NULL){
             //close_pipe(fd_to_free->pipe,process_id);
-        }else if(fd_to_free->shared_mem != NULL){
-            //close_shm(fd_to_free->pipe,process_id);
         }
         free(fd_to_free);
     }
@@ -405,27 +414,27 @@ int create_child_process(uint64_t ip){
     // process_node* node = scheduler->current;
 
     // fd* stdin_cpy = (fd*) alloc(sizeof(fd));
-    // stdin_cpy->pipe = node->pcb->stdin->pipe;
-    // stdin_cpy->shared_mem = node->pcb->stdin->shared_mem;
-    // stdin_cpy->readable = node->pcb->stdin->readable;
-    // stdin_cpy->writable = node->pcb->stdin->writable;
-    // stdin_cpy->pipe = node->pcb->stdin->pipe;
+    // stdin_cpy->pipe = node->pcb->stdin_fd->pipe;
+    // stdin_cpy->shared_mem = node->pcb->stdin_fd->shared_mem;
+    // stdin_cpy->readable = node->pcb->stdin_fd->readable;
+    // stdin_cpy->writable = node->pcb->stdin_fd->writable;
+    // stdin_cpy->pipe = node->pcb->stdin_fd->pipe;
 
     // fd* stdout_cpy = (fd*) alloc(sizeof(fd));
-    // stdout_cpy->pipe = node->pcb->stdout->pipe;
-    // stdout_cpy->shared_mem = node->pcb->stdout->shared_mem;
-    // stdout_cpy->readable = node->pcb->stdout->readable;
-    // stdout_cpy->writable = node->pcb->stdout->writable;
-    // stdout_cpy->pipe = node->pcb->stdout->pipe;
+    // stdout_cpy->pipe = node->pcb->stdout_fd->pipe;
+    // stdout_cpy->shared_mem = node->pcb->stdout_fd->shared_mem;
+    // stdout_cpy->readable = node->pcb->stdout_fd->readable;
+    // stdout_cpy->writable = node->pcb->stdout_fd->writable;
+    // stdout_cpy->pipe = node->pcb->stdout_fd->pipe;
 
     // fd* 
     // while(){
     //     fd* stdout_cpy = (fd*) alloc(sizeof(fd));
-    //     stdout_cpy->pipe = node->pcb->stdout->pipe;
-    //     stdout_cpy->shared_mem = node->pcb->stdout->shared_mem;
-    //     stdout_cpy->readable = node->pcb->stdout->readable;
-    //     stdout_cpy->writable = node->pcb->stdout->writable;
-    //     stdout_cpy->pipe = node->pcb->stdout->pipe;
+    //     stdout_cpy->pipe = node->pcb->stdout_fd->pipe;
+    //     stdout_cpy->shared_mem = node->pcb->stdout_fd->shared_mem;
+    //     stdout_cpy->readable = node->pcb->stdout_fd->readable;
+    //     stdout_cpy->writable = node->pcb->stdout_fd->writable;
+    //     stdout_cpy->pipe = node->pcb->stdout_fd->pipe;
     // }
     // int create_process(uint64_t ip, uint8_t priority, uint64_t argc,char argv[ARG_QTY][ARG_LEN], fd *customStdin,fd *customStdout)
     
