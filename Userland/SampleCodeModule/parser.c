@@ -24,9 +24,7 @@ int catch_args(char * buffer, int idx, int * argc, char argv[MAX_ARGS][MAX_ARG_L
     int i = 0;
     int cant = 1;
     int next = 0;
-    char c;
     while(buffer[idx] != 0 && cant < MAX_ARGS && i < MAX_ARG_LENGTH){
-        c = buffer[idx];
         next = check_next(buffer,idx);
         if(next != 0)
                 return idx;
@@ -104,8 +102,8 @@ void parse_pipe(char * buffer, char * aux1, int idx,int argc1, char argv1[MAX_AR
     fd * read = sys_get_fd(sys_get_pid(), pipe_fd[0]);
     fd * write = sys_get_fd(sys_get_pid(), pipe_fd[1]);
 
-    sys_process(func1,5,argc1,argv1,read,NULL);
-    sys_process(func2,5,argc2,argv2,NULL,write);
+    sys_process(func1,5,argc1,argv1,NULL,write);
+    sys_process(func2,5,argc2,argv2,read,NULL);
 }
 
 void parser(char * buffer){

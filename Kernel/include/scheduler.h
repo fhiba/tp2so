@@ -9,6 +9,8 @@
 #include <pipes.h>
 #include <stdio.h>
 #include <naiveConsole.h>
+#include <interrupts.h>
+#include <lib.h>
 
 #define ARG_QTY 5
 #define ARG_LEN 20
@@ -53,13 +55,14 @@ int switch_context(int rsp);
 int kill_process(int process_id);
 int get_PID();
 // pcb* get_process_list();
+void initScheduler();
 int change_priority(int process_id, int priority);
 int block_process(int process_id);
 int unblock_process(int process_id);
 int cede_cpu(int process_id);
 int wait_pid(int process_id);
 int fork();
-void get_process_list();
+void get_process_list(char *buf);
 void close_fd(unsigned int fd, int pid);
 fd * create_fd(int pid);
 int dup_fd(unsigned int dest_fd, unsigned int src_fd, int pid);
