@@ -152,7 +152,6 @@ int create_process(uint64_t ip, uint8_t priority, uint64_t argc,char argv[ARG_QT
     newPCB->stackPointer = sp;
     newPCB->basePointer = processMemory + DEFAULT_PROG_MEM - 1;  // no se si aca falta un -1
     newPCB->processMemory = processMemory;
-    pid_node * new_child_pid_list = NULL;
     process_node *newNode = (process_node *)alloc(sizeof(process_node));
     if(newNode == NULL) {
         free(newPCB);
@@ -173,7 +172,7 @@ int create_child(int ppid,uint64_t ip, uint8_t priority, uint64_t argc,char argv
 
     int child_pid = create_process(ip,priority,argc,argv,customStdin,customStdout);
     
-    process_node* parent_node = get_process_node(child_pid);
+
 
     insert_in_pid_list(ppid,child_pid);
     return child_pid;
@@ -580,7 +579,7 @@ void get_process_list(char *buf) {
   my_strcat(buf, "Name        ID  Priority  RSP       RBP       Foreground  State\n");
   process_node * current = scheduler->process_list;
   while (current != NULL) {
-    normalizeSpaces(buf, current->pcb->args, NAME);
+    normalizeSpaces(buf, current->pcb->args[0], NAME);
 
     uint32_t pid = current->pcb->pid;
     char pidStr[6];

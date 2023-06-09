@@ -182,7 +182,8 @@ void resize(int argc,char argv[5][20]){
         int pid = sys_get_pid();
         sys_kill(pid);
     }
-    sys_resize(argv[1]);
+    int num = atoi(argv[1]);
+    sys_resize(num);
     exit();
 }
 
@@ -234,8 +235,8 @@ void sleep(){
 
 void test_childs(){
     printf("entra al proceso padre\n");
-    sys_create_child(sys_get_pid(),&sleep,9,NULL,NULL,NULL,NULL);
-    sys_create_child(sys_get_pid(),&sleep,9,NULL,NULL,NULL,NULL);
+    sys_create_child(sys_get_pid(),(uint64_t)&sleep,9,(uint64_t)NULL,NULL,NULL,NULL);
+    sys_create_child(sys_get_pid(),(uint64_t)&sleep,9,(uint64_t)NULL,NULL,NULL,NULL);
     sys_wait_pid(sys_get_pid());
     printf("termina proceso padre\n");
     sys_kill(sys_get_pid());

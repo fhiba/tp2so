@@ -19,6 +19,11 @@ int n = N;
 my_sem mutex;
 my_sem chopsticks[N];
 
+void p_exit(){
+    int pid = sys_get_pid();
+    sys_kill(pid);
+}
+
 void test(int phnum) {
   if (state[phnum] == HUNGRY && state[LEFT] != EATING &&
       state[RIGHT] != EATING) {
@@ -55,7 +60,7 @@ void put_fork(int phnum) {
 
 void * philosopher(int argc, char argv[MAX_ARGS][MAX_ARG_LENGTH]) {
   if (argc != 2) {
-    exit();
+    p_exit();
   }
 
   int num = atoi(argv[1]);
@@ -72,10 +77,11 @@ void * philosopher(int argc, char argv[MAX_ARGS][MAX_ARG_LENGTH]) {
 
 void phylo() {
   int i;
-  mutex = sys_sem_open(GENERALSEMID);
+
+  mutex = sys_sem_create();
 
   for (i = 0; i < N; i++) {
-    chopsticks[i] = sys_sem_open(i);
+    chopsticks[i] = sys_sem_create();
   }
 
   char args[MAX_ARGS][MAX_ARG_LENGTH];
@@ -84,7 +90,7 @@ void phylo() {
   for (i = 0; i < N; i++) {
     cUintToBase(i, num, 10);
     strcpy(args[1], num);
-    pids[i] = sys_process((uint64_t)phylo, 3, 2, args, NULL, NULL);
+    pids[i] = sys_process((uint64_t)phylo, 3, 2, (char **)args, NULL, NULL);
   }
 
   char c;
@@ -99,9 +105,9 @@ void phylo() {
           cUintToBase(n, num, 10);
           strcpy(args[1], num);
           sys_sem_wait(mutex);
-          chopsticks[n] = sys_sem_open(n);
+          chopsticks[n] = sys_sem_open(chopsticks[n]);
           state[n] = THINKING;
-          pids[n++] = sys_process((uint64_t)phylo, 3, 2, args, NULL, NULL);
+          pids[n++] = sys_process((uint64_t)phylo, 3, 2,(char **) args, NULL, NULL);
           sys_sem_post(mutex);
           printf("The philosopher sat on the table\n");
         }
@@ -123,7 +129,7 @@ void phylo() {
         break;
     }
   }
-  exit();
+  p_exit();
 }
 
 void printTable() {
