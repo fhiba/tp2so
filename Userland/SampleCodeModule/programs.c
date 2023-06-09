@@ -59,9 +59,9 @@ void nice(int argc,char argv[5][20]){
         exit();
     }
     printf("Changed the priority of ");
-    printf(argv[0]);
-    printf(" to ");
     printf(argv[1]);
+    printf(" to ");
+    printf(argv[2]);
     printf("\n");
     int aux1 = atoi(argv[1]);
     int aux2 = atoi(argv[2]);
@@ -70,9 +70,8 @@ void nice(int argc,char argv[5][20]){
 }
 
 void ps(int argc,char argv[5][20]){
-    printf("program list jaja\n");
     char buffer[1024] = {0};
-    sys_ps(buffer);
+    sys_ps(buffer,argv[0]);
     printf(buffer);
     exit();
 }
@@ -83,7 +82,9 @@ void loop(int argc,char argv[5][20]){
     intToString(pid,num);
     while(1){
         printf(num);
+        printf("\n");
         printf("HOLA!");
+        printf("\n");
         sys_sleep(500);
     }
     exit();

@@ -575,7 +575,7 @@ void normalizeSpaces(char *buf, char *data, int field) {
 }
 
 
-void get_process_list(char *buf) {
+void get_process_list(char *buf, char * name) {
   my_strcat(buf, "Name        ID  Priority  RSP       RBP       Foreground  State\n");
   process_node * current = scheduler->process_list;
   while (current != NULL) {
@@ -694,7 +694,7 @@ int create_child_process(uint64_t ip) {
 /* Bubble sort the given linked list */
 void bubbleSort(process_node *start) 
 { 
-    int swapped, i; 
+    int swapped; 
     process_node *ptr1; 
     process_node *lptr = NULL; 
   

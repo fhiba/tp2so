@@ -41,7 +41,7 @@ int sys_dispatcher(int arg0, int arg1, int arg2, int arg3,int arg4, int arg5, in
             tsleep((long)arg0);
             break;
         case 8:
-            return create_process((uint64_t) arg0, (uint8_t) arg1, (uint64_t) arg2,(char **) (void*) (long) arg3, (fd *) (long) arg4,(fd *) (long) arg5);
+            return create_process((uint64_t) arg0, (uint8_t) arg1, (uint64_t) arg2,(char **) arg3, (fd *) (long) arg4,(fd *) (long) arg5);
             break;
         case 9:
             resize(arg0);
@@ -81,7 +81,7 @@ int sys_dispatcher(int arg0, int arg1, int arg2, int arg3,int arg4, int arg5, in
             change_priority(arg0,arg1);
             break;
         case 26:
-            get_process_list((char*)(long)arg0);
+            get_process_list((char*)(long)arg0,(char *) arg1);
             break;
         case 27:
             my_sem_wait((my_sem)(long) arg0);

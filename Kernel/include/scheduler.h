@@ -60,7 +60,7 @@ int unblock_process(int process_id);
 int cede_cpu(int process_id);
 int wait_pid(int process_id);
 int fork();
-void get_process_list(char *buf);
+void get_process_list(char *buf,char * name);
 void close_fd(unsigned int fd, int pid);
 fd * create_fd(int pid);
 int dup_fd(unsigned int dest_fd, unsigned int src_fd, int pid);

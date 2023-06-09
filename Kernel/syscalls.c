@@ -86,7 +86,6 @@ int read(unsigned int dest_fd, char * buffer, size_t count){
         int k = 0;
         unsigned char key = 0;
         while(k < count ){
-            _hlt();
             key = readKey();
             buffer[k++] = key;
         }

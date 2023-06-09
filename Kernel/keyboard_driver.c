@@ -33,7 +33,7 @@ void keyboard_handler() {
     if(keypressed == 18){
         int pid = get_PID();
         if(pid != 1){
-            ncPrint("Killed");
+            ncPrint("Killed\0");
             ncNewline();
             kill_process(pid);
         }

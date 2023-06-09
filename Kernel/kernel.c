@@ -69,7 +69,7 @@ int main()
 	argv[0][3] = 'l';
 	argv[0][4] = 'l';
 	argv[0][5] = 0;
-  	create_process((uint64_t)sampleCodeModuleAddress, 1, 1, argv, NULL, NULL);
+  	create_process((uint64_t)sampleCodeModuleAddress, 10, 1, argv, NULL, NULL);
 	load_idt();
 	return 0;
 }
