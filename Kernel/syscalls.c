@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <syscalls.h>
 #include <naiveConsole.h>
 #include <interrupts.h>
@@ -76,7 +78,7 @@ int read(unsigned int dest_fd, char * buffer, size_t count){
     } else {
         my_fd = get_fd(pid, dest_fd);
     }
-
+    
     if(my_fd == NULL || my_fd->readable == 0)
         return -1;
 

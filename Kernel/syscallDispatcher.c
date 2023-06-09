@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <stddef.h>
 #include <syscalls.h>
 #include <scheduler.h>
@@ -41,7 +43,7 @@ int sys_dispatcher(int arg0, int arg1, int arg2, int arg3,int arg4, int arg5, in
             tsleep((long)arg0);
             break;
         case 8:
-            create_process((uint64_t) arg0, (uint8_t) arg1, (uint64_t) arg2,(char **) arg3, (fd *)arg4,(fd *)arg5);
+            return create_process((uint64_t) arg0, (uint8_t) arg1, (uint64_t) arg2,(char **) arg3, (fd *)arg4,(fd *)arg5);
             break;
         case 9:
             resize(arg0);

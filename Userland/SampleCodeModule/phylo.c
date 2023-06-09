@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ourlib.h>
 #include <phylo.h>
 
@@ -70,8 +72,19 @@ void * philosopher(int argc, char argv[MAX_ARGS][MAX_ARG_LENGTH]) {
   }
 }
 
+void read_from_stdin(char buffer[2]){
+    printf("Choose an action!\n");
+    do{
+        sys_read(STDIN, buffer, 1);
+    }while(buffer[0] == 0);
+
+    sys_write(1, 1, buffer, 1);
+    printf("\n");
+}
+
 void phylo() {
   int i;
+  
   mutex = sys_sem_open(GENERALSEMID);
 
   for (i = 0; i < N; i++) {
