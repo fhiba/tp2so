@@ -10,6 +10,14 @@ void exit(){
     sys_kill(pid);
 }
 
+void test_sems(){
+    my_sem semaphore = sys_sem_create();
+    sys_sem_wait(semaphore);
+    printf("entre\n");
+    sys_sem_post(semaphore);
+    exit();
+}
+
 void help(){
     printFirst("Available Commands: \n");
     printFirst("TRON");

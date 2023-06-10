@@ -142,6 +142,9 @@ void * get_program(char * buffer){
     
     if(strcmp(buffer,"HELP"))
         return &help;
+    else if(strcmp(buffer,"TESTSEM")){
+        return &test_sems;
+    }
     else if(strcmp(buffer,"DATE"))
         return &date;
     else if(strcmp(buffer,"CLEAR"))
