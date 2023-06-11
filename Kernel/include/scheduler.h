@@ -48,6 +48,7 @@ typedef struct pcb {
   fdNode * last_node;
   uint8_t background;
   pid_node *child_pid_list;
+  uint8_t is_parent;
 } pcb;
 
 

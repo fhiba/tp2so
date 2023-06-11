@@ -288,28 +288,36 @@ void test_childs(){
 
 
 void mem(int argc, char argv[5][20]){
-    if(argc != 2){
+    if(argc != 1){
         printerr("Wrong amount of arguments\n");
         return;
     } 
-    int ok = 1;
-    uint64_t dir = stringToUint64(argv[1],&ok);
-    if(!ok || strlen(argv[0]) > 9){
-        printerr("Invalid adress\n");
-        return;
-    }
-    unsigned char memStr[20] = {0};
-    sys_printMem(dir,memStr);
-    for(int i=0; i < 20; i++){
-        if(i != 0 && i %5 ==0)
-            putchar('\n');
-        if(memStr[i] <16){
-            putchar('0');
-        }
-        sys_printBase(memStr[i],16);
+    // int ok = 1;
+    // uint64_t dir = stringToUint64(argv[1],&ok);
+    // if(!ok || strlen(argv[0]) > 9){
+    //     printerr("Invalid adress\n");
+    //     return;
+    // }
+    // unsigned char memStr[20] = {0};
+    // sys_printMem(dir,memStr);
+    // for(int i=0; i < 20; i++){
+    //     if(i != 0 && i %5 ==0)
+    //         putchar('\n');
+    //     if(memStr[i] <16){
+    //         putchar('0');
+    //     }
+    //     sys_printBase(memStr[i],16);
 
-        putchar(' ');
+    //     putchar(' ');
+    // }
+    unsigned int status[3];
+    char aux[50];
+    sys_mem_status(status);
+    printf("entre\n");
+    for(int i = 0; i < 3;i++){
+        intToString(status[i],aux);
+        printf(aux);
+        putchar('\n');
     }
-    putchar('\n');
     exit();
 }
