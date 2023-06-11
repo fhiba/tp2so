@@ -631,8 +631,15 @@ int change_priority(int process_id,int priority){
 }
 int block_process(int process_id){
     process_node* node = get_process_node(process_id);
-    node->pcb->state = BLOCKED;
-    return 0;
+    if(node->pcb->state == BLOCKED){
+        node->pcb->state = READY;
+        return 0;
+    }
+    else if(node->pcb->state == READY){
+        node->pcb->state = BLOCKED;
+        return 1;
+    }
+    return -1;
 }
 int unblock_process(int process_id){
     process_node* node = get_process_node(process_id);

@@ -25,10 +25,9 @@ void cat();
 void wc();
 void filter_vow();
 void run_phylo();
-void memPrint();
 void test_sems();
 void test_childs();
-void memPrint();
+void mem();
 void invalid();
 
 #endif

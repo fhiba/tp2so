@@ -17,6 +17,9 @@ int check_next(char * buffer, int idx){
     else if( buffer[idx] == '['){
         return 2;
     }
+    else if(buffer[idx] == 0){
+        return 3;
+    }
     return 0;
 }
 
@@ -50,7 +53,7 @@ void parse_pipe(char * buffer, char * aux1, int idx,int argc1, char argv1[MAX_AR
     void * func1, * func2;
     char aux2[20];
     int start = 0;
-    int argc2 = 0;
+    int argc2 = 1;
     char argv2[MAX_ARGS][MAX_ARG_LENGTH];
     if(flag == 0){
         my_substring(aux1,buffer,0,idx-1);
@@ -166,7 +169,7 @@ void * get_program(char * buffer){
     else if(strcmp(buffer, "OPCODE"))
         return &sys_opcode;
     else if(strcmp(buffer,"MEM"))
-        return &memPrint;
+        return &mem;
     else if(strcmp(buffer,"NICE"))
         return &nice;
     else if(strcmp(buffer,"TESTCHILDS"))

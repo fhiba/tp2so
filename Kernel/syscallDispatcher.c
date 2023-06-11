@@ -78,7 +78,7 @@ int sys_dispatcher(int arg0, int arg1, int arg2, int arg3,int arg4, int arg5, in
         case 23:
             isBlackPixel((unsigned int)arg0,(unsigned int) arg1);
         case 24:
-            block_process(arg0);
+            return block_process(arg0);
             break;
         case 25:
             change_priority(arg0,arg1);

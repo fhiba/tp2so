@@ -116,15 +116,25 @@ void block(int argc,char argv[5][20]){
         exit();
     }
     int num = atoi(argv[1]);
-    sys_block(num);
+    int flag = sys_block(num);
+    if(flag == -1)
+        printerr("There was a problem blocking the process\n");
+    printf(argv[1]);
+    printf(" : ");
+    if(flag == 1){
+        printf("BLOCKED\n");
+    }
+    else if(flag == 0){
+        printf("READY\n");
+    }
     exit();
 }
 
 void cat(int argc,char argv[5][20]){
     if(argc != 2) {
-        char buffer[512];
+        char buffer[100];
         int bytes_read;
-        while((bytes_read = sys_read(STDIN, buffer, 512)) != -1) {
+        while((bytes_read = sys_read(STDIN, buffer, 100)) != -1) {
             if(bytes_read != 0) {
                 buffer[bytes_read - 1] = 0;
                 printf(buffer);
@@ -141,7 +151,7 @@ void cat(int argc,char argv[5][20]){
 }
 
 void wc(int argc,char argv[5][20]){
-    int count = 0;
+    int count = -1 + argc;
     for(int i = 1; i < argc; i++){
         for(int j = 0; j < strlen(argv[i]);j++){
             if(argv[i][j] == '\n')
@@ -277,7 +287,7 @@ void test_childs(){
 }
 
 
-void memPrint(int argc, char argv[5][20]){
+void mem(int argc, char argv[5][20]){
     if(argc != 2){
         printerr("Wrong amount of arguments\n");
         return;

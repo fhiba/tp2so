@@ -29,7 +29,7 @@ void sys_free(void * mem_to_free);
 int sys_process(uint64_t ip, uint8_t priority, uint64_t argc,char *argv[20], void *customStdin,void *customStdout);
 void sys_kill(int pid);
 int sys_get_pid();
-void sys_block(int pid);
+int sys_block(int pid);
 void sys_nice(int pid, int priority);
 int sys_create_child(int ppid,uint64_t ip, uint8_t priority, uint64_t argc,char *argv[20], fd *customStdin,fd *customStdout);
 void sys_wait_pid(int pid);
