@@ -2,28 +2,12 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <pipes.h>
 
-#define BUFFER_SIZE 512
+
 #define MAX_PIPES 64
 
-typedef struct process_node{
-    int pid;
-    int operation;
-    struct process_node * next;
-}process_node;
 
-typedef process_node * process_list;
 
-typedef struct pipe_struct{
-    int id;
-    char buffer[BUFFER_SIZE];
-    uint8_t is_named;
-    unsigned int read_index;
-    unsigned int write_index;
-    process_list working_processes;
-    process_node * last_process_node;
-    my_sem sem_pipe_access;
-    my_sem sem_write;
-}pipe_struct;
+
 
 typedef struct named_pipe_node {
     char * name;
@@ -42,7 +26,7 @@ uint8_t destroyable_pipe(pipe my_pipe);
 named_pipe_node * insert_into_list(named_pipe_node* list, named_pipe_node* insert);
 named_pipe_node * remove_node_from_list(named_pipe_node * list, char * name, uint8_t * status);
 uint8_t add_process_to_pipe(pipe my_pipe, int pid, int operation);
-process_list remove_node(process_list list, int pid, uint8_t * status);
+users_list remove_node(users_list list, int pid, uint8_t * status, uint8_t * signal_close);
 uint8_t remove_process_from_pipe(pipe my_pipe, int pid);
 
 
@@ -64,19 +48,20 @@ int pipe_create(int is_named) {
     
     //asigning fds array
     //setting up struct
+    pipe_array[idx]->buffer[0] = 0;
     pipe_array[idx]->read_index = 0;
     pipe_array[idx]->write_index = 0;
     pipe_array[idx]->working_processes = NULL;
     pipe_array[idx]->last_process_node = NULL;
     pipe_array[idx]->id = idx;
     pipe_array[idx]->is_named = is_named;
-
+    pipe_array[idx]->is_closed = 0;
+    pipe_array[idx]->waiting_pid = -1;
     asigned_pipes++;
     
     
     //setting up sems
-    pipe_array[idx]->sem_pipe_access = create_sem();
-    pipe_array[idx]->sem_write = create_sem();
+    
 
     return idx;
 }
@@ -109,6 +94,7 @@ uint8_t pipe_open(fd * asigned_fd, int pipe_id, int pid) {
     return add_process_to_pipe(pipe_array[pipe_id], pid, asigned_fd->readable? READ:WRITE);
 }
 
+
 uint8_t pipe_close(pipe my_pipe, int pid) {
     if(my_pipe == NULL)
         return 1;
@@ -125,29 +111,32 @@ uint8_t remove_process_from_pipe(pipe my_pipe, int pid) {
     
     if(my_pipe == NULL)
         return 1;
-
-    process_node * list = my_pipe->working_processes;
+    uint8_t signal_close = 0;
+    users_node * list = my_pipe->working_processes;
     uint8_t status = 1;
-    list = remove_node(list, pid, &status);
+    list = remove_node(list, pid, &status, &signal_close);
+    if(signal_close)
+        my_pipe->is_closed = 1;
     return status;
 }
 
-process_list remove_node(process_list list, int pid, uint8_t * status) {
+users_list remove_node(users_list list, int pid, uint8_t * status, uint8_t * signal_close) {
     if(list == NULL)
         return NULL;
     if(list->pid == pid) {
         *status = 0;
-        process_node * next = list->next;
+        *signal_close = list->operation == WRITE ? 1:0;
+        users_node * next = list->next;
         free(list);
         return next;
     }
-    list = remove_node(list->next, pid, status);
+    list = remove_node(list->next, pid, status, signal_close);
 
     return list;
 }
 
 uint8_t add_process_to_pipe(pipe my_pipe, int pid, int operation) {
-    process_node * new_node = (process_node *) alloc(sizeof(process_node));
+    users_node * new_node = (users_node *) alloc(sizeof(users_node));
     if(new_node == NULL)
         return 1;
     new_node->pid = pid;
@@ -172,7 +161,7 @@ uint8_t destroy_pipe(pipe my_pipe) {
     int idx = my_pipe->id;
     pipe_array[idx] = NULL;
     if(my_pipe->working_processes != NULL) {
-        process_node * aux = my_pipe->working_processes;
+        users_node * aux = my_pipe->working_processes;
         while(aux != NULL) {
             my_pipe->working_processes = aux->next;
             free(aux);
@@ -191,22 +180,28 @@ int read_pipe(fd * user_fd, char * buffer, int max_bytes) {
     
     if(pipe_to_read == NULL)
         return -1;
-    my_sem_wait(pipe_to_read->sem_pipe_access);
+    //my_sem_wait(pipe_to_read->sem_pipe_access);
     int read_bytes = 0;
 
     while(read_bytes < max_bytes) {
-        if(pipe_to_read->read_index != pipe_to_read->write_index) {
+        if(pipe_to_read->read_index != pipe_to_read->write_index && pipe_to_read->buffer[pipe_to_read->read_index] != 0) {
             buffer[read_bytes++] = pipe_to_read->buffer[pipe_to_read->read_index++];
+            pipe_to_read->read_index = pipe_to_read->read_index == BUFFER_SIZE ? 0:pipe_to_read->read_index;
         } else {
-            if(read_bytes > 0 && get_value(pipe_to_read->sem_write) < 1) {
-                my_sem_post(pipe_to_read->sem_write);
+            if(pipe_to_read->is_closed)
+                return -1;
+            if(pipe_to_read->waiting_pid != -1) {
+                block_pid(pipe_to_read->waiting_pid);
             }
-            my_sem_post(pipe_to_read->sem_pipe_access);
+            // if(read_bytes > 0 && get_value(pipe_to_read->sem_write) < 1) {
+            //     my_sem_post(pipe_to_read->sem_write);
+            // }
+            // my_sem_post(pipe_to_read->sem_pipe_access);
             return read_bytes;
         }
     }
-    my_sem_post(pipe_to_read->sem_write);
-    my_sem_post(pipe_to_read->sem_pipe_access);
+    // my_sem_post(pipe_to_read->sem_write);
+    // my_sem_post(pipe_to_read->sem_pipe_access);
     return read_bytes;
 }
 
@@ -217,19 +212,24 @@ int write_pipe(fd * user_fd, char * buffer, int max_bytes) {
 
     if(pipe_to_write == NULL)
         return -1;
-    my_sem_wait(pipe_to_write->sem_pipe_access);
+    //my_sem_wait(pipe_to_write->sem_pipe_access);
     int write_bytes = 0;
 
     while(write_bytes < max_bytes) {
-        if(pipe_to_write->read_index != pipe_to_write->write_index) {
+        if((pipe_to_write->write_index == 0 && pipe_to_write->buffer[pipe_to_write->write_index] == 0) 
+            || pipe_to_write->read_index != pipe_to_write->write_index) {
             pipe_to_write->buffer[pipe_to_write->write_index++] = buffer[write_bytes++];
+            pipe_to_write->write_index = pipe_to_write->write_index == BUFFER_SIZE ? 0:pipe_to_write->write_index;
         } else {
-            my_sem_post(pipe_to_write->sem_pipe_access);
-            my_sem_wait(pipe_to_write->sem_write);
-            my_sem_wait(pipe_to_write->sem_pipe_access);
+                pipe_to_write->waiting_pid = get_PID();
+                block_pid(get_PID());
+                force_timer();
+            // my_sem_post(pipe_to_write->sem_pipe_access);
+            // my_sem_wait(pipe_to_write->sem_write);
+            // my_sem_wait(pipe_to_write->sem_pipe_access);
         }
     }
-    my_sem_post(pipe_to_write->sem_pipe_access);
+    //my_sem_post(pipe_to_write->sem_pipe_access);
     return write_bytes;
 }
 

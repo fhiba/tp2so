@@ -6,11 +6,13 @@
 #include <stdlib.h>
 #include <defs.h>
 #include <stdint.h>
-#include <pipes.h>
+#include <utils.h>
 #include <stdio.h>
 #include <naiveConsole.h>
 #include <interrupts.h>
 #include <lib.h>
+#include <mmu_wrapper.h>
+#include <pipes.h>
 
 #define ARG_QTY 5
 #define ARG_LEN 20

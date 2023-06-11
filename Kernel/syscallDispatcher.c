@@ -6,6 +6,7 @@
 #include <time.h>
 #include "./include/mmu_wrapper.h"
 #include <lib.h>
+#include <my_semaphore.h>
 
 
 static int num_syscall;

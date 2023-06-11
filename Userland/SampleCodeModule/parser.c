@@ -81,6 +81,10 @@ void parse_pipe(char * buffer, char * aux1, int idx,int argc1, char argv1[MAX_AR
         default:
             break;
     }
+    printf(aux1);
+    printf("\n");
+    printf(aux2);
+    printf("\n");
     func1 = get_program(aux1);
     func2 = get_program(aux2);
     strcpy(argv1[0],aux1);
