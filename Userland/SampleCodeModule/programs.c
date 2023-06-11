@@ -123,9 +123,9 @@ void block(int argc,char argv[5][20]){
 void cat(int argc,char argv[5][20]){
 
     for(int i = 1; i < argc; i++){
-        printf(argv[i]);
+            printf(argv[i]);
+            printf("\n");
     }
-    printf("\n");
     exit();
 }
 
