@@ -122,16 +122,26 @@ void block(int argc,char argv[5][20]){
 
 void cat(int argc,char argv[5][20]){
 
-    for(int i = 0; i < argc; i++){
+    for(int i = 1; i < argc; i++){
         printf(argv[i]);
     }
+    printf("\n");
     exit();
 }
 
 void wc(int argc,char argv[5][20]){
-    printf("water closet\n");
+    int count = 0;
+    for(int i = 1; i < argc; i++){
+        for(int j = 0; j < strlen(argv[i]);j++){
+            if(argv[i][j] == '\n')
+                count++;
+        }
+    }
+    char num[10];
+    intToString(count,num);
+    printf(num);
+    printf("\n");
     exit();
-    //cuenta la cantidad de lineas del input
 }
 
 int is_vow(char letter){
