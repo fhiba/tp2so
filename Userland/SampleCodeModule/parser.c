@@ -138,8 +138,10 @@ void parser(char * buffer){
         }
         idx++;
     }
-    if(space_flag == 0)
+    if(space_flag == 0){
         my_substring(aux,buffer,0,idx-1);
+        argc++;
+    }
     func1 = get_program(aux);
     strcpy(argv[0],aux);
     sys_process((uint64_t)func1,9,argc,(char **)argv,NULL,NULL);

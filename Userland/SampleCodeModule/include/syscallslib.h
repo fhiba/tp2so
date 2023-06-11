@@ -44,4 +44,5 @@ void sys_dup_fd(unsigned int dest_fd, unsigned int src_fd);
 fd * sys_get_fd(int pid ,unsigned int searching_fd);
 void * sys_memset(void * destination, int32_t c, uint64_t length);
 void sys_back();
+void sys_mem_status(unsigned int * status);
 #endif

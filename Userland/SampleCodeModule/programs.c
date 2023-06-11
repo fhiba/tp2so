@@ -313,11 +313,18 @@ void mem(int argc, char argv[5][20]){
     unsigned int status[3];
     char aux[50];
     sys_mem_status(status);
-    printf("entre\n");
-    for(int i = 0; i < 3;i++){
-        intToString(status[i],aux);
-        printf(aux);
-        putchar('\n');
-    }
+
+    intToString(status[0],aux);
+    printFirst("Heap Size : ");
+    printf(aux);
+    putchar('\n');
+    intToString(status[1],aux);
+    printFirst("Heap Left : ");
+    printf(aux);
+    putchar('\n');
+    intToString(status[2],aux);
+    printFirst("Used Heap : ");
+    printf(aux);
+    putchar('\n');
     exit();
 }

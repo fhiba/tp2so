@@ -119,6 +119,9 @@ int sys_dispatcher(int arg0, int arg1, int arg2, int arg3,int arg4, int arg5, in
         case 36:
             wait_pid(arg0);
             break;
+        case 37:
+            mem_status((unsigned int *)arg0);
+            break;
         default:
             return -1;
     }
