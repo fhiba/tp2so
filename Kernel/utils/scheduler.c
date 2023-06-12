@@ -113,27 +113,33 @@ int create_process(uint64_t ip, uint8_t priority, uint64_t argc,char argv[ARG_QT
     newPCB->fds = NULL;
     newPCB->last_node = NULL;
     newPCB->is_parent = 0;
+    newPCB->stdin_fd = (fd*) alloc(sizeof(fd));
+    newPCB->stdin_fd->id = customStdin == NULL? STDIN:customStdin->id;
+    newPCB->stdin_fd->readable = 1;
+    newPCB->stdin_fd->writable = 0;
+    newPCB->stdin_fd->pipe = NULL;
+    if( customStdin != NULL && customStdin->pipe != NULL) {
+        pipe_open(newPCB->stdin_fd, get_pipe_id(customStdin->pipe), newPCB->pid);
+    }
+    newPCB->stdout_fd = (fd*) alloc(sizeof(fd));
+    newPCB->stdout_fd->id = customStdin == NULL? STDOUT:customStdin->id;
+    newPCB->stdout_fd->readable = 0;
+    newPCB->stdout_fd->writable = 1;
+    newPCB->stdout_fd->pipe = NULL;
+    if(customStdout != NULL && customStdout->pipe != NULL) {
+        pipe_open(newPCB->stdout_fd, get_pipe_id(customStdout->pipe), newPCB->pid);
+    }
+    unsigned int max = 2;
     if(customStdin == NULL) {
-        customStdin = alloc(sizeof(fd));
-        customStdin->id = STDIN;
-        customStdin->pipe = NULL;
-        customStdin->readable = 1;
-        customStdin->writable = 0;
+        if(customStdout != NULL && max < customStdout->id + 1)
+            max = customStdout->id + 1;
+    } else if(customStdout == NULL) {
+        if(customStdin != NULL && max < customStdin->id + 1)
+            max = customStdin->id + 1;
+    } else {
+        max = customStdin->id > customStdout->id ? (customStdin->id + 1 > max? customStdin->id + 1: max) : (customStdout->id + 1 > max? customStdout->id + 1: max);
     }
-
-    if(customStdout == NULL) {
-        customStdout = alloc(sizeof(fd));
-        customStdout->id = STDOUT;
-        customStdout->pipe = NULL;
-        customStdout->readable = 0;
-        customStdout->writable = 1;
-    }
-
-    newPCB->stdin_fd = customStdin;
-    newPCB->stdin_fd->id = 0;
-    newPCB->stdout_fd = customStdout;
-    newPCB->stdout_fd->id = 1;
-    newPCB->next_fd_id = 2;
+    newPCB->next_fd_id = max;
     newPCB->state = 1;
     newPCB->background = back;
     back = 0;
@@ -174,8 +180,6 @@ int create_child(int ppid,uint64_t ip, uint8_t priority, uint64_t argc,char argv
 
     int child_pid = create_process(ip,priority,argc,argv,customStdin,customStdout);
     
-
-
     insert_in_pid_list(ppid,child_pid);
     return child_pid;
 }
@@ -351,6 +355,8 @@ int kill_process(int process_id){
     //LIBERO SUS RECURSOS
     free_fd(process_to_remove->pcb->stdin_fd,process_id);
     free_fd(process_to_remove->pcb->stdout_fd, process_id);
+    free(process_to_remove->pcb->stdin_fd);
+    free(process_to_remove->pcb->stdout_fd);
     free_fd_list(process_to_remove->pcb->fds,process_id);
     free_child_pid_list(process_to_remove->pcb->child_pid_list);
     free(process_to_remove->pcb);

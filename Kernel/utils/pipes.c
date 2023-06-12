@@ -51,6 +51,7 @@ int pipe_create(int is_named) {
     pipe_array[idx]->buffer[0] = 0;
     pipe_array[idx]->read_index = 0;
     pipe_array[idx]->write_index = 0;
+    pipe_array[idx]->readable_bytes = 0;
     pipe_array[idx]->working_processes = NULL;
     pipe_array[idx]->last_process_node = NULL;
     pipe_array[idx]->id = idx;
@@ -115,14 +116,14 @@ uint8_t remove_process_from_pipe(pipe my_pipe, int pid) {
     users_node * list = my_pipe->working_processes;
     uint8_t status = 1;
     list = remove_node(list, pid, &status, &signal_close);
-    if(signal_close)
-        my_pipe->is_closed = 1;
+    my_pipe->is_closed = pid != 1 ? signal_close:my_pipe->is_closed;
     return status;
 }
 
 users_list remove_node(users_list list, int pid, uint8_t * status, uint8_t * signal_close) {
     if(list == NULL)
         return NULL;
+    int list_pid = list->pid;
     if(list->pid == pid) {
         *status = 0;
         *signal_close = list->operation == WRITE ? 1:0;
@@ -184,14 +185,16 @@ int read_pipe(fd * user_fd, char * buffer, int max_bytes) {
     int read_bytes = 0;
 
     while(read_bytes < max_bytes) {
-        if(pipe_to_read->read_index != pipe_to_read->write_index && pipe_to_read->buffer[pipe_to_read->read_index] != 0) {
+        if(pipe_to_read->readable_bytes > 0) {
             buffer[read_bytes++] = pipe_to_read->buffer[pipe_to_read->read_index++];
             pipe_to_read->read_index = pipe_to_read->read_index == BUFFER_SIZE ? 0:pipe_to_read->read_index;
+            pipe_to_read->readable_bytes--;
         } else {
-            if(pipe_to_read->is_closed)
+            if(pipe_to_read->is_closed && read_bytes == 0)
                 return -1;
             if(pipe_to_read->waiting_pid != -1) {
-                block_pid(pipe_to_read->waiting_pid);
+                unblock_pid(pipe_to_read->waiting_pid);
+                pipe_to_read->waiting_pid = -1;
             }
             // if(read_bytes > 0 && get_value(pipe_to_read->sem_write) < 1) {
             //     my_sem_post(pipe_to_read->sem_write);
@@ -217,9 +220,10 @@ int write_pipe(fd * user_fd, char * buffer, int max_bytes) {
 
     while(write_bytes < max_bytes) {
         if((pipe_to_write->write_index == 0 && pipe_to_write->buffer[pipe_to_write->write_index] == 0) 
-            || pipe_to_write->read_index != pipe_to_write->write_index) {
+            || pipe_to_write->readable_bytes < BUFFER_SIZE) {
             pipe_to_write->buffer[pipe_to_write->write_index++] = buffer[write_bytes++];
             pipe_to_write->write_index = pipe_to_write->write_index == BUFFER_SIZE ? 0:pipe_to_write->write_index;
+            pipe_to_write->readable_bytes++;
         } else {
                 pipe_to_write->waiting_pid = get_PID();
                 block_pid(get_PID());

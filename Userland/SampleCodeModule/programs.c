@@ -55,7 +55,6 @@ void help(){
     printFirst("CLEAR");
     printf(": Clean the screen\n");
     exit();
-    return;
 }
 
 void invalid(){
@@ -140,6 +139,7 @@ void cat(int argc,char argv[5][20]){
                 printf(buffer);
             }
         }
+        printf("\n");
         exit();
     }
 
@@ -151,6 +151,19 @@ void cat(int argc,char argv[5][20]){
 }
 
 void wc(int argc,char argv[5][20]){
+    if(argc != 2) {
+        char buffer[100];
+        int bytes_read;
+        while((bytes_read = sys_read(STDIN, buffer, 100)) != -1) {
+            if(bytes_read != 0) {
+                buffer[bytes_read - 1] = 0;
+                int i = 0;
+                
+            }
+        }
+        exit();
+    }
+
     int count = -1 + argc;
     for(int i = 1; i < argc; i++){
         for(int j = 0; j < strlen(argv[i]);j++){
@@ -166,7 +179,8 @@ void wc(int argc,char argv[5][20]){
 }
 
 int is_vow(char letter){
-    if(letter == 'A' || letter == 'E' || letter == 'I' || letter == 'O' || letter == 'U')
+    if(letter == 'A' || letter == 'E' || letter == 'I' || letter == 'O' || letter == 'U' ||
+        letter == 'a' || letter == 'e' || letter == 'i' || letter == 'o' || letter == 'u')
         return 1;
     return 0;
 }
@@ -184,8 +198,6 @@ void filter_vow(int argc, char argv[5][20]){
                 }
             }
         }
-           
-        printerr("Wrong amount of arguments\n");
         int pid = sys_get_pid();
         sys_kill(pid);
     }

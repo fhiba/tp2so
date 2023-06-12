@@ -84,10 +84,6 @@ void parse_pipe(char * buffer, char * aux1, int idx,int argc1, char argv1[MAX_AR
         default:
             break;
     }
-    printf(aux1);
-    printf("\n");
-    printf(aux2);
-    printf("\n");
     func1 = get_program(aux1);
     func2 = get_program(aux2);
     strcpy(argv1[0],aux1);
@@ -99,6 +95,9 @@ void parse_pipe(char * buffer, char * aux1, int idx,int argc1, char argv1[MAX_AR
 
     sys_process((uint64_t)func1,5,argc1,(char **)argv1,NULL,write);
     sys_process((uint64_t)func2,5,argc2,(char **)argv2,read,NULL);
+    sys_close_pipe(read->id);
+    sys_close_pipe(write->id);
+    return;
 }
 
 void parser(char * buffer){

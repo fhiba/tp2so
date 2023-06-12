@@ -23,7 +23,7 @@ int sys_dispatcher(int arg0, int arg1, int arg2, int arg3,int arg4, int arg5, in
             set_back();
             break;
         case 1:
-            read((unsigned int)arg0,(char*)(long)arg1,(size_t)arg2);
+            return read((unsigned int)arg0,(char*)(long)arg1,(size_t)arg2);
             break;
         case 2:
             write((unsigned int) arg0, arg1,(char*)(long)arg2,(size_t)arg3);

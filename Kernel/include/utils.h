@@ -19,6 +19,7 @@ typedef struct pipe_struct{
     uint8_t is_closed;
     unsigned int read_index;
     unsigned int write_index;
+    unsigned int readable_bytes;
     users_list working_processes;
     users_node * last_process_node;
     int waiting_pid;
