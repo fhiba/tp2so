@@ -36,6 +36,8 @@ GLOBAL sys_close_pipe
 GLOBAL sys_dup_fd
 GLOBAL sys_get_fd
 GLOBAL sys_back
+GLOBAL sys_sem_close
+GLOBAL sys_cede
 
 sys_back:
     mov rax,99
@@ -216,6 +218,16 @@ sys_get_fd:
 
 sys_mem_status:
     mov rax,37
+    int 80h
+    ret
+
+sys_sem_close:
+    mov rax,38
+    int 80h
+    ret
+
+sys_cede:
+    mov rax,39
     int 80h
     ret
 

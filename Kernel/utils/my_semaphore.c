@@ -40,10 +40,15 @@ sem * create_sem(){
 my_sem my_sem_open(uint64_t id){
     while (_xchg(&sem_mut, 1) != 0);
 
+    if(amount == MAX)
+        return NULL;
+
     int semIter = 0;
     while (semIter < amount && semaphores[semIter]->id != id) {
         semIter++;
     }
+
+    
 
     if (semIter == amount) {
         semaphores[semIter] = (sem *)alloc(sizeof(sem));
