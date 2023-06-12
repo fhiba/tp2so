@@ -93,7 +93,7 @@ int sys_dispatcher(int arg0, int arg1, int arg2, int arg3,int arg4, int arg5, in
             my_sem_post((my_sem)(long) arg0);
             break;
         case 30:
-            return (long) my_sem_open((my_sem)(long) arg0);
+            return (long) my_sem_open(arg0);
             break;
         case 29:
             create_sem();
