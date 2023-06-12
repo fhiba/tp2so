@@ -1,9 +1,10 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <stdint.h>
-#include <stdio.h>
-#include "syscallslib.h"
-#include "test_util.h"
+// #include <stdio.h>
+#include <syscallslib.h>
+#include <programs.h>
+#include <test_util.h>
 
 #define MINOR_WAIT 1000000 // TODO: Change this value to prevent a process from flooding the screen
 #define WAIT 10000000      // TODO: Change this value to make the wait long enough to see theese processes beeing run at least twice
@@ -14,6 +15,12 @@
 #define HIGHEST 2 // TODO: Change as required
 
 int64_t prio[TOTAL_PROCESSES] = {LOWEST, MEDIUM, HIGHEST};
+
+void print_ps(){
+  char buffer[1024] = {0};
+  sys_ps(buffer,NULL);
+  printf(buffer);
+}
 
 void test_prio() {
   int64_t pids[TOTAL_PROCESSES];
@@ -26,30 +33,41 @@ void test_prio() {
   }
 
   bussy_wait(WAIT);
-  printf("\nCHANGING PRIORITIES...\n");
+  printFirst("\nCHANGING PRIORITIES...\n");
 
-  for (i = 0; i < TOTAL_PROCESSES; i++)
-    nice(pids[i], prio[i]);
+  for (i = 0; i < TOTAL_PROCESSES; i++){
+
+    sys_nice((int)pids[i], (int)prio[i]);
+    printf("\n");
+    print_ps();
+  }
+
+  sys_sleep(3000);
 
   bussy_wait(WAIT);
-  printf("\nBLOCKING...\n");
+  printFirst("\nBLOCKING...\n");
+
+  for (i = 0; i < TOTAL_PROCESSES; i++){
+    sys_block(pids[i]);
+    printf("\n");
+    print_ps();
+  }
+  sys_sleep(3000);
+
+  printFirst("CHANGING PRIORITIES WHILE BLOCKED...\n");
+
+  for (i = 0; i < TOTAL_PROCESSES; i++)
+    sys_nice((int)pids[i], (int)prio[i]);
+  print_ps();
+  printFirst("UNBLOCKING...\n");
 
   for (i = 0; i < TOTAL_PROCESSES; i++)
     sys_block(pids[i]);
 
-  printf("CHANGING PRIORITIES WHILE BLOCKED...\n");
-
-  for (i = 0; i < TOTAL_PROCESSES; i++)
-    nice(pids[i], MEDIUM);
-
-  printf("UNBLOCKING...\n");
-
-  for (i = 0; i < TOTAL_PROCESSES; i++)
-    sys_block(pids[i]);
-
   bussy_wait(WAIT);
-  printf("\nKILLING...\n");
-
+  printFirst("\nKILLING...\n");
   for (i = 0; i < TOTAL_PROCESSES; i++)
     sys_kill(pids[i]);
+  print_ps();
+  sys_kill(sys_get_pid());
 }

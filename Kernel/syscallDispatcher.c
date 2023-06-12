@@ -122,6 +122,12 @@ int sys_dispatcher(int arg0, int arg1, int arg2, int arg3,int arg4, int arg5, in
         case 37:
             mem_status((unsigned int *)arg0);
             break;
+        case 38:
+            my_sem_close((my_sem) arg0);
+            break;
+        case 39:
+            cede_cpu(arg0);
+            break;
         default:
             return -1;
     }

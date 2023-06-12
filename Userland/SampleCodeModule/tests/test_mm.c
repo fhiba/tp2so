@@ -12,19 +12,20 @@ typedef struct MM_rq {
   uint32_t size;
 } mm_rq;
 
-uint64_t test_mm(uint64_t argc, char *argv[]) {
+uint64_t test_mm(uint64_t argc, char argv[5][20]) {
 
   mm_rq mm_rqs[MAX_BLOCKS];
   uint8_t rq;
   uint32_t total;
   uint64_t max_memory;
 
-  if (argc != 1)
+  if (argc != 2)
     return -1;
 
-  if ((max_memory = satoi(argv[0])) <= 0)
+  if ((max_memory = satoi(argv[1])) <= 0)
     return -1;
 
+  printf("No errors yet\n");
   while (1) {
     rq = 0;
     total = 0;
@@ -59,4 +60,5 @@ uint64_t test_mm(uint64_t argc, char *argv[]) {
       if (mm_rqs[i].address)
         sys_free(mm_rqs[i].address);
   }
+  sys_kill(sys_get_pid());
 }

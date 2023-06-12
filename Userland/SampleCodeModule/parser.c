@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <ourlib.h>
 #include <syscallslib.h>
+#include <tests.h>
 
 #define MAX_ARGS 5
 #define MAX_ARG_LENGTH 20
@@ -191,5 +192,14 @@ void * get_program(char * buffer){
         return &cat;
     else if(strcmp(buffer,"PHYLO"))
         return &phylo;
+    else if(strcmp(buffer,"TESTSYNC"))
+        return &test_sync;
+    else if(strcmp(buffer,"TESTPROCESSES"))
+        return &test_processes;
+    else if(strcmp(buffer,"TESTMM"))
+        return &test_mm;
+    else if(strcmp(buffer,"TESTPRIO"))
+        return &test_prio;
+    
     return &invalid;
 }

@@ -1,9 +1,7 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <stdio.h>
-#include <stdint.h>
 #include <syscallslib.h>
-#include "test_util.h"
+#include <test_util.h>
 
 enum State { RUNNING,
              BLOCKED,
@@ -87,4 +85,5 @@ int64_t test_processes(uint64_t argc, char *argv[]) {
         }
     }
   }
+  sys_kill(sys_get_pid());
 }
