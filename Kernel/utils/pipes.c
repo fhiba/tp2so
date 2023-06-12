@@ -196,12 +196,17 @@ int read_pipe(fd * user_fd, char * buffer, int max_bytes) {
                 unblock_pid(pipe_to_read->waiting_pid);
                 pipe_to_read->waiting_pid = -1;
             }
+
+            return read_bytes;
             // if(read_bytes > 0 && get_value(pipe_to_read->sem_write) < 1) {
             //     my_sem_post(pipe_to_read->sem_write);
             // }
             // my_sem_post(pipe_to_read->sem_pipe_access);
-            return read_bytes;
         }
+    }
+    if(pipe_to_read->waiting_pid != -1) {
+        unblock_pid(pipe_to_read->waiting_pid);
+        pipe_to_read->waiting_pid = -1;
     }
     // my_sem_post(pipe_to_read->sem_write);
     // my_sem_post(pipe_to_read->sem_pipe_access);
@@ -225,6 +230,10 @@ int write_pipe(fd * user_fd, char * buffer, int max_bytes) {
             pipe_to_write->write_index = pipe_to_write->write_index == BUFFER_SIZE ? 0:pipe_to_write->write_index;
             pipe_to_write->readable_bytes++;
         } else {
+                if(pipe_to_write->waiting_pid != -1) {
+                    unblock_pid(pipe_to_write->waiting_pid);
+                    pipe_to_write->waiting_pid = -1;
+                } 
                 pipe_to_write->waiting_pid = get_PID();
                 block_pid(get_PID());
                 force_timer();
@@ -233,6 +242,10 @@ int write_pipe(fd * user_fd, char * buffer, int max_bytes) {
             // my_sem_wait(pipe_to_write->sem_pipe_access);
         }
     }
+    if(pipe_to_write->waiting_pid != -1) {
+        unblock_pid(pipe_to_write->waiting_pid);
+        pipe_to_write->waiting_pid = -1;
+    } 
     //my_sem_post(pipe_to_write->sem_pipe_access);
     return write_bytes;
 }
