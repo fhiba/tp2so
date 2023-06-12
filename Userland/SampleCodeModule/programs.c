@@ -56,6 +56,14 @@ void help(){
     printf(": Prints the state of the memory\n");
     printFirst("CLEAR");
     printf(": Clean the screen\n");
+    printFirst("TESTMM");
+    printf(": Periodically allocates and free mem up to max mem given as argument\n");
+    printFirst("TESTPRIO");
+    printf(": Creates up to MAX_PROCESSES and changes it's priority in scheduler\n");
+    printFirst("TESTPROCESSES");
+    printf(": Creates up to MAX_PROCESSES and randomly changes it's state to (UN)BLOCK or KILLs them\n");
+    printFirst("TESTSYNC");
+    printf(": Tests sync between processes changing global variable value, receives max modifications to var per process\n");
     exit();
 }
 
@@ -112,15 +120,30 @@ void kill(int argc, char argv[5][20]){
 }
 
 void block(int argc,char argv[5][20]){
+    char buffer[100];
+    int flag_pipe = 0;
     if(argc != 2){
-        printerr("Wrong amount of arguments\n");
-        exit();
+        if(sys_check_pipe(STDIN) == 0){
+            printerr("wrong amount of arguments\n");
+            exit();
+        }
+        int bytes_read;
+        while((bytes_read = sys_read(STDIN, buffer, 100)) != -1) {
+            if(bytes_read != 0) {
+                buffer[bytes_read - 1] = 0;
+                flag_pipe = 1;
+            }
+        }
     }
-    int num = atoi(argv[1]);
+    int num;
+    if(flag_pipe)
+        num = atoi(buffer);
+    else
+        num = atoi(argv[1]);
     int flag = sys_block(num);
     if(flag == -1)
         printerr("There was a problem blocking the process\n");
-    printf(argv[1]);
+    printf(flag_pipe?argv[1]:buffer);
     printf(" : ");
     if(flag == 1){
         printf("BLOCKED\n");
@@ -202,6 +225,10 @@ void filter_vow(int argc, char argv[5][20]){
     char buffer[512] = {0};
     int bytes_read = 0;
     if(argc != 2){
+        if(sys_check_pipe(STDIN) == 0){
+            printerr("wrong amount of arguments\n");
+            exit();
+        }
         while((bytes_read = sys_read(STDIN, buffer, 512)) != -1) {
             if(bytes_read != 0) {
                 buffer[bytes_read - 1] = '\0';
@@ -246,7 +273,22 @@ void resize(int argc,char argv[5][20]){
 
     // sys_write(1, buffer, 1);
     // printf("\n");
-
+    char buffer[512] = {0};
+    int bytes_read = 0;
+    if(argc != 2){
+        while((bytes_read = sys_read(STDIN, buffer, 512)) != -1) {
+            if(bytes_read != 0) {
+                buffer[bytes_read - 1] = '\0';
+                for(int i = 0; i < bytes_read; i++) {
+                    if(!is_vow(buffer[i]))
+                        putchar(buffer[i]);
+                }
+            }
+        }
+        printf("\n");
+        int pid = sys_get_pid();
+        sys_kill(pid);
+    }
     if(argc != 2){
         printerr("Wrong amount of arguments\n");
         int pid = sys_get_pid();

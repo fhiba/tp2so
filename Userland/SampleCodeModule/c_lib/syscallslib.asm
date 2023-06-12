@@ -39,6 +39,7 @@ GLOBAL sys_back
 GLOBAL sys_sem_close
 GLOBAL sys_cede
 GLOBAL sys_memset
+GLOBAL sys_check_pipe
 
 sys_back:
     mov rax,99
@@ -229,6 +230,11 @@ sys_sem_close:
 
 sys_cede:
     mov rax,39
+    int 80h
+    ret
+
+sys_check_pipe:
+    mov rax,41
     int 80h
     ret
 

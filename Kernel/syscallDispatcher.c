@@ -128,6 +128,8 @@ int sys_dispatcher(int arg0, int arg1, int arg2, int arg3,int arg4, int arg5, in
         case 39:
             cede_cpu(arg0);
             break;
+        case 41:
+            return is_pipe((unsigned int) arg0);
         default:
             return -1;
     }
