@@ -106,6 +106,12 @@ void intToString(int num, char* str) {
         num = -num;
     }
 
+    if(num == 0){
+        str[i++] = '0';
+        str[i] = '\0';
+        return;
+    }
+
     // Convert individual digits to characters
     while (num != 0) {
         int remainder = num % 10;

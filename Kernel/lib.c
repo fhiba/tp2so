@@ -4,6 +4,15 @@
 #include <time.h>
 #include <lib.h>
 
+
+int block_pid(int pid) {
+	return block_process(pid);
+}
+
+int unblock_pid(int pid) {
+	return unblock_process(pid);
+}
+
 void * memset(void * destination, int32_t c, uint64_t length)
 {
 	uint8_t chr = (uint8_t)c;

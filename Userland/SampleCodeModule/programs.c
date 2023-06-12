@@ -10,6 +10,14 @@ void exit(){
     sys_kill(pid);
 }
 
+void test_sems(){
+    my_sem semaphore = sys_sem_create();
+    sys_sem_wait(semaphore);
+    printf("entre\n");
+    sys_sem_post(semaphore);
+    exit();
+}
+
 void help(){
     printFirst("Available Commands: \n");
     printFirst("TRON");
@@ -47,7 +55,6 @@ void help(){
     printFirst("CLEAR");
     printf(": Clean the screen\n");
     exit();
-    return;
 }
 
 void invalid(){
@@ -108,26 +115,72 @@ void block(int argc,char argv[5][20]){
         exit();
     }
     int num = atoi(argv[1]);
-    sys_block(num);
+    int flag = sys_block(num);
+    if(flag == -1)
+        printerr("There was a problem blocking the process\n");
+    printf(argv[1]);
+    printf(" : ");
+    if(flag == 1){
+        printf("BLOCKED\n");
+    }
+    else if(flag == 0){
+        printf("READY\n");
+    }
     exit();
 }
 
 void cat(int argc,char argv[5][20]){
+    if(argc != 2) {
+        char buffer[100];
+        int bytes_read;
+        while((bytes_read = sys_read(STDIN, buffer, 100)) != -1) {
+            if(bytes_read != 0) {
+                buffer[bytes_read - 1] = 0;
+                printf(buffer);
+            }
+        }
+        printf("\n");
+        exit();
+    }
 
-    for(int i = 0; i < argc; i++){
-        printf(argv[i]);
+    for(int i = 1; i < argc; i++){
+            printf(argv[i]);
+            printf("\n");
     }
     exit();
 }
 
 void wc(int argc,char argv[5][20]){
-    printf("water closet\n");
+    if(argc != 2) {
+        char buffer[100];
+        int bytes_read;
+        while((bytes_read = sys_read(STDIN, buffer, 100)) != -1) {
+            if(bytes_read != 0) {
+                buffer[bytes_read - 1] = 0;
+                int i = 0;
+                
+            }
+        }
+        exit();
+    }
+
+    int count = -1 + argc;
+    for(int i = 1; i < argc; i++){
+        for(int j = 0; j < strlen(argv[i]);j++){
+            if(argv[i][j] == '\n')
+                count++;
+        }
+    }
+    char num[10];
+    intToString(count,num);
+    printf(num);
+    printf("\n");
     exit();
-    //cuenta la cantidad de lineas del input
 }
 
 int is_vow(char letter){
-    if(letter == 'A' || letter == 'E' || letter == 'I' || letter == 'O' || letter == 'U')
+    if(letter == 'A' || letter == 'E' || letter == 'I' || letter == 'O' || letter == 'U' ||
+        letter == 'a' || letter == 'e' || letter == 'i' || letter == 'o' || letter == 'u')
         return 1;
     return 0;
 }
@@ -136,15 +189,15 @@ void filter_vow(int argc, char argv[5][20]){
     char buffer[512] = {0};
     int bytes_read = 0;
     if(argc != 2){
-        while((bytes_read = sys_read(STDIN, buffer, 512))) {
-            buffer[bytes_read - 1] = '\0';
-            for(int i = 0; i < bytes_read; i++) {
-                if(!is_vow(buffer[i]))
-                    putchar(buffer[i]);
+        while((bytes_read = sys_read(STDIN, buffer, 512)) != -1) {
+            if(bytes_read != 0) {
+                buffer[bytes_read - 1] = '\0';
+                for(int i = 0; i < bytes_read; i++) {
+                    if(!is_vow(buffer[i]))
+                        putchar(buffer[i]);
+                }
             }
         }
-           
-        printerr("Wrong amount of arguments\n");
         int pid = sys_get_pid();
         sys_kill(pid);
     }
@@ -246,29 +299,44 @@ void test_childs(){
 }
 
 
-void memPrint(int argc, char argv[5][20]){
-    if(argc != 2){
+void mem(int argc, char argv[5][20]){
+    if(argc != 1){
         printerr("Wrong amount of arguments\n");
         return;
     } 
-    int ok = 1;
-    uint64_t dir = stringToUint64(argv[1],&ok);
-    if(!ok || strlen(argv[0]) > 9){
-        printerr("Invalid adress\n");
-        return;
-    }
-    unsigned char memStr[20] = {0};
-    sys_printMem(dir,memStr);
-    for(int i=0; i < 20; i++){
-        if(i != 0 && i %5 ==0)
-            putchar('\n');
-        if(memStr[i] <16){
-            putchar('0');
-        }
-        sys_printBase(memStr[i],16);
+    // int ok = 1;
+    // uint64_t dir = stringToUint64(argv[1],&ok);
+    // if(!ok || strlen(argv[0]) > 9){
+    //     printerr("Invalid adress\n");
+    //     return;
+    // }
+    // unsigned char memStr[20] = {0};
+    // sys_printMem(dir,memStr);
+    // for(int i=0; i < 20; i++){
+    //     if(i != 0 && i %5 ==0)
+    //         putchar('\n');
+    //     if(memStr[i] <16){
+    //         putchar('0');
+    //     }
+    //     sys_printBase(memStr[i],16);
 
-        putchar(' ');
-    }
+    //     putchar(' ');
+    // }
+    unsigned int status[3];
+    char aux[50];
+    sys_mem_status(status);
+
+    intToString(status[0],aux);
+    printFirst("Heap Size : ");
+    printf(aux);
+    putchar('\n');
+    intToString(status[1],aux);
+    printFirst("Heap Left : ");
+    printf(aux);
+    putchar('\n');
+    intToString(status[2],aux);
+    printFirst("Used Heap : ");
+    printf(aux);
     putchar('\n');
     exit();
 }

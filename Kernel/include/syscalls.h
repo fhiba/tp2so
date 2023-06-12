@@ -10,6 +10,7 @@
 #include <scheduler.h>
 #include <naiveConsole.h>
 #include <keyboard_driver.h>
+#include <pipes.h>
 #define READ 0
 #define WRITE 1
 

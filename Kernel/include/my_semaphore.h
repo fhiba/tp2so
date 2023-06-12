@@ -26,4 +26,6 @@ atomic_int get_value(my_sem semaphore);
 
 my_sem create_sem();
 
+void remove_process_sem(int64_t pid);
+
 #endif

@@ -6,11 +6,13 @@
 #include <stdlib.h>
 #include <defs.h>
 #include <stdint.h>
-#include <pipes.h>
+#include <utils.h>
 #include <stdio.h>
 #include <naiveConsole.h>
 #include <interrupts.h>
 #include <lib.h>
+#include <mmu_wrapper.h>
+#include <pipes.h>
 
 #define ARG_QTY 5
 #define ARG_LEN 20
@@ -46,6 +48,7 @@ typedef struct pcb {
   fdNode * last_node;
   uint8_t background;
   pid_node *child_pid_list;
+  uint8_t is_parent;
 } pcb;
 
 

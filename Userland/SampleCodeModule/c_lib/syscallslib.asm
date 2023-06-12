@@ -14,7 +14,7 @@ GLOBAL sys_divzero
 GLOBAL sys_opcode
 GLOBAL sys_recto
 GLOBAL sys_tron
-
+GLOBAL sys_mem_status
 GLOBAL sys_printBase
 GLOBAL sys_isBlackPixel
 GLOBAL sys_malloc
@@ -211,6 +211,11 @@ sys_dup_fd:
 
 sys_get_fd:
     mov rax, 34
+    int 80h
+    ret
+
+sys_mem_status:
+    mov rax,37
     int 80h
     ret
 
