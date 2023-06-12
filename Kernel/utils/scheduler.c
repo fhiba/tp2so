@@ -638,6 +638,8 @@ int change_priority(int process_id,int priority){
 }
 int block_process(int process_id){
     process_node* node = get_process_node(process_id);
+    if(node == NULL)
+        return -1;
     if(node->pcb->state == BLOCKED){
         node->pcb->state = READY;
         return 0;
@@ -712,6 +714,16 @@ void swap(process_node *a, process_node *b)
     int temp = a->pcb->priority; 
     a->pcb->priority = b->pcb->priority; 
     b->pcb->priority = temp; 
+}
+
+int is_pipe(unsigned int custom_fd){
+    if(custom_fd == STDIN)
+        return scheduler->current->pcb->stdin_fd->pipe != NULL;
+    else if(custom_fd == STDOUT){
+        return scheduler->current->pcb->stdout_fd->pipe != NULL;
+    }
+    fd * aux = get_fd(get_PID,custom_fd);
+    return aux->pipe != NULL;
 }
 
 pcb * block_current(){
