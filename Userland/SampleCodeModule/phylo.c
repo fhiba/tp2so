@@ -102,7 +102,7 @@ void phylo() {
   for (i = 0; i < N; i++) {
     cUintToBase(i, num, 10);
     strcpy(args[1], num);
-    pids[i] = sys_process((uint64_t)phylo, 3, 2, (char **)args, NULL, NULL);
+    pids[i] = sys_process((uint64_t)philosopher, 3, 2, (char **)args, NULL, NULL);
   }
 
   char c;
