@@ -16,11 +16,6 @@
 
 int64_t prio[TOTAL_PROCESSES] = {LOWEST, MEDIUM, HIGHEST};
 
-void print_ps(){
-  char buffer[1024] = {0};
-  sys_ps(buffer,NULL);
-  printf(buffer);
-}
 
 void test_prio() {
   int64_t pids[TOTAL_PROCESSES];

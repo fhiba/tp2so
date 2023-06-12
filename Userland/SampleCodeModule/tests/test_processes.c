@@ -12,18 +12,27 @@ typedef struct P_rq {
   enum State state;
 } p_rq;
 
-int64_t test_processes(uint64_t argc, char *argv[]) {
+
+
+int64_t test_processes(uint64_t argc, char argv[5][20]) {
   uint8_t rq;
   uint8_t alive = 0;
   uint8_t action;
   uint64_t max_processes;
   char *argvAux[] = {0};
 
-  if (argc != 1)
-    return -1;
+  if (argc != 2){
+    printerr("Wrong amount of arguments\n");
+    sys_kill(sys_get_pid());
+  }
 
-  if ((max_processes = satoi(argv[0])) <= 0)
-    return -1;
+  printf(argv[1]);
+  printf("\n");
+
+  if ((max_processes = satoi(argv[1])) <= 0){
+    printerr("max processes is less than 0\n");
+    sys_kill(sys_get_pid());
+  }
 
   p_rq p_rqs[max_processes];
 
@@ -44,6 +53,11 @@ int64_t test_processes(uint64_t argc, char *argv[]) {
       }
     }
 
+    print_ps();
+    sys_sleep(3000);
+    printf("\n");
+
+    printFirst("RANDOM KILL BLOCK OR UNBLOCK PROCESS\n");
     // Randomly kills, blocks or unblocks processes until every one has been killed
     while (alive > 0) {
 
@@ -58,8 +72,12 @@ int64_t test_processes(uint64_t argc, char *argv[]) {
                 return -1;
               }
               p_rqs[rq].state = KILLED;
+              printFirst("RANDOM ACTION = KILLED\n");
               alive--;
             }
+                print_ps();
+                sys_sleep(3000);
+                printf("\n");
             break;
 
           case 1:
@@ -68,12 +86,20 @@ int64_t test_processes(uint64_t argc, char *argv[]) {
                 printf("test_processes: ERROR blocking process\n");
                 return -1;
               }
+              printFirst("RANDOM ACTION = BLOCKED\n");
               p_rqs[rq].state = BLOCKED;
             }
+                print_ps();
+                sys_sleep(3000);
+                printf("\n");
             break;
         }
       }
+        print_ps();
+        sys_sleep(3000);
+        printf("\n");
 
+      printFirst("RANDOM ACTION = UNBLOCKED\n");
       // Randomly unblocks processes
       for (rq = 0; rq < max_processes; rq++)
         if (p_rqs[rq].state == BLOCKED && GetUniform(100) % 2) {
@@ -82,8 +108,12 @@ int64_t test_processes(uint64_t argc, char *argv[]) {
             return -1;
           }
           p_rqs[rq].state = RUNNING;
+              print_ps();
+              printf("\n");
+              sys_sleep(3000);
         }
     }
+
   }
   sys_kill(sys_get_pid());
 }

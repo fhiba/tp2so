@@ -8,6 +8,12 @@
 static uint32_t m_z = 362436069;
 static uint32_t m_w = 521288629;
 
+void print_ps(){
+  char buffer[1024] = {0};
+  sys_ps(buffer,NULL);
+  printf(buffer);
+}
+
 uint32_t GetUint() {
   m_z = 36969 * (m_z & 65535) + (m_z >> 16);
   m_w = 18000 * (m_w & 65535) + (m_w >> 16);

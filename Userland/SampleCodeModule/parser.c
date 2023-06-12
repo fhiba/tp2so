@@ -194,7 +194,7 @@ void * get_program(char * buffer){
         return &phylo;
     else if(strcmp(buffer,"TESTSYNC"))
         return &test_sync;
-    else if(strcmp(buffer,"TESTPROCESSES"))
+    else if(strcmp(buffer,"TESTPRO"))
         return &test_processes;
     else if(strcmp(buffer,"TESTMM"))
         return &test_mm;
