@@ -32,7 +32,10 @@ void test_prio() {
     pids[i] = sys_process(&endless_loop,1,1,(char **)argv,NULL,NULL);
   }
 
-  bussy_wait(WAIT);
+  printFirst("INITIAL PS\n");
+  print_ps();
+
+
   printFirst("\nCHANGING PRIORITIES...\n");
 
   for (i = 0; i < TOTAL_PROCESSES; i++){
@@ -44,7 +47,7 @@ void test_prio() {
 
   sys_sleep(3000);
 
-  bussy_wait(WAIT);
+
   printFirst("\nBLOCKING...\n");
 
   for (i = 0; i < TOTAL_PROCESSES; i++){
@@ -56,18 +59,25 @@ void test_prio() {
 
   printFirst("CHANGING PRIORITIES WHILE BLOCKED...\n");
 
-  for (i = 0; i < TOTAL_PROCESSES; i++)
+  for (i = 0; i < TOTAL_PROCESSES; i++){
     sys_nice((int)pids[i], (int)prio[i]);
-  print_ps();
+    print_ps();
+  }
+
+  sys_sleep(3000);
   printFirst("UNBLOCKING...\n");
 
-  for (i = 0; i < TOTAL_PROCESSES; i++)
+  for (i = 0; i < TOTAL_PROCESSES; i++){
     sys_block(pids[i]);
+    print_ps();  
+  }
 
-  bussy_wait(WAIT);
+  sys_sleep(1000);
+
   printFirst("\nKILLING...\n");
-  for (i = 0; i < TOTAL_PROCESSES; i++)
+  for (i = 0; i < TOTAL_PROCESSES; i++){
     sys_kill(pids[i]);
-  print_ps();
+    print_ps();
+  }
   sys_kill(sys_get_pid());
 }
