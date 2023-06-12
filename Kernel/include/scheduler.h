@@ -75,4 +75,5 @@ fd * get_fd(int pid, unsigned int searching_fd);
 int find_fd_id(fdNode * list, fd * my_fd);
 pcb * get_pcb(int pid);
 void set_back();
+pcb * block_current();
 #endif

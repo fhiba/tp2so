@@ -610,7 +610,7 @@ void get_process_list(char *buf, char * name) {
     cUintToBase(rbp, rbpStr, 16);
     normalizeSpaces(buf, rbpStr, RBP);
 
-    normalizeSpaces(buf, priority == 1 ? "yes" : "no", FOREGROUND);
+    normalizeSpaces(buf, current->pcb->background == 1 ? "no" : "yes", FOREGROUND);
 
     uint8_t state = current->pcb->state;
     normalizeSpaces(buf, state == 1 ? "running" : "blocked", STATE);
@@ -712,4 +712,9 @@ void swap(process_node *a, process_node *b)
     int temp = a->pcb->priority; 
     a->pcb->priority = b->pcb->priority; 
     b->pcb->priority = temp; 
-} 
+}
+
+pcb * block_current(){
+    scheduler->current->pcb->state = 0;
+    return &scheduler->current->pcb;
+}

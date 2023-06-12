@@ -96,8 +96,8 @@ void parse_pipe(char * buffer, char * aux1, int idx,int argc1, char argv1[MAX_AR
 
     sys_process((uint64_t)func1,5,argc1,(char **)argv1,NULL,write);
     sys_process((uint64_t)func2,5,argc2,(char **)argv2,read,NULL);
-    sys_close_pipe(read->id);
-    sys_close_pipe(write->id);
+    // sys_close_pipe(read->id);
+    // sys_close_pipe(write->id);
     return;
 }
 

@@ -49,9 +49,11 @@ void help(){
     printFirst("WC");
     printf(": Counts the amount of input lines\n");
     printFirst("FILTER");
-    printf(": Filters the vocals frome the input\n");
+    printf(": Filters the vocals from the input\n");
     printFirst("PHYLO");
     printf(": Runs phylo\n");
+    printFirst("MEM");
+    printf(": Prints the state of the memory\n");
     printFirst("CLEAR");
     printf(": Clean the screen\n");
     exit();
@@ -152,15 +154,26 @@ void cat(int argc,char argv[5][20]){
 
 void wc(int argc,char argv[5][20]){
     if(argc != 2) {
-        char buffer[100];
+        printf("entre\n");
+        char buffer[512] = {0};
         int bytes_read;
-        while((bytes_read = sys_read(STDIN, buffer, 100)) != -1) {
+        int count = 0;
+        while((bytes_read = sys_read(STDIN, buffer, 512)) != -1) {
             if(bytes_read != 0) {
                 buffer[bytes_read - 1] = 0;
-                int i = 0;
-                
+                for(int i = 0; i < bytes_read -1; i++){
+                    if(buffer[i] == '\n'){
+                        count++;
+                        printf("+1");
+                    }
+                }
             }
         }
+        printf("sali");
+        char num[5];
+        intToString(count,num);
+        printf(num);
+        printf("\n");
         exit();
     }
 
@@ -198,6 +211,7 @@ void filter_vow(int argc, char argv[5][20]){
                 }
             }
         }
+        printf("\n");
         int pid = sys_get_pid();
         sys_kill(pid);
     }

@@ -19,7 +19,6 @@ int64_t test_processes(uint64_t argc, char argv[5][20]) {
   uint8_t alive = 0;
   uint8_t action;
   uint64_t max_processes;
-  char *argvAux[] = {0};
 
   if (argc != 2){
     printerr("Wrong amount of arguments\n");
@@ -46,7 +45,7 @@ int64_t test_processes(uint64_t argc, char argv[5][20]) {
 
       if (p_rqs[rq].pid == -1) {
         printf("test_processes: ERROR creating process\n");
-        return -1;
+        sys_kill(sys_get_pid());
       } else {
         p_rqs[rq].state = RUNNING;
         alive++;
@@ -68,8 +67,8 @@ int64_t test_processes(uint64_t argc, char argv[5][20]) {
           case 0:
             if (p_rqs[rq].state == RUNNING || p_rqs[rq].state == BLOCKED) {
               if (sys_kill(p_rqs[rq].pid) == 1) {
-                printf("test_processes: ERROR killing process\n");
-                return -1;
+                printerr("test_processes: ERROR killing process\n");
+                sys_kill(sys_get_pid());
               }
               p_rqs[rq].state = KILLED;
               printFirst("RANDOM ACTION = KILLED\n");
@@ -83,8 +82,8 @@ int64_t test_processes(uint64_t argc, char argv[5][20]) {
           case 1:
             if (p_rqs[rq].state == RUNNING) {
               if (sys_block(p_rqs[rq].pid) == -1) {
-                printf("test_processes: ERROR blocking process\n");
-                return -1;
+                printerr("test_processes: ERROR blocking process\n");
+                sys_kill(sys_get_pid());
               }
               printFirst("RANDOM ACTION = BLOCKED\n");
               p_rqs[rq].state = BLOCKED;
@@ -95,17 +94,14 @@ int64_t test_processes(uint64_t argc, char argv[5][20]) {
             break;
         }
       }
-        print_ps();
-        sys_sleep(3000);
-        printf("\n");
 
       printFirst("RANDOM ACTION = UNBLOCKED\n");
       // Randomly unblocks processes
       for (rq = 0; rq < max_processes; rq++)
         if (p_rqs[rq].state == BLOCKED && GetUniform(100) % 2) {
           if (sys_block(p_rqs[rq].pid) == -1) {
-            printf("test_processes: ERROR unblocking process\n");
-            return -1;
+            printerr("test_processes: ERROR unblocking process\n");
+            sys_kill(sys_get_pid());
           }
           p_rqs[rq].state = RUNNING;
               print_ps();

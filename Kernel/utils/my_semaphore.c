@@ -98,7 +98,7 @@ int my_sem_wait(sem * sem_id){
             return -1;
         }
 
-        sem_id->processes[sem_id->waiting++] = block_process(get_PID());
+        sem_id->processes[sem_id->waiting++] = block_current();
 
 
         _xchg(&sem_id->mutex, 0);

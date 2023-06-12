@@ -123,7 +123,6 @@ uint8_t remove_process_from_pipe(pipe my_pipe, int pid) {
 users_list remove_node(users_list list, int pid, uint8_t * status, uint8_t * signal_close) {
     if(list == NULL)
         return NULL;
-    int list_pid = list->pid;
     if(list->pid == pid) {
         *status = 0;
         *signal_close = list->operation == WRITE ? 1:0;
@@ -196,7 +195,9 @@ int read_pipe(fd * user_fd, char * buffer, int max_bytes) {
                 unblock_pid(pipe_to_read->waiting_pid);
                 pipe_to_read->waiting_pid = -1;
             }
-
+            block_pid(get_PID());
+            pipe_to_read->waiting_pid = get_PID();
+            force_timer();
             return read_bytes;
             // if(read_bytes > 0 && get_value(pipe_to_read->sem_write) < 1) {
             //     my_sem_post(pipe_to_read->sem_write);

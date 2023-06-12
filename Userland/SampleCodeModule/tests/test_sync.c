@@ -20,7 +20,7 @@ void slowInc(int64_t *p, int64_t inc) {
 uint64_t my_process_inc(uint64_t argc, char *argv[]) {
   uint64_t n;
   int8_t inc;
-  int8_t use_sem;
+
 
   printf("entre\n");
 
@@ -37,7 +37,7 @@ uint64_t my_process_inc(uint64_t argc, char *argv[]) {
   }
 
   my_sem test_sem = sys_sem_open(SEM_ID);
-  if (use_sem)
+
     if (test_sem == NULL) {
       printf("test_sync: ERROR opening semaphore\n");
       sys_kill(sys_get_pid());
@@ -46,18 +46,18 @@ uint64_t my_process_inc(uint64_t argc, char *argv[]) {
   char num[5];
   uint64_t i;
   for (i = 0; i < n; i++) {
-    if (use_sem)
+
       sys_sem_wait(test_sem);
     slowInc(&global, inc);
     intToString(global,num);
     printf(num);
     printf("\n");
     sys_kill(1000);
-    if (use_sem)
+
       sys_sem_post(test_sem);
   }
 
-  if (use_sem)
+
     sys_sem_close(test_sem);
 
   return 0;
@@ -97,4 +97,5 @@ uint64_t test_sync(uint64_t argc, char *argv[]) { //{n, use_sem, 0}
   printf(num);
   printf("\n");
   sys_kill(sys_get_pid());
+  return 0;
 }
