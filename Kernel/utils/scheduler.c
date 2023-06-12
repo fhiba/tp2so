@@ -593,7 +593,9 @@ void get_process_list(char *buf, char * name) {
   my_strcat(buf, "Name        ID  Priority  RSP       RBP       Foreground  State\n");
   process_node * current = scheduler->process_list;
   while (current != NULL) {
-    normalizeSpaces(buf, current->pcb->args[0], NAME);
+    char name[20];
+    my_strcpy(name,current->pcb->args[0]);
+    normalizeSpaces(buf, name, NAME);
 
     uint32_t pid = current->pcb->pid;
     char pidStr[6];

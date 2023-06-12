@@ -19,12 +19,12 @@ int64_t prio[TOTAL_PROCESSES] = {LOWEST, MEDIUM, HIGHEST};
 
 void test_prio() {
   int64_t pids[TOTAL_PROCESSES];
-  char *argv[] = {0};
+  char argv[5][20] = {0};
   uint64_t i;
   char process_name[13] = "enldess loop"; 
   strcpy(argv[0],process_name);
   for (i = 0; i < TOTAL_PROCESSES; i++){
-    pids[i] = sys_process(&endless_loop,1,1,(char **)argv,NULL,NULL);
+    pids[i] = sys_process(&endless_loop,1,1,argv,NULL,NULL);
   }
 
   printFirst("INITIAL PS\n");

@@ -32,8 +32,6 @@ void help(){
     printf(": See what the opcode exception loooks like\n");
     printFirst("INFOREG");
     printf(": After taking a snapshot with = see what values the registers hold!\n");
-    printFirst("MEM");
-    printf(": Dumps 20 bytes of memory from given pointer\n");
     printFirst("NICE");
     printf(": Changes the priority of a process to the given priority\n");
     printFirst("PS");
@@ -239,7 +237,10 @@ void cat(int argc,char argv[5][20]){
 
 void wc(int argc,char argv[5][20]){
     if(argc != 2) {
-        printf("entre\n");
+        if(sys_check_pipe(STDIN) == 0){
+            printerr("wrong amount of arguments\n");
+            exit();
+        }
         char buffer[512] = {0};
         int bytes_read;
         int count = 0;
@@ -249,12 +250,10 @@ void wc(int argc,char argv[5][20]){
                 for(int i = 0; i < bytes_read -1; i++){
                     if(buffer[i] == '\n'){
                         count++;
-                        printf("+1");
                     }
                 }
             }
         }
-        printf("sali");
         char num[5];
         intToString(count,num);
         printf(num);

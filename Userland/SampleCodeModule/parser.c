@@ -112,7 +112,8 @@ void parser(char * buffer){
     char aux[len];
     int space_flag = 0;
     int argc = 0;
-    char argv[MAX_ARGS][MAX_ARG_LENGTH];
+    char argv[MAX_ARGS][MAX_ARG_LENGTH] = {0};
+    
     while(buffer[idx] != 0 ){
         if(buffer[idx] == ' ' ){
             if(space_flag == 0)
@@ -147,8 +148,9 @@ void parser(char * buffer){
     }
     func1 = get_program(aux);
     strcpy(argv[0],aux);
-    argc += argc == 0? 1:0;
-    sys_process((uint64_t)func1,9,argc,(char **)argv,NULL,NULL);
+    if(argc == 0)
+        argc++;
+    sys_process((uint64_t)func1,9,argc,argv,NULL,NULL);
 }
 
 void * get_program(char * buffer){
