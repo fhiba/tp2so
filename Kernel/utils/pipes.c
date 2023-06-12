@@ -195,9 +195,9 @@ int read_pipe(fd * user_fd, char * buffer, int max_bytes) {
                 unblock_pid(pipe_to_read->waiting_pid);
                 pipe_to_read->waiting_pid = -1;
             }
-            block_pid(get_PID());
-            pipe_to_read->waiting_pid = get_PID();
-            force_timer();
+            // block_pid(get_PID());
+            // pipe_to_read->waiting_pid = get_PID();
+            // force_timer();
             return read_bytes;
             // if(read_bytes > 0 && get_value(pipe_to_read->sem_write) < 1) {
             //     my_sem_post(pipe_to_read->sem_write);

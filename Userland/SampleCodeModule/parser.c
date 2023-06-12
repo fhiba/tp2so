@@ -10,7 +10,6 @@
 #define MAX_ARGS 5
 #define MAX_ARG_LENGTH 20
 
-
 int check_next(char * buffer, int idx){
     if(buffer[idx] == '-'){
         return 1;
@@ -34,8 +33,11 @@ int catch_args(char * buffer, int idx, int * argc, char argv[MAX_ARGS][MAX_ARG_L
                 return idx;
         if(buffer[idx] == ' '){
             next = check_next(buffer,idx + 1);
-            if( next != 0 )
+            if( next != 0 ) {
+                *argc = cant + 1;
                 return idx;
+            }
+                
             argv[cant][i] = 0;
             cant++;
             i = 0;    
@@ -93,7 +95,8 @@ void parse_pipe(char * buffer, char * aux1, int idx,int argc1, char argv1[MAX_AR
     sys_create_pipe(pipe_fd);
     fd * read = sys_get_fd(sys_get_pid(), pipe_fd[0]);
     fd * write = sys_get_fd(sys_get_pid(), pipe_fd[1]);
-
+    argc1 += argc1 == 0? 1:0;
+    argc2 += argc2 == 0? 1:0;
     sys_process((uint64_t)func1,5,argc1,(char **)argv1,NULL,write);
     sys_process((uint64_t)func2,5,argc2,(char **)argv2,read,NULL);
     // sys_close_pipe(read->id);
@@ -110,7 +113,6 @@ void parser(char * buffer){
     int space_flag = 0;
     int argc = 0;
     char argv[MAX_ARGS][MAX_ARG_LENGTH];
-    
     while(buffer[idx] != 0 ){
         if(buffer[idx] == ' ' ){
             if(space_flag == 0)
@@ -145,6 +147,7 @@ void parser(char * buffer){
     }
     func1 = get_program(aux);
     strcpy(argv[0],aux);
+    argc += argc == 0? 1:0;
     sys_process((uint64_t)func1,9,argc,(char **)argv,NULL,NULL);
 }
 

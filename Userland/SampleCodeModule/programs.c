@@ -72,18 +72,65 @@ void invalid(){
     exit();
 }
 
+int parse_buffer(char * s, char * a, char * b) {
+    int buff_picker = 0;
+    while(*s != '\0') {
+        if(*s != ' ' && (*s < '0' || *s >'9'))
+            return 1;
+        if(*s == ' ') {
+            if(!buff_picker) {
+                buff_picker++;
+                *a = '\0';
+            } else
+                return 1;
+        } else {
+            if(!buff_picker) {
+                *a = *s;
+                a++;
+            } else {
+                *b = *s;
+                b++;
+            }
+        }
+        s++;
+    }
+    *b = '\0';
+    return 0;
+}
+
 void nice(int argc,char argv[5][20]){
+    char buffer[512];
+    char s_aux1[20];
+    char s_aux2[20];
+    int err_flag = 1;
+    int flag_pipe = 0;
     if(argc != 3){
-        printerr("Wrong amount of arguments\n");
-        exit();
+        if(sys_check_pipe(STDIN) == 0){
+            printerr("wrong amount of arguments\n");
+            exit();
+        }
+        flag_pipe = 1;
+        int acum = 0;
+        int bytes_read = 0;
+        while((bytes_read = sys_read(STDIN, buffer + acum, 512)) != -1)
+            acum+= bytes_read;
+
+        buffer[acum - 1] = 0;
+        err_flag = parse_buffer(buffer, s_aux1, s_aux2);
+        flag_pipe = 0;
+        if(err_flag != 0){
+            printerr("wrong amount of arguments\n");
+            exit();
+        }
+
     }
     printf("Changed the priority of ");
-    printf(argv[1]);
+    printf(flag_pipe? s_aux1:argv[1]);
     printf(" to ");
-    printf(argv[2]);
+    printf(flag_pipe? s_aux2:argv[2]);
     printf("\n");
-    int aux1 = atoi(argv[1]);
-    int aux2 = atoi(argv[2]);
+    int aux1 = atoi(flag_pipe? s_aux1:argv[1]);
+    int aux2 = atoi(flag_pipe? s_aux2:argv[2]);
     sys_nice(aux1,aux2);
     exit();
 }
@@ -110,11 +157,22 @@ void loop(int argc,char argv[5][20]){
 }
 
 void kill(int argc, char argv[5][20]){
+    char buffer[20] = {0};
+    int flag_pipe = 0;
     if(argc != 2){
-        printerr("Wrong amount of arguments\n");
-        exit();
+        if(sys_check_pipe(STDIN) == 0){
+            printerr("wrong amount of arguments\n");
+            exit();
+        }
+        int bytes_read;
+        while((bytes_read = sys_read(STDIN, buffer, 20)) != -1) {
+            if(bytes_read != 0) {
+                buffer[bytes_read - 1] = 0;
+                flag_pipe = 1;
+            }
+        }
     }
-    int num = atoi(argv[1]);
+    int num = atoi(flag_pipe?buffer:argv[1]);
     sys_kill(num);
     exit();
 }
@@ -156,6 +214,10 @@ void block(int argc,char argv[5][20]){
 
 void cat(int argc,char argv[5][20]){
     if(argc != 2) {
+        if(sys_check_pipe(STDIN) == 0){
+            printerr("wrong amount of arguments\n");
+            exit();
+        }
         char buffer[100];
         int bytes_read;
         while((bytes_read = sys_read(STDIN, buffer, 100)) != -1) {
