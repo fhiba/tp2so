@@ -56,6 +56,14 @@ void help(){
     printf(": Prints the state of the memory\n");
     printFirst("CLEAR");
     printf(": Clean the screen\n");
+    printFirst("TESTMM");
+    printf(": Periodically allocates and free mem up to max mem given as argument\n");
+    printFirst("TESTPRIO");
+    printf(": Creates up to MAX_PROCESSES and changes it's priority in scheduler\n");
+    printFirst("TESTPROCESSES");
+    printf(": Creates up to MAX_PROCESSES and randomly changes it's state to (UN)BLOCK or KILLs them\n");
+    printFirst("TESTSYNC");
+    printf(": Tests sync between processes changing global variable value, receives max modifications to var per process\n");
     exit();
 }
 
