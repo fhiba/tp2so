@@ -37,19 +37,19 @@ sem * create_sem(){
     return semaphores[amount++];
 }
 
-my_sem my_sem_open(my_sem sem_id){
+my_sem my_sem_open(uint64_t id){
     while (_xchg(&sem_mut, 1) != 0);
 
     int semIter = 0;
-    while (semIter < amount && semaphores[semIter]->id != sem_id->id) {
+    while (semIter < amount && semaphores[semIter]->id != id) {
         semIter++;
     }
 
     if (semIter == amount) {
         semaphores[semIter] = (sem *)alloc(sizeof(sem));
-        semaphores[semIter]->id = sem_id->id;
+        semaphores[semIter]->id = id;
         semaphores[semIter]->waiting = 0;
-        semaphores[semIter]->value = sem_id->value;
+        semaphores[semIter]->value = 1;
         _xchg(&sem_mut, 0);
         return semaphores[amount++];
     }

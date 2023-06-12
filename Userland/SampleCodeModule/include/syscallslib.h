@@ -35,7 +35,7 @@ int sys_create_child(int ppid,uint64_t ip, uint8_t priority, uint64_t argc,char 
 void sys_wait_pid(int pid);
 void sys_ps(char * buf,char * name);
 my_sem sys_sem_create();
-my_sem sys_sem_open(my_sem sem);
+my_sem sys_sem_open(uint64_t id);
 void sys_sem_post(my_sem sem);
 void sys_sem_wait(my_sem sem);
 void sys_create_pipe(unsigned int fds[2]);

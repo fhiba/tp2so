@@ -90,10 +90,10 @@ void read_from_stdin(char buffer[2]){
 void phylo() {
   int i;
 
-  mutex = sys_sem_create();
+  mutex = sys_sem_open(GENERALSEMID);
 
   for (i = 0; i < N; i++) {
-    chopsticks[i] = sys_sem_create();
+    chopsticks[i] = sys_sem_open(i);
   }
 
   char args[MAX_ARGS][MAX_ARG_LENGTH];
@@ -102,7 +102,7 @@ void phylo() {
   for (i = 0; i < N; i++) {
     cUintToBase(i, num, 10);
     strcpy(args[1], num);
-    pids[i] = sys_process((uint64_t)phylo, 3, 2, (char **)args, NULL, NULL);
+    pids[i] = sys_process((uint64_t)philosopher, 3, 2, (char **)args, NULL, NULL);
   }
 
   char c;
@@ -117,7 +117,7 @@ void phylo() {
           cUintToBase(n, num, 10);
           strcpy(args[1], num);
           sys_sem_wait(mutex);
-          chopsticks[n] = sys_sem_open(chopsticks[n]);
+          chopsticks[n] = sys_sem_open(n);
           state[n] = THINKING;
           pids[n++] = sys_process((uint64_t)phylo, 3, 2,(char **) args, NULL, NULL);
           sys_sem_post(mutex);
