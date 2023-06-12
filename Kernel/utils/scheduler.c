@@ -198,6 +198,8 @@ void insert_in_pid_list(int ppid,int pid){
             aux_pid_node = aux_pid_node->next;
         aux_pid_node->next = new_pid_node;
     }
+    process_node *child_node = get_process_node(pid);
+    child_node->pcb->ppid = ppid;
 }
 
 
@@ -227,8 +229,11 @@ void shell_handler(process_node * process){
         int flag = 0;
         if(process->pcb->state == BLOCKED){
             while(iter != NULL){
-                if(iter->pcb->pid != 1 && iter->pcb->state == READY && iter->pcb->background == 0)
+                if(iter->pcb->pid != 1 && iter->pcb->state == READY && iter->pcb->background == 0  )
                     flag = 1;
+                if(iter->pcb->pid != 1 && iter->pcb->is_parent){
+                    flag = 1;
+                }
                 iter = iter->next;
             }
             if(flag == 0){
@@ -275,7 +280,6 @@ int switch_context(int rsp){
     uint8_t all_blocked = 1;
     while (aux_node != NULL )
     {
-        shell_handler(aux_node);
         if(aux_node->pcb->pid != 1 &&aux_node->pcb->state == BLOCKED && aux_node->pcb->is_parent == 1){
             uint8_t flag = 0;
             pid_node *aux = aux_node->pcb->child_pid_list;
@@ -290,6 +294,7 @@ int switch_context(int rsp){
                 aux_node->pcb->state = READY;
             }
         }
+        shell_handler(aux_node);
         if(aux_node->pcb->auxPriority > 0 && aux_node->pcb->state != BLOCKED){
             scheduler->current = aux_node;
             scheduler->current->pcb->auxPriority--;
@@ -716,5 +721,5 @@ void swap(process_node *a, process_node *b)
 
 pcb * block_current(){
     scheduler->current->pcb->state = 0;
-    return &scheduler->current->pcb;
+    return scheduler->current->pcb;
 }

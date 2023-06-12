@@ -12,22 +12,20 @@ int64_t global; // shared memory
 
 void slowInc(int64_t *p, int64_t inc) {
   uint64_t aux = *p;
-  sys_cede(sys_get_pid()); // This makes the race condition highly probable
+//   sys_cede(sys_get_pid()); // This makes the race condition highly probable
   aux += inc;
   *p = aux;
 }
 
-uint64_t my_process_inc(uint64_t argc, char *argv[]) {
+uint64_t my_process_inc(uint64_t argc, char argv[5][20]) {
   uint64_t n;
   int8_t inc;
-
-
-  printf("entre\n");
+  int8_t use_sem = 1;
 
   if (argc != 3)
     sys_kill(sys_get_pid());
 
-  if ((n = satoi(argv[0])) <= 0){
+  if ((n = satoi(argv[2])) <= 0){
     printerr("Wrong value for n\n");
     sys_kill(sys_get_pid());
   }
@@ -47,23 +45,30 @@ uint64_t my_process_inc(uint64_t argc, char *argv[]) {
   uint64_t i;
   for (i = 0; i < n; i++) {
 
-      sys_sem_wait(test_sem);
+    sys_sem_wait(test_sem);
     slowInc(&global, inc);
     intToString(global,num);
     printf(num);
     printf("\n");
-    sys_kill(1000);
-
+    sys_sleep(1000);
+    if (use_sem)
       sys_sem_post(test_sem);
   }
 
 
     sys_sem_close(test_sem);
 
-  return 0;
+  printf("\n");
+  printFirst("Va a matar a hijo pid: ");
+  char pid[5];
+  intToString(sys_get_pid(),pid);
+  printf(pid);
+  printf("\n");
+  print_ps();
+  sys_kill(sys_get_pid());
 }
 
-uint64_t test_sync(uint64_t argc, char *argv[]) { //{n, use_sem, 0}
+uint64_t test_sync(uint64_t argc, char argv[5][20]) { //{n, use_sem, 0}
   uint64_t pids[2 * TOTAL_PAIR_PROCESSES];
 
   if (argc != 2){
@@ -74,22 +79,26 @@ uint64_t test_sync(uint64_t argc, char *argv[]) { //{n, use_sem, 0}
   printf(argv[1]);
   printf("\n");
 
-  char *argvDec[] = {argv[0], "-1", argv[1]};
-  char *argvInc[] = {argv[0], "1", argv[1]};
-
+  char argvDec[5][20] = {0};
+  strcpy(argvDec[0],argv[0]);
+  strcpy(argvDec[1],"-1");
+  strcpy(argvDec[2],argv[1]);
+  char argvInc[5][20] = {0};
+  strcpy(argvInc[0],argv[0]);
+  strcpy(argvInc[1],"1");
+  strcpy(argvInc[2],argv[1]);
   global = 0;
   printf("Creating childs\n");
   uint64_t i;
   for (i = 0; i < TOTAL_PAIR_PROCESSES; i++) {
     pids[i] = sys_create_child(sys_get_pid(),&my_process_inc,5, 3, argvDec,NULL,NULL);
     pids[i + TOTAL_PAIR_PROCESSES] = sys_create_child(sys_get_pid(),&my_process_inc,5, 3, argvInc,NULL,NULL);
+    print_ps();
   }
   printf("Childs created\n");
 
   printf("Waiting for pids\n");
-  for (i = 0; i < TOTAL_PAIR_PROCESSES; i++) {
-    sys_wait_pid(sys_get_pid());
-  }
+  sys_wait_pid(sys_get_pid());
 
   printf("Final value: ");
   char num[10];
@@ -97,5 +106,4 @@ uint64_t test_sync(uint64_t argc, char *argv[]) { //{n, use_sem, 0}
   printf(num);
   printf("\n");
   sys_kill(sys_get_pid());
-  return 0;
 }
